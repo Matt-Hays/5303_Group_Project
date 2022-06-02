@@ -1,6 +1,8 @@
 package com.gof.hr2s.user;
 
-public class User {
+import com.gof.hr2s.utils.HotelAuth;
+
+public class User extends HotelAuth {
     public final int userId;
     public final Account accountType;
     private String username;
