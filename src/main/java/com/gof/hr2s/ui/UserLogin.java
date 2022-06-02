@@ -1,7 +1,6 @@
 package com.gof.hr2s.ui;
 
 import com.gof.hr2s.utils.HotelAuth;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
