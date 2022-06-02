@@ -9,8 +9,8 @@ import java.security.spec.InvalidKeySpecException;
 
 public final class HotelAuth {
 
-    private HotelAuth(){
-
+    private HotelAuth() {
+        // No instantiation of this *utility / static* object
     }
 
     public static String generatePasswordHash(String password)

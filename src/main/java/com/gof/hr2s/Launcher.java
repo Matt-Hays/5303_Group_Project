@@ -26,8 +26,18 @@ class Launcher extends JFrame {
 //		Launcher launcher = new Launcher();
 
 		// Calling the entry point (UserLogin) panel
-		UserLogin homePanel = new UserLogin();
-		homePanel.setVisible(true);
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try{
+					UserLogin homePanel = new UserLogin();
+					homePanel.setVisible(true);
+				}catch (Exception ex){
+					ex.printStackTrace();
+				}
+			}
+		});
+
     }
 
 	private boolean initialize() {
