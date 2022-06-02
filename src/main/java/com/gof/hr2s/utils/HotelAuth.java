@@ -7,7 +7,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
-public class HotelAuth {
+public final class HotelAuth {
+
+    private HotelAuth(){
+
+    }
 
     public static String generatePasswordHash(String password)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
