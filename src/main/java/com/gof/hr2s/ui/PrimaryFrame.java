@@ -1,4 +1,4 @@
-package com.gof.hr2s;
+package com.gof.hr2s.ui;
 
 import com.gof.hr2s.ui.UserLogin;
 

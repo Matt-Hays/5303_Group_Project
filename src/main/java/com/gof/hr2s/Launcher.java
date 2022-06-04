@@ -1,13 +1,9 @@
 package com.gof.hr2s;
 
 
+import com.gof.hr2s.ui.PrimaryFrame;
+
 import javax.swing.*;
-import java.awt.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 class Launcher {
 //	private Logger logger;
