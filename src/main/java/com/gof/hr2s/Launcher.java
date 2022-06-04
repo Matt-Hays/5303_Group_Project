@@ -1,34 +1,31 @@
 package com.gof.hr2s;
 
-import com.gof.hr2s.db.Database;
-import com.gof.hr2s.ui.UserLogin;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class Launcher extends JFrame {
+class Launcher {
 //	private Logger logger;
 //	private Database db = null;
 //	private final String dbName = "hr2s.sqlite";
 
-	public static void main(String args[]){
-//		Launcher launcher = new Launcher();
-
-		// Calling the entry point (UserLogin) panel
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try{
-					UserLogin homePanel = new UserLogin();
-					homePanel.setVisible(true);
-				}catch (Exception ex){
-					ex.printStackTrace();
-				}
-			}
-		});
-
+    public static void main(String args[]) {
+        // Start the app
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new PrimaryFrame();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
 //	private boolean initialize() {

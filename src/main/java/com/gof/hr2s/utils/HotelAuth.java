@@ -15,7 +15,7 @@ public final class HotelAuth {
 
     public static String generatePasswordHash(String password)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
-        int iterations = 65538;
+        int iterations = 1000;
         int keyLength = 64 * 8;
         char[] chars = password.toCharArray();
         byte[] salt = getSalt();
