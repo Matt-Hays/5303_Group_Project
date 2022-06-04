@@ -11,11 +11,12 @@ public class Room {
         this.roomId = roomId;
     }
 
-    public Room(int roomId, boolean smoking, int numBeds, Bed bedType) {
+    public Room(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied) {
         this(roomId);
         this.smoking = smoking;
         this.numBeds = numBeds;
         this.bedType = bedType;
+        this.occupied = occupied;
     }
 
     public int getRoomId() {
