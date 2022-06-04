@@ -1,5 +1,6 @@
 package com.gof.hr2s.db;
 
+import com.gof.hr2s.reservation.Reservation;
 import com.gof.hr2s.room.Bed;
 import com.gof.hr2s.room.Room;
 import com.gof.hr2s.user.Account;
@@ -8,6 +9,7 @@ import com.gof.hr2s.utils.Response;
 
 import java.io.*;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.logging.Logger;
 
 public class Database {
@@ -153,6 +155,58 @@ public class Database {
 			Boolean occupied = rs.getBoolean("occupied");
 
 			return new Room(roomId, bedType, numBeds, smoking, occupied);
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return null;
+	}
+
+	/**
+	 * recall a reservation
+	 * @param reservationId the reservation to look up
+	 * @return a Reservation instance or null
+	 */
+	public Reservation getRegistration(int reservationId) {
+		// Build the query
+		try {
+			PreparedStatement ps = db.conn.prepareStatement(
+					"SELECT * FROM `registration` WHERE `id`=?;"
+			);
+			ps.setInt(1, reservationId);
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set for registration: " + reservationId);
+				return null;
+			}
+
+			int userId = rs.getInt("userId");
+			int roomId = rs.getInt("roomId");
+			LocalDate bookTime = LocalDate.parse(rs.getString("bookTime"));
+			LocalDate startTime = LocalDate.parse(rs.getString("startTime"));
+			LocalDate endTime = LocalDate.parse(rs.getString("endTime"));
+			String checkIn = rs.getString("checkIn");
+			String checkOut = rs.getString("checkOut");
+
+			// user has not checked in for reservation
+			if (null == checkIn) {
+				return new Reservation(reservationId, userId, roomId, bookTime, startTime, endTime);
+			}
+
+			LocalDate ciLocalDate = null;
+			LocalDate coLocalDate = null;
+			if (null != checkIn) {
+				ciLocalDate = LocalDate.parse(checkIn);
+				if (null != checkOut) {
+					coLocalDate = LocalDate.parse(checkOut);
+				}
+			}
+
+			// user has checked in for reservation
+			return new Reservation(reservationId, userId, roomId, bookTime, startTime, endTime, ciLocalDate, coLocalDate);
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
