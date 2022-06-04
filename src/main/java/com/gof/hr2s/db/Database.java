@@ -1,65 +1,75 @@
 package com.gof.hr2s.db;
 
+import com.gof.hr2s.room.Bed;
+import com.gof.hr2s.room.Room;
+import com.gof.hr2s.user.Account;
+import com.gof.hr2s.user.User;
+import com.gof.hr2s.utils.Response;
+
 import java.io.*;
 import java.sql.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Database {
 
-	public final String dbName;
+	private final String dbName = "hr2s.sqlite";
 	private Connection conn = null;
 	private Logger logger;
 
-	public Database(String dbName) {
-		this.dbName = dbName;
-		this.logger = Logger.getLogger(Database.class.getName());
+	private static Database db = null;
+
+	public static Database Database() {
+		if (null == db) {
+			db = new Database();
+			db.logger = Logger.getLogger(Database.class.getName());
+			db.connect();
+		}
+
+		return db;
 	}
 
-	public boolean connect() {
-		File dbFile = new File(this.dbName);
+	public Response connect() {
+		File dbFile = new File(dbName);
 		boolean exists = dbFile.exists();
 
 		try {
 			String url = "jdbc:sqlite:" + dbName;
 			// create a connection to the database
-			conn = DriverManager.getConnection(url);
+			db.conn = DriverManager.getConnection(url);
 			
 			if (!exists) {
-				logger.info("DB " + dbName + " does not exist.");
+				db.logger.info("DB " + dbName + " does not exist.");
 				return dbInit();
 			} else {
-				logger.info("DB " + dbName + " exists.");
+				db.logger.info("DB " + dbName + " exists.");
 			}
 
 		} catch (SQLException e) {
-			logger.log(Level.SEVERE, e.getMessage());
-			return false;
+			db.logger.severe(e.getMessage());
+			return Response.FAILURE;
 		}
 
-		return true;
+		return Response.SUCCESS;
 	}
 
 	public boolean close() {
 		try {
-			if (conn != null) {
-				logger.info("Closing the database.");
-				conn.close();
+			if (db.conn != null) {
+				db.logger.info("Closing the database.");
+				db.conn.close();
 			}
 		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
+			db.logger.severe(ex.getMessage());
 			return false;
 		}
 
 		return true;
 	}
 
-	private boolean dbInit() {
+	private Response dbInit() {
 
-		logger.info("Initializing the Database.");
-		Boolean result = createUserTable();
-
-		return result;
+		db.logger.info("Initializing the Database.");
+		return createDatabase();
 	}
 
 	/**
@@ -71,10 +81,11 @@ public class Database {
 		ResultSet rs = null;
 
 		try {
-			Statement statement = this.conn.createStatement();
+			Statement statement = db.conn.createStatement();
 			rs = statement.executeQuery(sqlStatement);
 		} catch (SQLException e) {
-			logger.severe(e.getMessage());
+			// this may be expected
+//			db.logger.info(e.getMessage());
 			return null;
 		}
 
@@ -82,31 +93,179 @@ public class Database {
 	}
 
 	/**
+	 * queries the db for a user and returns a User instance if found
+	 * @param username the username to lookup
+	 * @return a User instance
+	 */
+	public User getUser(String username) {
+		// Build the query
+		try {
+			PreparedStatement ps = db.conn.prepareStatement(
+					"SELECT `id`, `type`, `firstName`, `lastName`, `active` FROM `user` WHERE `username`=?;"
+			);
+			ps.setString(1, username.toLowerCase());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set for username: " + username);
+				return null;
+			}
+
+			int userId = rs.getInt("id");
+			String firstName = rs.getString("firstName");
+			String lastName = rs.getString("lastName");
+			boolean active = rs.getBoolean("active");
+			Account accountType = Account.valueOf(rs.getString("type"));
+
+			return new User(userId, accountType, username.toLowerCase(), firstName, lastName);
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return null;
+	}
+
+	/**
+	 * queries the database for the room based on room number
+	 * @param roomId the room number
+	 * @return a Room instance or null
+	 */
+	public Room getRoom(int roomId) {
+		// Build the query
+		try {
+			PreparedStatement ps = db.conn.prepareStatement(
+					"SELECT `bedType`, `numBeds`, `smoking`, `occupied` FROM `room` WHERE `id`=?;"
+			);
+			ps.setInt(1, roomId);
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set for room: " + roomId);
+				return null;
+			}
+
+			Bed bedType = Bed.valueOf(rs.getString("bedType"));
+			int numBeds = rs.getInt("numBeds");
+			Boolean smoking = rs.getBoolean("smoking");
+			Boolean occupied = rs.getBoolean("occupied");
+
+			return new Room(roomId, bedType, numBeds, smoking, occupied);
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return null;
+	}
+
+	/**
+	 * retrieves the password for a user from the database
+	 * @param username the username to match on
+	 * @return hashed password string or null
+	 */
+	public String getPassword(String username) {
+		// Build the query
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("SELECT `password` FROM `user` WHERE `username`=?;");
+			ps.setString(1, username.toLowerCase());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set for username: " + username);
+				return null;
+			}
+
+			return rs.getString("password");
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return null;
+	}
+
+	/**
+	 * inserts a user into the database
+	 * @param type the type of user
+	 * @param username the username
+	 * @param hashed_password the prehashed/salted password
+	 * @param fName first name
+	 * @param lName lastname
+	 * @param active is the account active
+	 * @return
+	 */
+	public Response insertUser(Account type, String username, String hashed_password,
+							   String fName, String lName, int active) {
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
+					" (`type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
+					"values (?,?,?,?,?,?)");
+			ps.setString(1, type.name());
+			ps.setString(2, username.toLowerCase());
+			ps.setString(3, hashed_password);
+			ps.setString(4, fName);
+			ps.setString(5, lName);
+			ps.setInt(6, active);
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			};
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return Response.FAILURE;
+	}
+
+	/**
 	 * Reads in the SQL statement to create the user table and passes it to executeQuery
 	 * @return true (success) / false (fail)
 	 */
-	private boolean createUserTable() {
-		// read in resource file user_tbl.sql
-		String userTbl = "sql/user_tbl.sql";
-		ClassLoader classLoader = getClass().getClassLoader();
-		InputStream resource = classLoader.getResourceAsStream(userTbl);
-		if (resource == null) {
-            logger.severe("Unable to locate resource: " + userTbl);
-			return false;
-        }
+	private Response createDatabase() {
+		// read in resource files in this order
+		String []sqlFiles = { "sql/user_tbl.sql", "sql/insert_users.sql", "sql/room_tbl.sql", "sql/insert_rooms.sql" , "sql/registration_tbl.sql"};
 
-		String query;
-		try {
-			query = readFromInputStream(resource);
-			resource.close();
-		} catch (IOException e) {
-			logger.severe("Unable to read from resource: " + userTbl);
-			return false;
+		for (String sqlFile : sqlFiles) {
+			logger.info("Processing: " + sqlFile);
+			ClassLoader classLoader = getClass().getClassLoader();
+			InputStream resource = classLoader.getResourceAsStream(sqlFile);
+			if (resource == null) {
+				db.logger.severe("Unable to locate resource: " + sqlFile);
+				return Response.FAILURE;
+			}
+
+			String query;
+			try {
+				query = readFromInputStream(resource);
+				resource.close();
+			} catch (IOException e) {
+				db.logger.severe("Unable to read from resource: " + sqlFile);
+				return Response.FAILURE;
+			}
+
+			// execute and see if we got back a null object (indicates failure)
+			execute(query);
 		}
 
-		// execute and see if we got back a null object (indicates failure)
-		ResultSet rs = execute(query);
-		return rs != null;
+		return Response.SUCCESS;
+	}
+
+	/**
+	 * deterines if the ResultSet is not null or closed
+	 * @param rs the ResultSet to test
+	 * @return true (valid), false (invalid)
+	 */
+	public boolean validate(ResultSet rs) {
+		try {
+			return rs != null && !rs.isClosed();
+		} catch (SQLException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -116,7 +275,7 @@ public class Database {
 	 * @return the completed string
 	 * @throws IOException Unable to read from InputStream
 	 */
-	private String readFromInputStream(InputStream inputStream)
+	private static String readFromInputStream(InputStream inputStream)
 			throws IOException {
 		StringBuilder resultStringBuilder = new StringBuilder();
 		try (BufferedReader br
