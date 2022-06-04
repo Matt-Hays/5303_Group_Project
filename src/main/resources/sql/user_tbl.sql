@@ -1,11 +1,19 @@
--- DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
-	`userid` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`type` INTEGER NOT NULL,
+	`id` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`type` TEXT NOT NULL,
 	`username` TEXT NOT NULL UNIQUE,
 	`password` TEXT NOT NULL,
 	`firstName` TEXT,
 	`lastName` TEXT,
+	`email` TEXT,
+	`street` TEXT,
+	`state` TEXT,
+	`zip` TEXT,
+	`country` TEXT,
+	`phone` TEXT,
+	`billingStreet` TEXT,
+	`billingState` TEXT,
+	`billingZip` TEXT,
+	`billingCountry` TEXT,
 	`active` INTEGER NOT NULL
 );
--- INSERT INTO `user` (`type`, `username`, `password`, `active`) VALUES (4, 'admin', 'password123$', 1);
