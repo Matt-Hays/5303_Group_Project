@@ -7,13 +7,24 @@ public class Reservation {
     public final int reservationID;
     public final int customerId;
     private int roomId;
+    private LocalDate bookTime;
+    private LocalDate reservationStart;
+    private LocalDate reservationEnd;
     private LocalDate checkIn;
     private LocalDate checkout;
 
-    public Reservation(int reservationId, int customerId, int roomId, LocalDate checkIn, LocalDate checkout) {
+    public Reservation(int reservationId, int customerId, int roomId, LocalDate bookTime, LocalDate reservationStart, LocalDate reservationEnd) {
         this.reservationID = reservationId;
         this.customerId = customerId;
         this.roomId = roomId;
+        this.bookTime = bookTime;
+        this.reservationStart = reservationStart;
+        this.reservationEnd = reservationEnd;
+    }
+
+    public Reservation(int reservationId, int customerId, int roomId, LocalDate bookTime,
+                       LocalDate reservationStart, LocalDate reservationEnd, LocalDate checkIn, LocalDate checkout) {
+        this(reservationId, customerId, roomId, bookTime, reservationStart, reservationEnd);
         this.checkIn = checkIn;
         this.checkout = checkout;
     }
@@ -80,6 +91,30 @@ public class Reservation {
      */
     public long lengthOfStay() {
         return ChronoUnit.DAYS.between(this.checkIn, this.checkout);
+    }
+
+    public LocalDate getReservationStart() {
+        return reservationStart;
+    }
+
+    public void setReservationStart(LocalDate reservationStart) {
+        this.reservationStart = reservationStart;
+    }
+
+    public LocalDate getReservationEnd() {
+        return reservationEnd;
+    }
+
+    public void setReservationEnd(LocalDate reservationEnd) {
+        this.reservationEnd = reservationEnd;
+    }
+
+    public LocalDate getBookTime() {
+        return bookTime;
+    }
+
+    public void setBookTime(LocalDate bookTime) {
+        this.bookTime = bookTime;
     }
 
     @java.lang.Override
