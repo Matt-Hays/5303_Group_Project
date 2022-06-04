@@ -5,8 +5,8 @@ CREATE TABLE `registration` (
     `bookTime` TEXT NOT NULL,
     `startTime` TEXT NOT NULL,
     `endTime` TEXT NOT NULL,
-    `checkIn`,
-    `checkOut`,
+    `checkIn` TEXT,
+    `checkOut` TEXT,
     FOREIGN KEY (`userId`) REFERENCES `user` (`id`),
     FOREIGN KEY (`roomId`) REFERENCES `room` (`id`)
 );
