@@ -6,19 +6,18 @@ public class User {
     public final int userId;
     public final Account accountType;
     private String username;
-    private String password;
     private String firstName;
     private String lastName;
     private boolean active = true;
 
-    public User(int userId, Account accountType, String username, String password) {
+    public User(int userId, Account accountType, String username) {
         this.userId = userId;
         this.accountType = accountType;
         this.username = username;
     }
 
-    public User(int userId, Account accountType, String username, String password, String firstName, String lastName) {
-        this(userId, accountType, username, password);
+    public User(int userId, Account accountType, String username, String firstName, String lastName) {
+        this(userId, accountType, username);
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -49,14 +48,6 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public int compareTo(String password) {
-        return this.password.compareTo(password);
     }
 
     public boolean getActive() {
