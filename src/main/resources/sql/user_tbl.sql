@@ -1,5 +1,4 @@
-DROP TABLE IF EXISTS `user`;
-
+-- DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
 	`userid` INTEGER PRIMARY KEY AUTOINCREMENT,
 	`type` INTEGER NOT NULL,
@@ -9,5 +8,4 @@ CREATE TABLE `user` (
 	`lastName` TEXT,
 	`active` INTEGER NOT NULL
 );
-
-INSERT INTO `user` (`type`, `username`, `password`, `active`) VALUES (4, 'admin', 'password123$', 1);
+-- INSERT INTO `user` (`type`, `username`, `password`, `active`) VALUES (4, 'admin', 'password123$', 1);
