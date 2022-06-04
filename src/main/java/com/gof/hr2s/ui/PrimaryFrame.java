@@ -15,11 +15,11 @@ public class PrimaryFrame {
         JFrame appFrame = new JFrame("Hotel Reservation System");
         appFrame.setSize(600, 600);
         appFrame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
-        appFrame.setVisible(true);
         return appFrame;
     }
 
     private void addInitialPanel(JFrame appFrame){
         new UserLogin(appFrame);
+        appFrame.setVisible(true);
     }
 }
