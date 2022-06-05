@@ -31,6 +31,7 @@ public class UserLogin extends JPanel {
     private JButton registerBtn;
     Database db = null;
 
+
     public UserLogin(JFrame appFrame) {
         appFrame.setContentPane(homePanel);
         appFrame.invalidate();
@@ -82,6 +83,4 @@ public class UserLogin extends JPanel {
             }
         });
     }
-
-
-        }
+}

@@ -27,11 +27,13 @@ public class GuestRegistration {
     private JPanel registrationPanel;
     Database db = null;
 
+
     public GuestRegistration(JFrame appFrame) {
         appFrame.setContentPane(registrationPanel);
         appFrame.invalidate();
         appFrame.validate();
         db = Database.Database();
+
 
         registerBtn.addActionListener(new ActionListener() {
             @Override
@@ -45,6 +47,7 @@ public class GuestRegistration {
                 SwingWorker worker = new SwingWorker<Void, Void>() {
                     @Override
                     protected Void doInBackground() throws Exception {
+
                         // Hash user input password to store inside the db
                         String hashed_password = HotelAuth.generatePasswordHash(String.valueOf(passwordField.getPassword()));
                         db.insertUser(type, username, hashed_password, fName, lName, active);
