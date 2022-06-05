@@ -368,4 +368,30 @@ public class Database {
 		}
 		return resultStringBuilder.toString();
 	}
+
+	/**
+	 * updates all attributes of a user profile in the database
+	 * @param user
+	 * @return
+	 */
+	public Response updateUserProfile(User user){
+
+		try {
+			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user`" +
+					" (`username`, `firstName`, `lastName`) " +
+					"values (?,?,?)");
+			ps.setString(1, user.getUsername().toLowerCase());
+			ps.setString(2, user.getFirstName());
+			ps.setString(3, user.getLastName());
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			};
+		} catch (SQLException e) {
+			this.logger.severe(e.getMessage());
+		}
+
+		return Response.FAILURE;
+	}
 }

@@ -23,7 +23,6 @@ public class User {
         this.accountType = accountType;
         this.username = username;
         db = Database.Database();
-
     }
 
     public User(int userId, Account accountType, String username, String firstName, String lastName) {
@@ -36,7 +35,7 @@ public class User {
         return this.accountType;
     }
 
-    public void setUserame(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 
@@ -68,7 +67,17 @@ public class User {
         this.active = active;
     }
 
-    /**
+    // Need to be able to modify aspects of a User profile
+    public void modifyGuestAccount(String newFirstName, String newLastName, String newUsername) {
+        this.firstName = newFirstName;
+        this.lastName = newLastName;
+        this.username = newUsername;
+
+        // Call to update database
+        db.updateUser(this);
+    }
+
+        /**
      * updates a user's password
      * @param username username of the user
      * @param currentPassword current password of the user
