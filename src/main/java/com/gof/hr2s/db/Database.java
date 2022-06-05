@@ -251,17 +251,21 @@ public class Database {
 	 * @param new password to update in the database
 	 * @return
 	 */
-	public void updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+	public Response updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		if(HotelAuth.validatePassword(existingPassword, getPassword(username))){
 			PreparedStatement ps = null;
 			try {
 				ps = db.conn.prepareStatement("UPDATE `user` SET `password` = newPassword WHERE `username`=?;");
 				ps.setString(1, username.toLowerCase());
-				ps.executeUpdate();
+				if (ps.executeUpdate() == 1) {
+					return Response.SUCCESS;
+				}
 			} catch (SQLException e) {
 				db.logger.severe(e.getMessage());
 			}
 		}
+
+		return Response.FAILURE;
 	}
 
 
@@ -289,7 +293,7 @@ public class Database {
 			ps.setInt(6, active);
 
 			// Execute the query
-			if (ps.executeUpdate() > 0) {
+			if (ps.executeUpdate() == 1) {
 				return Response.SUCCESS;
 			};
 		} catch (SQLException e) {
