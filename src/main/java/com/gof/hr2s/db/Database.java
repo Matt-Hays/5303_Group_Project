@@ -369,6 +369,11 @@ public class Database {
 		return resultStringBuilder.toString();
 	}
 
+	/**
+	 * updates all attributes of a user profile in the database
+	 * @param user
+	 * @return
+	 */
 	public Response updateUserProfile(User user){
 
 		try {
