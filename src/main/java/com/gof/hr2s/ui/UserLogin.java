@@ -1,5 +1,8 @@
 package com.gof.hr2s.ui;
 
+import com.gof.hr2s.db.Database;
+import com.gof.hr2s.room.Room;
+import com.gof.hr2s.user.User;
 import com.gof.hr2s.utils.HotelAuth;
 
 import javax.swing.*;
@@ -26,11 +29,15 @@ public class UserLogin extends JPanel {
     private JLabel panelTitle;
     private JLabel panelSubtitle;
     private JButton registerBtn;
+    Database db = null;
+
 
     public UserLogin(JFrame appFrame) {
         appFrame.setContentPane(homePanel);
         appFrame.invalidate();
         appFrame.validate();
+        db = Database.Database();
+
         // If the LOGIN button is clicked
         loginBtn.addActionListener(new ActionListener() {
             @Override
@@ -42,20 +49,12 @@ public class UserLogin extends JPanel {
                 SwingWorker worker = new SwingWorker<Boolean, Void>() {
                     @Override
                     protected Boolean doInBackground() throws Exception {
-                        // Connect to db
-                        Connection conn = DriverManager.getConnection("jdbc:sqlite:hr2s.sqlite");
-                        // Build the query
-                        PreparedStatement ps = conn.prepareStatement("SELECT password FROM user WHERE username=?;");
-                        ps.setString(1, username);
 
-                        // Execute the query
-                        ResultSet rs = ps.executeQuery();
-                        if (!rs.isClosed()) {
-                            String hashPw = rs.getString("password");
-                            if (!hashPw.trim().isEmpty()) {
-                                return HotelAuth.validatePassword(password, hashPw);
-                            }
+                        String hashPw = db.getPassword(username);
+                        if (hashPw != null && !hashPw.trim().isEmpty()) {
+                            return HotelAuth.validatePassword(password, hashPw);
                         }
+
                         return false;
                     }
                 };
@@ -78,11 +77,10 @@ public class UserLogin extends JPanel {
         registerBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 // Display the registration panel
                 new GuestRegistration(appFrame);
             }
         });
     }
-
-
 }
