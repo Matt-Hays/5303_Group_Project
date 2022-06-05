@@ -89,4 +89,16 @@ public class User {
         String hashedPassword = generatePasswordHash(newPassword);
         return db.updatePassword(username, currentPassword, hashedPassword);
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", accountType=" + accountType +
+                ", username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", active=" + active +
+                '}';
+    }
 }
