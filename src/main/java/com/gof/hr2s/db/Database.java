@@ -259,10 +259,11 @@ public class Database {
 				ps.setString(1, username.toLowerCase());
 				ps.executeUpdate();
 			} catch (SQLException e) {
-				throw new RuntimeException(e);
+				db.logger.severe(e.getMessage());
 			}
 		}
 	}
+
 
 	/**
 	 * inserts a user into the database

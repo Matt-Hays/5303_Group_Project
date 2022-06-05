@@ -67,7 +67,7 @@ public class User {
         this.active = active;
     }
 
-    public void changeClerkPassword(String username, String currentPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public void changePassword(String username, String currentPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         String hashedPassword = generatePasswordHash(newPassword);
         this.setPassword(hashedPassword);
