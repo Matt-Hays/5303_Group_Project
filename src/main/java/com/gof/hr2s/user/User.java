@@ -1,6 +1,12 @@
 package com.gof.hr2s.user;
 
+import com.gof.hr2s.db.Database;
 import com.gof.hr2s.utils.HotelAuth;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
+import static com.gof.hr2s.utils.HotelAuth.generatePasswordHash;
 
 public class User {
     public final int userId;
@@ -9,11 +15,14 @@ public class User {
     private String firstName;
     private String lastName;
     private boolean active = true;
+    public Database db = null;
 
     public User(int userId, Account accountType, String username) {
         this.userId = userId;
         this.accountType = accountType;
         this.username = username;
+        db = Database.Database();
+
     }
 
     public User(int userId, Account accountType, String username, String firstName, String lastName) {
@@ -56,5 +65,12 @@ public class User {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void changeClerkPassword(String username, String currentPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+        String hashedPassword = generatePasswordHash(newPassword);
+        this.setPassword(hashedPassword);
+        db.updatePassword(username, currentPassword ,hashedPassword);
     }
 }
