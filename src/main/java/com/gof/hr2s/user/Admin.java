@@ -8,6 +8,7 @@ public class Admin extends User{
     private String adminLastName;
     public String jobTitle;
 
+    Database db = null;
 
     public Admin(int userId, Account accountType, String username, String firstName, String lastName, String jobTitle) {
         super(userId, accountType.ADMIN, username, firstName, lastName);
@@ -16,13 +17,12 @@ public class Admin extends User{
         this.jobTitle = "Admin";
     }
 
-    public void createClerk(int newUserId, Account newAccountType, String newUsername, String newFirstName, String newLastName, String newJobTitle){
-        this.userId = newUserId;
-        this.accountType = newAccountType;
-        this.username = newUsername;
-        this.firstName = newFirstName;
-        this.lastName = newLastName;
-        this.jobTitle = newJobTitle;
+    public void createClerk(int userId, Account accountType, String username, String newFirstName, String newLastName, String newJobTitle){
+        super(userId, accountType.CLERK, username);
+        this.setFirstName(newFirstName);
+        this.setLastName(newLastName);
+        this.jobTitle = "Clerk";
+        db = Database.Database(this);
 
     }
 }
