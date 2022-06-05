@@ -74,7 +74,7 @@ public class User {
         this.username = newUsername;
 
         // Call to update database
-        db.updateUser(this);
+        db.updateUserProfile(this);
     }
 
         /**
