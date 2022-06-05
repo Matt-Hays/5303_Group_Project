@@ -17,8 +17,8 @@ public class Admin extends User{
         this.jobTitle = "Admin";
     }
 
-    public void createClerk(int userId, Account accountType, String username, String newFirstName, String newLastName, String newJobTitle){
-        super(userId, accountType.CLERK, username);
+    public void createClerk(int userId, Account accountType, String newUsername, String newFirstName, String newLastName, String newJobTitle){
+        this.setUsername(newUsername);
         this.setFirstName(newFirstName);
         this.setLastName(newLastName);
         this.jobTitle = "Clerk";
