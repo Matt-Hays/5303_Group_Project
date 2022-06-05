@@ -51,19 +51,18 @@ public class Clerk extends User{
     /**
      * updates attributes of a room
      * @param room the room object to be modified
-     * @param roomID the room number
-     * @param smoking smoking / nonsmoking
-     * @param numBeds number of beds
      * @param bedType bed type
+     * @param numBeds number of beds
+     * @param smoking smoking / nonsmoking
      * @param occupied is the room occupied
      */
-    public void editRoom (Room room, int roomID, boolean smoking, int numBeds, Bed bedType, Boolean occupied) {
+    public void editRoom (Room room, Bed bedType, int numBeds, boolean smoking, Boolean occupied) {
+
         room.setSmoking(smoking);
         room.setNumBeds(numBeds);
         room.setBedType(bedType);
         room.setOccupied(occupied);
 
-        //db.updateRoom(roomID, smoking, numBeds, bedType, occupied);
+        db.updateRoom(room.getRoomId(), bedType, numBeds, smoking, occupied);
     }
-
 }
