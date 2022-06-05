@@ -370,15 +370,14 @@ public class Database {
 	}
 
 	public Response updateUserProfile(User user){
-		this.connect();
 
 		try {
 			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user`" +
 					" (`username`, `firstName`, `lastName`) " +
 					"values (?,?,?)");
-			ps.setString(0, user.getUsername().toLowerCase());
-			ps.setString(1, user.getFirstName());
-			ps.setString(2, user.getLastName());
+			ps.setString(1, user.getUsername().toLowerCase());
+			ps.setString(2, user.getFirstName());
+			ps.setString(3, user.getLastName());
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
