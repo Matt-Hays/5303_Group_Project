@@ -3,6 +3,7 @@ package com.gof.hr2s.user;
 import com.gof.hr2s.db.Database;
 import com.gof.hr2s.room.Bed;
 import com.gof.hr2s.room.Room;
+import com.gof.hr2s.utils.Response;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -11,33 +12,15 @@ import static com.gof.hr2s.utils.HotelAuth.generatePasswordHash;
 
 public class Clerk extends User{
 
-    private String clerkFirstName;
-    private String clerkLastName;
     public String jobTitle;
 
-
+    public Clerk(int userId, Account accountType, String username, String firstName, String lastName) {
+        super(userId, accountType, username, firstName, lastName);
+    }
 
     public Clerk(int userId, Account accountType, String username, String firstName, String lastName, String jobTitle) {
-        super(userId, accountType, username, firstName, lastName);
-        this.clerkFirstName = firstName;
-        this.clerkLastName = lastName;
+        this(userId, accountType, username, firstName, lastName);
         this.jobTitle = "Hotel Clerk";
-    }
-
-    public String getClerkFirstName() {
-        return clerkFirstName;
-    }
-
-    public void setClerkFirstName(String clerkFirstName) {
-        this.clerkFirstName = clerkFirstName;
-    }
-
-    public String getClerkLastName() {
-        return clerkLastName;
-    }
-
-    public void setClerkLastName(String clerkLastName) {
-        this.clerkLastName = clerkLastName;
     }
 
     public String getJobTitle() {
@@ -55,14 +38,15 @@ public class Clerk extends User{
      * @param numBeds number of beds
      * @param smoking smoking / nonsmoking
      * @param occupied is the room occupied
+     * @return Response.SUCCESS or Response.FAIL
      */
-    public void editRoom (Room room, Bed bedType, int numBeds, boolean smoking, Boolean occupied) {
+    public Response updateRoom (Room room, Bed bedType, int numBeds, boolean smoking, Boolean occupied) {
 
         room.setSmoking(smoking);
         room.setNumBeds(numBeds);
         room.setBedType(bedType);
         room.setOccupied(occupied);
 
-        db.updateRoom(room.getRoomId(), bedType, numBeds, smoking, occupied);
+        return db.updateRoom(room.getRoomId(), bedType, numBeds, smoking, occupied);
     }
 }
