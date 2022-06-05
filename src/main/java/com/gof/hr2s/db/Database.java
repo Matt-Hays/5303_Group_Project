@@ -248,7 +248,7 @@ public class Database {
 	 * updates the password for a user in the database
 	 * @param username the username to match on
 	 * @param existingPassword to validate the user
-	 * @param new password to update in the database
+	 * @param newPassword to update in the database
 	 * @return
 	 */
 	public Response updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -280,7 +280,7 @@ public class Database {
 	 * @return
 	 */
 	public Response insertUser(Account type, String username, String hashed_password,
-							   String fName, String lName, int active) {
+							   String fName, String lName, boolean active) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
 					" (`type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
@@ -290,7 +290,7 @@ public class Database {
 			ps.setString(3, hashed_password);
 			ps.setString(4, fName);
 			ps.setString(5, lName);
-			ps.setInt(6, active);
+			ps.setBoolean(6, active);
 
 			// Execute the query
 			if (ps.executeUpdate() == 1) {
@@ -377,12 +377,13 @@ public class Database {
 	public Response updateUserProfile(User user){
 
 		try {
-			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user`" +
-					" (`username`, `firstName`, `lastName`) " +
-					"values (?,?,?)");
+			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user` " +
+					"SET `username`=?, `firstName`=?, `lastName`=? " +
+					"WHERE `username` LIKE ?");
 			ps.setString(1, user.getUsername().toLowerCase());
 			ps.setString(2, user.getFirstName());
 			ps.setString(3, user.getLastName());
+			ps.setString(4, user.getUsername());
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
