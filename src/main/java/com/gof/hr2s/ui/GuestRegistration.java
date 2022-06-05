@@ -42,7 +42,7 @@ public class GuestRegistration {
                 String username = usernameField.getText();
                 String fName = fNameField.getText();
                 String lName = lNameField.getText();
-                int active = 1;
+                boolean active = true;
 
                 SwingWorker worker = new SwingWorker<Void, Void>() {
                     @Override
