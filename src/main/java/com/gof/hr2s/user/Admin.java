@@ -2,7 +2,9 @@ package com.gof.hr2s.user;
 
 import com.gof.hr2s.db.Database;
 import com.gof.hr2s.utils.HotelAuth;
+import com.gof.hr2s.utils.Response;
 
+import javax.xml.crypto.Data;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
@@ -16,6 +18,7 @@ public class Admin extends User{
         super(userId, accountType.ADMIN, username, firstName, lastName);
         this.adminFirstName = firstName;
         this.adminLastName = lastName;
+        db = Database.Database();
     }
 
     /**
@@ -24,16 +27,17 @@ public class Admin extends User{
      * @param newUsername
      * @param newFirstName
      * @param newLastName
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
+     * @return Response.SUCCESS or Response.FAIL
      */
-    public void createUser(Account accountType, String newUsername, String newFirstName, String newLastName) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public Response createUser(Account accountType, String newUsername, String newFirstName, String newLastName) {
+        String hashed_password;
 
-        String hashed_password = HotelAuth.generatePasswordHash("password123$");
+        try {
+            hashed_password = HotelAuth.generatePasswordHash("password123$");
+        } catch (NoSuchAlgorithmException|InvalidKeySpecException e) {
+            return Response.FAILURE;
+        }
 
-        int active = 1;
-
-        db.insertUser(accountType, newUsername, hashed_password, newFirstName, newLastName, active);
-
+        return db.insertUser(accountType, newUsername, hashed_password, newFirstName, newLastName, true);
     }
 }
