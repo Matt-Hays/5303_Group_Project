@@ -5,9 +5,12 @@ import com.gof.hr2s.room.Bed;
 import com.gof.hr2s.room.Room;
 import com.gof.hr2s.user.Account;
 import com.gof.hr2s.user.User;
+import com.gof.hr2s.utils.HotelAuth;
 import com.gof.hr2s.utils.Response;
 
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.logging.Logger;
@@ -38,7 +41,6 @@ public class Database {
 			String url = "jdbc:sqlite:" + dbName;
 			// create a connection to the database
 			db.conn = DriverManager.getConnection(url);
-			
 			if (!exists) {
 				db.logger.info("DB " + dbName + " does not exist.");
 				return dbInit();
@@ -243,6 +245,31 @@ public class Database {
 	}
 
 	/**
+	 * updates the password for a user in the database
+	 * @param username the username to match on
+	 * @param existingPassword to validate the user
+	 * @param new password to update in the database
+	 * @return
+	 */
+	public Response updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		if(HotelAuth.validatePassword(existingPassword, getPassword(username))){
+			PreparedStatement ps = null;
+			try {
+				ps = db.conn.prepareStatement("UPDATE `user` SET `password` = newPassword WHERE `username`=?;");
+				ps.setString(1, username.toLowerCase());
+				if (ps.executeUpdate() == 1) {
+					return Response.SUCCESS;
+				}
+			} catch (SQLException e) {
+				db.logger.severe(e.getMessage());
+			}
+		}
+
+		return Response.FAILURE;
+	}
+
+
+	/**
 	 * inserts a user into the database
 	 * @param type the type of user
 	 * @param username the username
@@ -266,7 +293,7 @@ public class Database {
 			ps.setInt(6, active);
 
 			// Execute the query
-			if (ps.executeUpdate() > 0) {
+			if (ps.executeUpdate() == 1) {
 				return Response.SUCCESS;
 			};
 		} catch (SQLException e) {
