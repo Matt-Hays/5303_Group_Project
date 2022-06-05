@@ -395,4 +395,34 @@ public class Database {
 
 		return Response.FAILURE;
 	}
+
+	/**
+	 * updates a room in the database
+	 * @param roomID the room number
+	 * @param bedType the type of bed
+	 * @param numBeds the number of beds
+	 * @param smoking smoking / nonsmoking
+	 * @param occupied is the room occupied
+	 * @return Response.SUCCESS or Response.FAIL
+	 */
+	public Response updateRoom (int roomID, Bed bedType, int numBeds, boolean smoking, Boolean occupied) {
+		try {
+			PreparedStatement ps = this.conn.prepareStatement("UPDATE `room` " +
+					"SET `bedType`=?, `numBeds`=?, `smoking`=?, `occupied`=? " +
+					"WHERE id = ?");
+			ps.setString(1, bedType.name());
+			ps.setInt(2, numBeds);
+			ps.setBoolean(3, smoking);
+			ps.setBoolean(4, occupied);
+			ps.setInt(5, roomID);
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			};
+		} catch (SQLException e) {
+			this.logger.severe(e.getMessage());
+		}
+		return Response.FAILURE;
+	}
 }
