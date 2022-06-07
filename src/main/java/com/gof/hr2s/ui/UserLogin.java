@@ -65,7 +65,7 @@ public class UserLogin extends JPanel {
                     if (isAuthenticated) {
                         JOptionPane.showMessageDialog(loginBtn, "You have validated your password!");
                     } else {
-                        JOptionPane.showMessageDialog(loginBtn, "Please renter your username / or password.");
+                        JOptionPane.showMessageDialog(loginBtn, "Please re-enter your username / or password.");
                     }
                 } catch (InterruptedException | ExecutionException ex) {
                     throw new RuntimeException(ex);
