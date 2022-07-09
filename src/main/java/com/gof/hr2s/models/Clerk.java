@@ -1,4 +1,4 @@
-package com.gof.hr2s.user;
+package com.gof.hr2s.models;
 
 public class Clerk extends User{
 

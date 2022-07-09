@@ -1,4 +1,4 @@
-package com.gof.hr2s.utils;
+package com.gof.hr2s.service;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;

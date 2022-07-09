@@ -1,9 +1,9 @@
 package com.gof.hr2s.ui;
 
-import com.gof.hr2s.db.Database;
-import com.gof.hr2s.room.Room;
-import com.gof.hr2s.user.User;
-import com.gof.hr2s.utils.HotelAuth;
+import com.gof.hr2s.database.Database;
+import com.gof.hr2s.models.Room;
+import com.gof.hr2s.models.User;
+import com.gof.hr2s.service.HotelAuth;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;

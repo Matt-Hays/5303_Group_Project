@@ -1,6 +1,6 @@
-package com.gof.hr2s.user;
+package com.gof.hr2s.models;
 
-import com.gof.hr2s.utils.HotelAuth;
+import com.gof.hr2s.service.HotelAuth;
 
 public class User {
     public final int userId;
