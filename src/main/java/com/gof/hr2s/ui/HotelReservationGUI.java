@@ -7,6 +7,18 @@ public class HotelReservationGUI extends JFrame {
     public JPanel cards; //a panel that uses CardLayout
 
     public HotelReservationGUI() {
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+        } catch (UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+        } catch (InstantiationException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
         //Create and set up the window.
         setTitle("Hotel Reservation System");
         setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
