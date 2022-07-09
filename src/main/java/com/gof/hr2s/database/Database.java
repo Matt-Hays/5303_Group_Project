@@ -1,11 +1,7 @@
-package com.gof.hr2s.db;
+package com.gof.hr2s.database;
 
-import com.gof.hr2s.reservation.Reservation;
-import com.gof.hr2s.room.Bed;
-import com.gof.hr2s.room.Room;
-import com.gof.hr2s.models.Account;
-import com.gof.hr2s.models.User;
-import com.gof.hr2s.utils.Response;
+import com.gof.hr2s.models.*;
+import com.gof.hr2s.service.Response;
 
 import java.io.*;
 import java.sql.*;
@@ -38,7 +34,7 @@ public class Database {
 			String url = "jdbc:sqlite:" + dbName;
 			// create a connection to the database
 			db.conn = DriverManager.getConnection(url);
-			
+
 			if (!exists) {
 				db.logger.info("DB " + dbName + " does not exist.");
 				return dbInit();
@@ -253,7 +249,7 @@ public class Database {
 	 * @return
 	 */
 	public Response insertUser(Account type, String username, String hashed_password,
-							   String fName, String lName, int active) {
+							   String fName, String lName, boolean active) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
 					" (`type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
@@ -263,7 +259,7 @@ public class Database {
 			ps.setString(3, hashed_password);
 			ps.setString(4, fName);
 			ps.setString(5, lName);
-			ps.setInt(6, active);
+			ps.setBoolean(6, active);
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {

@@ -1,4 +1,4 @@
-package com.gof.hr2s.utils;
+package com.gof.hr2s.service;
 
 public enum Response {
     SUCCESS,

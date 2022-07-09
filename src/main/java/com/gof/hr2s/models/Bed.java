@@ -1,4 +1,4 @@
-package com.gof.hr2s.room;
+package com.gof.hr2s.models;
 
 public enum Bed {
     TWIN,

@@ -1,4 +1,4 @@
-package com.gof.hr2s.reservation;
+package com.gof.hr2s.models;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
