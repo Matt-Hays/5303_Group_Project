@@ -5,7 +5,7 @@ CREATE TABLE `reservation` (
     `bookTime` TEXT NOT NULL,
     `arrival` TEXT NOT NULL,
     `departure` TEXT NOT NULL,
-    `status` INTEGER NOT NULL,
+    `status` TEXT NOT NULL,
     FOREIGN KEY (`userId`) REFERENCES `user` (`id`),
     FOREIGN KEY (`roomId`) REFERENCES `room` (`id`)
 );
