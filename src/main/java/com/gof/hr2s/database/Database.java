@@ -166,18 +166,18 @@ public class Database {
 	 * @param reservationId the reservation to look up
 	 * @return a Reservation instance or null
 	 */
-	public Reservation getRegistration(int reservationId) {
+	public Reservation getReservation(int reservationId) {
 		// Build the query
 		try {
 			PreparedStatement ps = db.conn.prepareStatement(
-					"SELECT * FROM `registration` WHERE `id`=?;"
+					"SELECT * FROM `reservation` WHERE `id`=?;"
 			);
 			ps.setInt(1, reservationId);
 
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
-				logger.info("Empty set for registration: " + reservationId);
+				logger.info("Empty set for reservation: " + reservationId);
 				return null;
 			}
 
