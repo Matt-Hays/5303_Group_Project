@@ -280,7 +280,7 @@ public class Database {
 	 */
 	private Response createDatabase() {
 		// read in resource files in this order
-		String []sqlFiles = { "sql/user_tbl.sql", "sql/insert_users.sql", "sql/room_tbl.sql", "sql/insert_rooms.sql" , "sql/registration_tbl.sql"};
+		String []sqlFiles = { "sql/user_tbl.sql", "sql/insert_users.sql", "sql/room_tbl.sql", "sql/insert_rooms.sql" , "sql/reservation_tbl.sql"};
 
 		for (String sqlFile : sqlFiles) {
 			logger.info("Processing: " + sqlFile);
