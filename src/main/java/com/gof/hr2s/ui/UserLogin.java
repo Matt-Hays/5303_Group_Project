@@ -1,8 +1,9 @@
 package com.gof.hr2s.ui;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 
-public class UserLogin {
+public class UserLogin extends JPanel {
     private JPanel homePanel;
     private JTextField usernameField;
     private JLabel input1Txt;
@@ -13,9 +14,26 @@ public class UserLogin {
     private JButton registerBtn;
 
     public UserLogin() {
+        this.add(homePanel);
     }
 
-    public JPanel getHomePanel() {
-        return homePanel;
+    public String getUsernameField() {
+        return usernameField.getText();
+    }
+
+    public String getInput1Txt() {
+        return input1Txt.getText();
+    }
+
+    public char[] getPasswordField() {
+        return passwordField.getPassword();
+    }
+
+    void addLoginListener(ActionListener listenForLoginBtn) {
+        loginBtn.addActionListener(listenForLoginBtn);
+    }
+
+    void addRegistrationListener(ActionListener listenForRegistrationBtn) {
+        registerBtn.addActionListener(listenForRegistrationBtn);
     }
 }
