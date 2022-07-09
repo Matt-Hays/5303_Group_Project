@@ -78,20 +78,6 @@
           </grid>
         </constraints>
       </vspacer>
-      <vspacer id="dc60">
-        <constraints>
-          <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
-            <preferred-size width="518" height="14"/>
-          </grid>
-        </constraints>
-      </vspacer>
-      <vspacer id="d20d7">
-        <constraints>
-          <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
-            <preferred-size width="518" height="14"/>
-          </grid>
-        </constraints>
-      </vspacer>
       <hspacer id="3cf7a">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -120,16 +106,6 @@
           <text value="User Login System"/>
         </properties>
       </component>
-      <component id="68210" class="javax.swing.JButton" binding="loginBtn">
-        <constraints>
-          <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <background color="-15584170"/>
-          <font name="Futura" size="20" style="1"/>
-          <text value="Login"/>
-        </properties>
-      </component>
       <component id="d962" class="javax.swing.JButton" binding="registerBtn">
         <constraints>
           <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -142,6 +118,25 @@
       <vspacer id="a0d37">
         <constraints>
           <grid row="13" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <component id="6a6f3" class="javax.swing.JButton">
+        <constraints>
+          <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Futura" size="20" style="1"/>
+          <text value="Login"/>
+        </properties>
+      </component>
+      <vspacer id="a7bb4">
+        <constraints>
+          <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="4cffc">
+        <constraints>
+          <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
     </children>
