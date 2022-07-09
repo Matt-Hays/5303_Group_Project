@@ -5,13 +5,13 @@ import java.awt.event.ActionListener;
 
 public class UserLogin extends JPanel {
     private JPanel homePanel;
-    private JTextField usernameField;
     private JLabel input1Txt;
-    private JButton loginBtn;
-    private JPasswordField passwordField;
     private JLabel panelTitle;
     private JLabel panelSubtitle;
+    private JButton loginBtn;
     private JButton registerBtn;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
 
     public UserLogin() {
         this.add(homePanel);
@@ -19,10 +19,6 @@ public class UserLogin extends JPanel {
 
     public String getUsernameField() {
         return usernameField.getText();
-    }
-
-    public String getInput1Txt() {
-        return input1Txt.getText();
     }
 
     public char[] getPasswordField() {

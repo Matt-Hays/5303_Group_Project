@@ -4,17 +4,17 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 
 public class GuestRegistration extends JPanel {
+    private JPanel registrationPanel;
     private JLabel panelTitle;
     private JLabel usernameLabel;
-    private JTextField usernameField;
-    private JPasswordField passwordField;
-    private JTextField fNameField;
     private JLabel lNameTxt;
     private JLabel fNameTxt;
     private JLabel pwTxt;
-    private JTextField lNameField;
     private JButton registerBtn;
-    private JPanel registrationPanel;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JTextField fNameField;
+    private JTextField lNameField;
 //    Database db = null;
 
 
