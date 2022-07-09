@@ -36,7 +36,7 @@ public class GuestRegistration extends JPanel {
         return lNameField.getText();
     }
 
-    void addRegisterListener(ActionListener listenForRegisterBtn) {
+    public void addRegisterListener(ActionListener listenForRegisterBtn) {
         registerBtn.addActionListener(listenForRegisterBtn);
     }
 }

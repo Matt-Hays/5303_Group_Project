@@ -25,11 +25,11 @@ public class UserLogin extends JPanel {
         return passwordField.getPassword();
     }
 
-    void addLoginListener(ActionListener listenForLoginBtn) {
+    public void addLoginListener(ActionListener listenForLoginBtn) {
         loginBtn.addActionListener(listenForLoginBtn);
     }
 
-    void addRegistrationListener(ActionListener listenForRegistrationBtn) {
+    public void addRegistrationListener(ActionListener listenForRegistrationBtn) {
         registerBtn.addActionListener(listenForRegistrationBtn);
     }
 }
