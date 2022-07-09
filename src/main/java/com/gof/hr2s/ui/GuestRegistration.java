@@ -15,8 +15,6 @@ public class GuestRegistration extends JPanel {
     private JPasswordField passwordField;
     private JTextField fNameField;
     private JTextField lNameField;
-//    Database db = null;
-
 
     public GuestRegistration() {
         this.add(registrationPanel);
