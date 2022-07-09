@@ -8,26 +8,18 @@ public class Reservation {
     public final int customerId;
     private int room_number;
     private LocalDate createdAt;
-    private LocalDate reservationStart;
-    private LocalDate reservationEnd;
     private LocalDate arrival;
     private LocalDate departure;
-    private boolean status;
+    private ReservationStatus status;
 
-    public Reservation(int reservationId, int customerId, int room_number, LocalDate createdAt, LocalDate reservationStart, LocalDate reservationEnd) {
+    public Reservation(int reservationId, int customerId, int room_number, LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
         this.reservationID = reservationId;
         this.customerId = customerId;
         this.room_number = room_number;
         this.createdAt = createdAt;
-        this.reservationStart = reservationStart;
-        this.reservationEnd = reservationEnd;
-    }
-
-    public Reservation(int reservationId, int customerId, int room_number, LocalDate createdAt,
-                       LocalDate reservationStart, LocalDate reservationEnd, LocalDate checkIn, LocalDate checkout) {
-        this(reservationId, customerId, room_number, createdAt, reservationStart, reservationEnd);
-        this.arrival = checkIn;
-        this.departure = checkout;
+        this.arrival = arrival;
+        this.departure = departure;
+        this.status = status;
     }
 
     public int getRoom_number() {
@@ -94,22 +86,6 @@ public class Reservation {
         return ChronoUnit.DAYS.between(this.arrival, this.departure);
     }
 
-    public LocalDate getReservationStart() {
-        return reservationStart;
-    }
-
-    public void setReservationStart(LocalDate reservationStart) {
-        this.reservationStart = reservationStart;
-    }
-
-    public LocalDate getReservationEnd() {
-        return reservationEnd;
-    }
-
-    public void setReservationEnd(LocalDate reservationEnd) {
-        this.reservationEnd = reservationEnd;
-    }
-
     public LocalDate getCreatedAt() {
         return createdAt;
     }
@@ -129,11 +105,11 @@ public class Reservation {
                 '}';
     }
 
-    public boolean isStatus() {
+    public ReservationStatus isStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(ReservationStatus status) {
         this.status = status;
     }
 }
