@@ -31,15 +31,4 @@ public class HotelReservationGUI extends JFrame {
 
         pane.add(cards, BorderLayout.CENTER);
     }
-
-//    public static void main(String[] args) {
-//
-//
-//        SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                new HotelReservationGUI();
-//            }
-//        });
-//    }
 }
