@@ -6,39 +6,40 @@ import java.time.temporal.ChronoUnit;
 public class Reservation {
     public final int reservationID;
     public final int customerId;
-    private int roomId;
-    private LocalDate bookTime;
+    private int room_number;
+    private LocalDate createdAt;
     private LocalDate reservationStart;
     private LocalDate reservationEnd;
-    private LocalDate checkIn;
-    private LocalDate checkout;
+    private LocalDate arrival;
+    private LocalDate departure;
+    private boolean status;
 
-    public Reservation(int reservationId, int customerId, int roomId, LocalDate bookTime, LocalDate reservationStart, LocalDate reservationEnd) {
+    public Reservation(int reservationId, int customerId, int room_number, LocalDate createdAt, LocalDate reservationStart, LocalDate reservationEnd) {
         this.reservationID = reservationId;
         this.customerId = customerId;
-        this.roomId = roomId;
-        this.bookTime = bookTime;
+        this.room_number = room_number;
+        this.createdAt = createdAt;
         this.reservationStart = reservationStart;
         this.reservationEnd = reservationEnd;
     }
 
-    public Reservation(int reservationId, int customerId, int roomId, LocalDate bookTime,
+    public Reservation(int reservationId, int customerId, int room_number, LocalDate createdAt,
                        LocalDate reservationStart, LocalDate reservationEnd, LocalDate checkIn, LocalDate checkout) {
-        this(reservationId, customerId, roomId, bookTime, reservationStart, reservationEnd);
-        this.checkIn = checkIn;
-        this.checkout = checkout;
+        this(reservationId, customerId, room_number, createdAt, reservationStart, reservationEnd);
+        this.arrival = checkIn;
+        this.departure = checkout;
     }
 
-    public int getRoomId() {
-        return this.roomId;
+    public int getRoom_number() {
+        return this.room_number;
     }
 
-    public void setRoomId(int roomId) {
-        this.roomId = roomId;
+    public void setRoom_number(int room_number) {
+        this.room_number = room_number;
     }
 
-    public LocalDate getCheckIn() {
-        return this.checkIn;
+    public LocalDate getArrival() {
+        return this.arrival;
     }
 
     /**
@@ -49,16 +50,16 @@ public class Reservation {
      */
     public boolean setCheckIn(LocalDate checkIn) {
         // TODO: need to ensure this doesn't invalidate room availability
-        if (checkIn.compareTo(this.checkIn) <= 0 || ChronoUnit.DAYS.between(checkIn, this.checkout) < 1) {
+        if (checkIn.compareTo(this.arrival) <= 0 || ChronoUnit.DAYS.between(checkIn, this.departure) < 1) {
             return false;
         }
 
-        this.checkIn = checkIn;
+        this.arrival = checkIn;
         return true;
     }
 
-    public LocalDate getCheckout() {
-        return this.checkout;
+    public LocalDate getDeparture() {
+        return this.departure;
     }
 
     /**
@@ -69,11 +70,11 @@ public class Reservation {
      */
     public boolean setCheckout(LocalDate checkout) {
         // TODO: need to ensure this doesn't violate room availability
-        if (checkout.compareTo(this.checkIn) <= 0 || ChronoUnit.DAYS.between(this.checkIn, checkout) < 1) {
+        if (checkout.compareTo(this.arrival) <= 0 || ChronoUnit.DAYS.between(this.arrival, checkout) < 1) {
             return false;
         }
 
-        this.checkout = checkout;
+        this.departure = checkout;
         return true;
     }
 
@@ -90,7 +91,7 @@ public class Reservation {
      * @return long representing the number of days
      */
     public long lengthOfStay() {
-        return ChronoUnit.DAYS.between(this.checkIn, this.checkout);
+        return ChronoUnit.DAYS.between(this.arrival, this.departure);
     }
 
     public LocalDate getReservationStart() {
@@ -109,12 +110,12 @@ public class Reservation {
         this.reservationEnd = reservationEnd;
     }
 
-    public LocalDate getBookTime() {
-        return bookTime;
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
-    public void setBookTime(LocalDate bookTime) {
-        this.bookTime = bookTime;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     @java.lang.Override
@@ -122,9 +123,17 @@ public class Reservation {
         return "Reservation{" +
                 "reservationID=" + reservationID +
                 ", customerId=" + customerId +
-                ", roomId=" + roomId +
-                ", checkIn=" + checkIn +
-                ", checkout=" + checkout +
+                ", roomId=" + room_number +
+                ", checkIn=" + arrival +
+                ", checkout=" + departure +
                 '}';
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }
