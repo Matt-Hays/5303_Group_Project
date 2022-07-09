@@ -184,33 +184,116 @@ public class Database {
 			int userId = rs.getInt("userId");
 			int roomId = rs.getInt("roomId");
 			LocalDate bookTime = LocalDate.parse(rs.getString("bookTime"));
-			LocalDate startTime = LocalDate.parse(rs.getString("startTime"));
-			LocalDate endTime = LocalDate.parse(rs.getString("endTime"));
-			String checkIn = rs.getString("checkIn");
-			String checkOut = rs.getString("checkOut");
+			LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
+			LocalDate departure = LocalDate.parse(rs.getString("departure"));
+			ReservationStatus status = ReservationStatus.valueOf("status");
 
-			// user has not checked in for reservation
-			if (null == checkIn) {
-				return new Reservation(reservationId, userId, roomId, bookTime, startTime, endTime);
-			}
-
-			LocalDate ciLocalDate = null;
-			LocalDate coLocalDate = null;
-			if (null != checkIn) {
-				ciLocalDate = LocalDate.parse(checkIn);
-				if (null != checkOut) {
-					coLocalDate = LocalDate.parse(checkOut);
-				}
-			}
-
-			// user has checked in for reservation
-			return new Reservation(reservationId, userId, roomId, bookTime, startTime, endTime, ciLocalDate, coLocalDate);
+			return new Reservation(reservationId, userId, roomId, bookTime, arrival, departure, status);
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
 		}
 
 		return null;
+	}
+
+	/**
+	 * Inserts a new reservation in the db and returns the reservationId
+	 * @param userId user id of the gues
+	 * @param roomId room
+	 * @param bookTime booking time
+	 * @param arrival arrival date
+	 * @param departure departure date
+	 * @return the reservationId on success or -1 (Response.Failure) on failure
+	 */
+	public int insertReservation(int userId, int roomId, LocalDate bookTime, LocalDate arrival, LocalDate departure) {
+		try {
+
+			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `reservation` " +
+							"(`userId`, `roomId`, `bookTime`, `arrival`, `departure`, `status`);" +
+							"VALUES (?,?,?,?,?,?)");
+			ps.setInt(1, userId);
+			ps.setInt(2, roomId);
+			ps.setString(3, bookTime.toString());
+			ps.setString(4, arrival.toString());
+			ps.setString(5, departure.toString());
+			ps.setString(6, ReservationStatus.AWAITING.name());
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				ps = db.conn.prepareStatement("SELECT `id` FROM `reservation` WHERE " +
+						"`userId`=?, `roomId`=?, `bookTime`=?, `arrival`=?, `departure`=?, `status`=?");
+				ps.setInt(1, userId);
+				ps.setInt(2, roomId);
+				ps.setString(3, bookTime.toString());
+				ps.setString(4, arrival.toString());
+				ps.setString(5, departure.toString());
+				ps.setString(6, ReservationStatus.AWAITING.name());
+
+				// Execute the query
+				ResultSet rs = ps.executeQuery();
+				// this shouldn't happen if the insert was successful
+				if (!validate(rs)) {
+					logger.info("Empty set after inserting reservation");
+					return Response.FAILURE.getValue();
+				}
+
+				// get the new reservationId
+				return rs.getInt("id");
+			}
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+		// failure
+		return Response.FAILURE.getValue();
+	}
+
+	/**
+	 * Retrieves a list of reservations that overlap with the requested arrival and departure dates
+	 * @param arrival start date
+	 * @param departure end date
+	 * @return list of reservations
+	 */
+	public ArrayList<Reservation> getOverlappingReservations(LocalDate arrival, LocalDate departure) {
+		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+
+		try {
+			// attempts to find reservations that overlap with requested arrival and departure dates
+			PreparedStatement ps = db.conn.prepareStatement("SELECT * FROM `reservation` WHERE " +
+					"(date(?) >= date(arrival) AND date(?) <  date(departure)) OR " +
+					"(date(?) >  date(arrival) AND date('?) <= date(departure)) OR " +
+					"(date(?) <= date(arrival) AND date(?) >= date(departure));");
+
+			ps.setString(1, arrival.toString());
+			ps.setString(2, arrival.toString());
+			ps.setString(3, departure.toString());
+			ps.setString(4, departure.toString());
+			ps.setString(5, arrival.toString());
+			ps.setString(6, departure.toString());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set after inserting reservation");
+				return reservations;
+			}
+
+			do {
+				int reservationId = rs.getInt("id");
+				int userId = rs.getInt("userId");
+				int roomId = rs.getInt("roomId");
+				LocalDate bookTime = LocalDate.parse(rs.getString("bookTime"));
+				ReservationStatus status = ReservationStatus.valueOf("status");
+
+				reservations.add(new Reservation(reservationId, userId, roomId, bookTime, arrival, departure, status));
+			} while (rs.next());
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return reservations;
 	}
 
 	/**
