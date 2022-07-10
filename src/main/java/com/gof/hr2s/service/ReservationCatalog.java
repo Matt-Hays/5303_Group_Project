@@ -1,4 +1,4 @@
-package com.gof.hr2s.models;
+package com.gof.hr2s.service;
 
 import com.gof.hr2s.database.Database;
 import java.time.LocalDate;
