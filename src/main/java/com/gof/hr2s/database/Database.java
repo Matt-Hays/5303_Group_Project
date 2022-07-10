@@ -17,6 +17,8 @@ public class Database {
 
 	private static Database db = null;
 
+	private Database(){}
+
 	public static Database Database() {
 		if (null == db) {
 			db = new Database();
@@ -358,12 +360,39 @@ public class Database {
 	}
 
 	/**
+	 * updates all attributes of a user profile in the database
+	 * @param user
+	 * @return
+	 */
+	public Response updateUserProfile(User user){
+
+		try {
+			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user` " +
+					"SET `username`=?, `firstName`=?, `lastName`=? " +
+					"WHERE `username` LIKE ?");
+			ps.setString(1, user.getUsername().toLowerCase());
+			ps.setString(2, user.getFirstName());
+			ps.setString(3, user.getLastName());
+			ps.setString(4, user.getUsername());
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			};
+		} catch (SQLException e) {
+			this.logger.severe(e.getMessage());
+		}
+
+		return Response.FAILURE;
+	}
+
+	/**
 	 * Reads in the SQL statement to create the user table and passes it to executeQuery
 	 * @return true (success) / false (fail)
 	 */
 	private Response createDatabase() {
 		// read in resource files in this order
-		String []sqlFiles = { "sql/user_tbl.sql", "sql/insert_users.sql", "sql/room_tbl.sql", "sql/insert_rooms.sql" , "sql/reservation_tbl.sql"};
+		String []sqlFiles = { "sql/user_tbl.sql", "sql/insert_users.sql", "sql/room_tbl.sql", "sql/insert_rooms.sql" , "sql/reservation_tbl.sql", "sql/invoice_tbl.sql"};
 
 		for (String sqlFile : sqlFiles) {
 			logger.info("Processing: " + sqlFile);
