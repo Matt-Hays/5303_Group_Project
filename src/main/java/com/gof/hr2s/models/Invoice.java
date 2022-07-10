@@ -1,8 +1,5 @@
 package com.gof.hr2s.models;
 
-import com.gof.hr2s.reservation.Reservation;
-import com.gof.hr2s.room.Room;
-
 public class Invoice {
     public final int invoiceId;
     private double subtotal = 0.0;
