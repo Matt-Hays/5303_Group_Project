@@ -1,5 +1,8 @@
 package com.gof.hr2s.models;
 
+import com.gof.hr2s.reservation.Reservation;
+import com.gof.hr2s.room.Room;
+
 public class Invoice {
     public final int invoiceId;
     private double subtotal = 0.0;
@@ -33,17 +36,16 @@ public class Invoice {
         return this.lengthOfStay;
     }
 
-    public void setRoomPrice(){
-        this.room_price = room_price;
+    public void setNightlyRate(Room nightly_rate) {
+        this.nightly_rate = nightly_rate;
     }
 
-    public room_price(){
-        return this.room_price;
+    public Room getNightlyRate() {
+        return this.nightly_rate;
     }
 
-    public void setSubtotal(double subtotal) {
-
-        this.subtotal = subtotal;
+    public void setSubtotal(double nightly_rate, int lengthOfStay) {
+        this.subtotal = nightly_rate*lengthOfStay;
     }
 
     public double getSubtotal() {
