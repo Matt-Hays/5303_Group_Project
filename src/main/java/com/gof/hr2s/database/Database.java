@@ -173,6 +173,27 @@ public class Database {
 		return null;
 	}
 
+	public Response updateRoom (Room room) {
+		try {
+			PreparedStatement ps = this.conn.prepareStatement("UPDATE `room` " +
+					"SET `bedType`=?, `numBeds`=?, `smoking`=?, `occupied`=? " +
+					"WHERE id = ?");
+			ps.setString(1, room.getBedType().name());
+			ps.setInt(2, room.getNumBeds());
+			ps.setBoolean(3, room.getSmoking());
+			ps.setBoolean(4, room.getOccupied());
+			ps.setInt(5, room.getRoomId());
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			};
+		} catch (SQLException e) {
+			this.logger.severe(e.getMessage());
+		}
+		return Response.FAILURE;
+	}
+
 	/**
 	 * recall a reservation
 	 * @param reservationId the reservation to look up
@@ -536,6 +557,31 @@ public class Database {
 			};
 		} catch (SQLException e) {
 			this.logger.severe(e.getMessage());
+		}
+
+		return Response.FAILURE;
+	}
+
+	/**
+	 * updates the password for a user in the database
+	 * @param username the username to match on
+	 * @param existingPassword to validate the user
+	 * @param newPassword to update in the database
+	 * @return
+	 */
+	public Response updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		if(HotelAuth.validatePassword(existingPassword, getPassword(username))){
+			PreparedStatement ps = null;
+			try {
+				ps = db.conn.prepareStatement("UPDATE `user` SET `password` = ? WHERE `username`=?;");
+				ps.setString(1, newPassword);
+				ps.setString(2, username.toLowerCase());
+				if (ps.executeUpdate() == 1) {
+					return Response.SUCCESS;
+				}
+			} catch (SQLException e) {
+				db.logger.severe(e.getMessage());
+			}
 		}
 
 		return Response.FAILURE;
