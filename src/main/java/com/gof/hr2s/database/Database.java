@@ -297,13 +297,13 @@ public class Database {
 	 * @param reservationID the reservation id
 	 * @return success or fail
 	 */
-	public Response deleteReservation(UUID reservationID) {
+	public Response deleteReservation(Reservation r) {
 		try {
-			// remove any reservations currently associated with an invoice
-			PreparedStatement ps = db.conn.prepareStatement("DELETE FROM `reservation` " +
-					"WHERE `reservationId`=?;");
+			// invoices for the reservation
+			PreparedStatement ps = db.conn.prepareStatement("DELETE FROM `invoice` " +
+					"WHERE `id`=?;");
 
-			ps.setString(1, reservationID.toString());
+			ps.setString(1, r.getInvoiceId().toString());
 
 			// Execute the query
 			ps.executeQuery();
@@ -312,7 +312,7 @@ public class Database {
 			ps = db.conn.prepareStatement("DELETE FROM `reservation` " +
 					"WHERE `id`=?;");
 
-			ps.setString(1, reservationID.toString());
+			ps.setString(1, r.getReservationId().toString());
 
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
