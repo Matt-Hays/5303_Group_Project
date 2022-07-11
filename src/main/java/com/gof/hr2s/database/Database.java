@@ -339,7 +339,6 @@ public class Database {
 		}
 		return resultStringBuilder.toString();
 	}
-}
 
 
 public ArrayList<Room> getAllRooms() {
