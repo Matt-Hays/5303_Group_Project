@@ -266,6 +266,58 @@ public class Database {
 		return Response.FAILURE;
 	}
 
+	public Invoice getInvoice(UUID invoiceId) {
+		// Build the query
+		try {
+			PreparedStatement ps = db.conn.prepareStatement(
+					"SELECT * FROM `invoice` WHERE `id`=?;"
+			);
+			ps.setString(1, invoiceId.toString());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set for reservation: " + invoiceId);
+				return null;
+			}
+
+			double taxRate = rs.getDouble("taxRate");
+			double fees = rs.getDouble("fees");
+			double subTotal = rs.getDouble("subTotal");
+			boolean isPaid = rs.getBoolean("isPaid");
+
+			return new Invoice(invoiceId, taxRate, fees, subTotal, isPaid);
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return null;
+	}
+
+	public Response updateInvoice(Invoice i) {
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("UPDATE `invoice` " +
+					"SET `taxRate`=?, `fees`=?, `subTotal`=?, `isPaid`=? " +
+					"WHERE `id`=?;");
+			ps.setDouble(1, i.getTaxRate());
+			ps.setDouble(2, i.getFees());
+			ps.setDouble(3, i.getSubTotal());
+			ps.setBoolean(4, i.isPaid());
+			ps.setString(5, i.getInvoiceId().toString());
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			}
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+		// failure
+		return Response.FAILURE;
+	}
+
 	public Response updateReservation(Reservation r) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("UPDATE `reservation` " +
