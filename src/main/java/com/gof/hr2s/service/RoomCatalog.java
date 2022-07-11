@@ -12,27 +12,38 @@ import java.time.LocalDate;
 
 public class RoomCatalog {
 
-    private static final RoomCatalog roomCatalog = null;
+    private static RoomCatalog roomCatalog = null;
     private Database db = null;
     public RoomCatalog() {
 
         db = Database.Database();
     }
 
+    public static RoomCatalog getRoomCatalog() {
+        if (null == roomCatalog) {
+            roomCatalog = new RoomCatalog();
+        }
 
+        return roomCatalog;
+    }
     public ArrayList<Room> filterRooms(LocalDate arrival, LocalDate departure) {
 
         ArrayList<Room> all_rooms = db.getAllRooms();
         ArrayList<Reservation> occupiedRooms = db.getOverlappingReservations(arrival, departure);
         ArrayList<Room> filteredRooms = new ArrayList<Room>();
 
-        int i, j;
-        for(i = 0; i < all_rooms.size(); i++) {
-            for(j = 0; j < occupiedRooms.size(); j++) {
-                if (all_rooms.get(i).roomId != occupiedRooms.get(j).getRoomNumber()) {
-                    filteredRooms.add(all_rooms.get(i));
+        boolean found;
+        for(int i = 0; i < all_rooms.size(); i++) {
+            found = false;
+            for(int j = 0; j < occupiedRooms.size(); j++) {
+                if (all_rooms.get(i).roomId == occupiedRooms.get(j).getRoomNumber()) {
+                    found = true;
                     break;
                 }
+            }
+
+            if(!found) {
+                filteredRooms.add(all_rooms.get(i));
             }
         }
 
