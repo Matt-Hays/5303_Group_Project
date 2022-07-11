@@ -253,6 +253,43 @@ public class Database {
 		return Response.FAILURE.getValue();
 	}
 
+
+
+	/**
+	 * Delete a reservation from the database (invoice table and reservation table)
+	 * @param reservationID the reservation id
+	 * @return success or fail
+	 */
+	public Response deleteReservation(UUID reservationID) {
+		try {
+			// remove any reservations currently associated with an invoice
+			PreparedStatement ps = db.conn.prepareStatement("DELETE FROM `reservation` " +
+					"WHERE `reservationId`=?;");
+
+			ps.setString(1, reservationID.toString());
+
+			// Execute the query
+			ps.executeQuery();
+
+			// remove the reservation
+			ps = db.conn.prepareStatement("DELETE FROM `reservation` " +
+					"WHERE `id`=?;");
+
+			ps.setString(1, reservationID.toString());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set after deleting reservation");
+				return Response.FAILURE;
+			}
+			return Response.SUCCESS;
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return Response.FAILURE;
+	}
 	/**
 	 * Retrieves a list of reservations that overlap with the requested arrival and departure dates
 	 * @param arrival start date
