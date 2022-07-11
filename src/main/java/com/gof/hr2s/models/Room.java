@@ -6,7 +6,7 @@ public class Room {
     private int numBeds = 2;
     private Bed bedType = Bed.QUEEN;
     private boolean occupied = false;
-
+    
     public Room(int roomId) {
         this.roomId = roomId;
     }
