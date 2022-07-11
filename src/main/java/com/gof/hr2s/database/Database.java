@@ -187,13 +187,14 @@ public class Database {
 			}
 
 			UUID userId = UUID.fromString(rs.getString("userId"));
+			UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
 			int roomId = rs.getInt("roomId");
 			LocalDate bookTime = LocalDate.parse(rs.getString("bookTime"));
 			LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
 			LocalDate departure = LocalDate.parse(rs.getString("departure"));
 			ReservationStatus status = ReservationStatus.valueOf("status");
 
-			return new Reservation(reservationId, userId, roomId, bookTime, arrival, departure, status);
+			return new Reservation(reservationId, invoiceId, userId, roomId, bookTime, arrival, departure, status);
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
@@ -209,51 +210,79 @@ public class Database {
 	 * @param bookTime booking time
 	 * @param arrival arrival date
 	 * @param departure departure date
-	 * @return the reservationId on success or -1 (Response.Failure) on failure
+	 * @return the reservationId on success or null on failure
 	 */
-	public int insertReservation(int userId, int roomId, LocalDate bookTime, LocalDate arrival, LocalDate departure) {
+	public UUID insertReservation(UUID userId, UUID invoiceId, int roomId, LocalDate bookTime,
+								  LocalDate arrival, LocalDate departure, ReservationStatus status) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `reservation` " +
-							"(`userId`, `roomId`, `bookTime`, `arrival`, `departure`, `status`);" +
-							"VALUES (?,?,?,?,?,?)");
-			ps.setInt(1, userId);
-			ps.setInt(2, roomId);
-			ps.setString(3, bookTime.toString());
-			ps.setString(4, arrival.toString());
-			ps.setString(5, departure.toString());
-			ps.setString(6, ReservationStatus.AWAITING.name());
+							"(`userId`, `invoiceId`, `roomId`, `bookTime`, `arrival`, `departure`, `status`) " +
+							"VALUES (?,?,?,?,?,?,?)");
+			ps.setString(1, userId.toString());
+			ps.setString(2, invoiceId.toString());
+			ps.setInt(3, roomId);
+			ps.setString(4, bookTime.toString());
+			ps.setString(5, arrival.toString());
+			ps.setString(6, departure.toString());
+			ps.setString(7, status.name());
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
 				ps = db.conn.prepareStatement("SELECT `id` FROM `reservation` WHERE " +
-						"`userId`=?, `roomId`=?, `bookTime`=?, `arrival`=?, `departure`=?, `status`=?");
-				ps.setInt(1, userId);
-				ps.setInt(2, roomId);
-				ps.setString(3, bookTime.toString());
-				ps.setString(4, arrival.toString());
-				ps.setString(5, departure.toString());
-				ps.setString(6, ReservationStatus.AWAITING.name());
+						"`userId`=?, `invoiceId`=?, `roomId`=?, `bookTime`=?, `arrival`=?, `departure`=?, `status`=?");
+				ps.setString(1, userId.toString());
+				ps.setString(2, invoiceId.toString());
+				ps.setInt(3, roomId);
+				ps.setString(4, bookTime.toString());
+				ps.setString(5, arrival.toString());
+				ps.setString(6, departure.toString());
+				ps.setString(7, status.name());
 
 				// Execute the query
 				ResultSet rs = ps.executeQuery();
 				// this shouldn't happen if the insert was successful
 				if (!validate(rs)) {
 					logger.info("Empty set after inserting reservation");
-					return Response.FAILURE.getValue();
+					return null;
 				}
 
 				// get the new reservationId
-				return rs.getInt("id");
+				return UUID.fromString(rs.getString("id"));
 			}
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
 		}
 		// failure
-		return Response.FAILURE.getValue();
+		return null;
 	}
 
+	public Response updateReservation(UUID reservationID, UUID userId, UUID invoiceId, int roomId, LocalDate bookTime,
+									  LocalDate arrival, LocalDate departure, ReservationStatus status) {
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("UPDATE `reservation` " +
+					"SET `userId`=?, `invoiceId`=?, `roomId`=?, `bookTime`=?, `arrival`=?, `departure`=?, `status`=? " +
+					"WHERE `id`=?;");
+			ps.setString(1, userId.toString());
+			ps.setString(2, invoiceId.toString());
+			ps.setInt(3, roomId);
+			ps.setString(4, bookTime.toString());
+			ps.setString(5, arrival.toString());
+			ps.setString(6, departure.toString());
+			ps.setString(7, status.name());
+			ps.setString(8, reservationID.toString());
 
+			// Execute the update
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			};
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+		// failure
+		return Response.FAILURE;
+	}
 
 	/**
 	 * Delete a reservation from the database (invoice table and reservation table)
@@ -322,12 +351,13 @@ public class Database {
 
 			do {
 				UUID reservationId = UUID.fromString(rs.getString("id"));
-				UUID userId = UUID.fromString(rs.getString("userId"));
+				UUID customerId = UUID.fromString(rs.getString("userId"));
+				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
 				int roomId = rs.getInt("roomId");
-				LocalDate bookTime = LocalDate.parse(rs.getString("bookTime"));
+				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
 				ReservationStatus status = ReservationStatus.valueOf("status");
 
-				reservations.add(new Reservation(reservationId, userId, roomId, bookTime, arrival, departure, status));
+				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
 			} while (rs.next());
 
 		} catch (SQLException e) {
