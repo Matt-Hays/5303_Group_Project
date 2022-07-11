@@ -1,5 +1,5 @@
 CREATE TABLE `user` (
-	`id` INTEGER NOT NULL,
+    `id` TEXT NOT NULL,
 	`type` TEXT NOT NULL,
 	`username` TEXT NOT NULL UNIQUE,
 	`password` TEXT NOT NULL,

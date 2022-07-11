@@ -1,5 +1,5 @@
 CREATE TABLE `invoice` (
-	`id`	INTEGER NOT NULL,
+	`id`	TEXT NOT NULL,
 	`taxRate`	REAL NOT NULL,
 	`fees`	REAL NOT NULL,
 	`subTotal`	REAL NOT NULL,

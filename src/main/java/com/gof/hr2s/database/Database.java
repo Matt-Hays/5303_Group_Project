@@ -102,11 +102,11 @@ public class Database {
 	 * @param username the username to lookup
 	 * @return a User instance
 	 */
-	public User getUser(String username) {
+	public Object getUser(String username) {
 		// Build the query
 		try {
 			PreparedStatement ps = db.conn.prepareStatement(
-					"SELECT `id`, `type`, `firstName`, `lastName`, `active` FROM `user` WHERE `username`=?;"
+					"SELECT * FROM `user` WHERE `username`=?;"
 			);
 			ps.setString(1, username.toLowerCase());
 
@@ -117,13 +117,20 @@ public class Database {
 				return null;
 			}
 
-			int userId = rs.getInt("id");
+			UUID userId = UUID.fromString(rs.getString("id"));
 			String firstName = rs.getString("firstName");
 			String lastName = rs.getString("lastName");
 			boolean active = rs.getBoolean("active");
 			Account accountType = Account.valueOf(rs.getString("type"));
 
-			return new User(userId, accountType, username.toLowerCase(), firstName, lastName);
+			switch (accountType) {
+				case CLERK:
+					return new Clerk(userId, username.toLowerCase(), firstName, lastName);
+				case ADMIN:
+					return new Admin(userId, username.toLowerCase(), firstName, lastName);
+				case GUEST:
+					return new Guest(userId, username.toLowerCase(), firstName, lastName);
+			}
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
@@ -186,15 +193,15 @@ public class Database {
 				return null;
 			}
 
-			UUID userId = UUID.fromString(rs.getString("userId"));
+			UUID userId = UUID.fromString(rs.getString("customerId"));
 			UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
 			int roomId = rs.getInt("roomId");
-			LocalDate bookTime = LocalDate.parse(rs.getString("bookTime"));
+			LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
 			LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
 			LocalDate departure = LocalDate.parse(rs.getString("departure"));
-			ReservationStatus status = ReservationStatus.valueOf("status");
+			ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
 
-			return new Reservation(reservationId, invoiceId, userId, roomId, bookTime, arrival, departure, status);
+			return new Reservation(reservationId, invoiceId, userId, roomId, createdAt, arrival, departure, status);
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
@@ -207,7 +214,7 @@ public class Database {
 	public Response insertReservation(Reservation r) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `reservation` " +
-							"(`id`, `userId`, `invoiceId`, `roomId`, `bookTime`, `arrival`, `departure`, `status`) " +
+							"(`id`, `customerId`, `invoiceId`, `roomId`, `createdAt`, `arrival`, `departure`, `status`) " +
 							"VALUES (?,?,?,?,?,?,?,?)");
 			ps.setString(1, r.getReservationId().toString());
 			ps.setString(2, r.getCustomerId().toString());
@@ -237,27 +244,17 @@ public class Database {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `invoice` " +
 					"(`id`, `taxRate`, `fees`, `subTotal`, `isPaid`) " +
-					"VALUES (?,?,?,?,?)");
+					"VALUES (?,?,?,?,?);");
 			ps.setString(1, i.getInvoiceId().toString());
 			ps.setDouble(2, i.getTaxRate());
 			ps.setDouble(3, i.getFees());
 			ps.setDouble(4, i.getSubtotal());
 			ps.setBoolean(5, i.getIsPaid());
 
+
 			// Execute the query
-			if (ps.executeUpdate() > 0) {
-
-				// Execute the query
-				ResultSet rs = ps.executeQuery();
-				// this shouldn't happen if the insert was successful
-				if (!validate(rs)) {
-					logger.info("Empty set after inserting reservation");
-					return Response.FAILURE;
-				}
-
-				// get the new reservationId
-				return Response.SUCCESS;
-			}
+			ps.executeUpdate();
+			return Response.SUCCESS;
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
@@ -321,7 +318,7 @@ public class Database {
 	public Response updateReservation(Reservation r) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("UPDATE `reservation` " +
-					"SET `userId`=?, `invoiceId`=?, `roomId`=?, `bookTime`=?, `arrival`=?, `departure`=?, `status`=? " +
+					"SET `customerId`=?, `invoiceId`=?, `roomId`=?, `createdAt`=?, `arrival`=?, `departure`=?, `status`=? " +
 					"WHERE `id`=?;");
 			ps.setString(1, r.getCustomerId().toString());
 			ps.setString(2, r.getInvoiceId().toString());
@@ -346,7 +343,7 @@ public class Database {
 
 	/**
 	 * Delete a reservation from the database (invoice table and reservation table)
-	 * @param reservationID the reservation id
+	 * @param r the reservation id
 	 * @return success or fail
 	 */
 	public Response deleteReservation(Reservation r) {
@@ -392,7 +389,7 @@ public class Database {
 			// attempts to find reservations that overlap with requested arrival and departure dates
 			PreparedStatement ps = db.conn.prepareStatement("SELECT * FROM `reservation` WHERE " +
 					"(date(?) >= date(arrival) AND date(?) <  date(departure)) OR " +
-					"(date(?) >  date(arrival) AND date('?) <= date(departure)) OR " +
+					"(date(?) >  date(arrival) AND date(?) <= date(departure)) OR " +
 					"(date(?) <= date(arrival) AND date(?) >= date(departure));");
 
 			ps.setString(1, arrival.toString());
@@ -405,17 +402,17 @@ public class Database {
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
-				logger.info("Empty set after inserting reservation");
+				// an empty set could be normal
 				return reservations;
 			}
 
 			do {
 				UUID reservationId = UUID.fromString(rs.getString("id"));
-				UUID customerId = UUID.fromString(rs.getString("userId"));
+				UUID customerId = UUID.fromString(rs.getString("customerId"));
 				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
 				int roomId = rs.getInt("roomId");
 				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
-				ReservationStatus status = ReservationStatus.valueOf("status");
+				ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
 
 				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
 			} while (rs.next());
@@ -454,33 +451,45 @@ public class Database {
 		return null;
 	}
 
-	/**
-	 * inserts a user into the database
-	 * @param type the type of user
-	 * @param username the username
-	 * @param hashed_password the prehashed/salted password
-	 * @param fName first name
-	 * @param lName lastname
-	 * @param active is the account active
-	 * @return
-	 */
-	public Response insertUser(Account type, String username, String hashed_password,
-							   String fName, String lName, boolean active) {
+	public Response insertUser(Object obj, String hashed_password) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
-					" (`type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
-					"values (?,?,?,?,?,?)");
-			ps.setString(1, type.name());
-			ps.setString(2, username.toLowerCase());
-			ps.setString(3, hashed_password);
-			ps.setString(4, fName);
-			ps.setString(5, lName);
-			ps.setBoolean(6, active);
+					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
+					"values (?,?,?,?,?,?,?)");
+
+			// there must be a better way!
+			if (obj instanceof Admin) {
+				Admin admin = (Admin)obj;
+				ps.setString(1, admin.userId.toString());
+				ps.setString(2, admin.getAccountType().name());
+				ps.setString(3, admin.getUsername().toLowerCase());
+				ps.setString(5, admin.getFirstName());
+				ps.setString(6, admin.getLastName());
+				ps.setBoolean(7, admin.getActive());
+			} else if (obj instanceof Clerk) {
+				Clerk clerk = (Clerk)obj;
+				ps.setString(1, clerk.userId.toString());
+				ps.setString(2, clerk.getAccountType().name());
+				ps.setString(3, clerk.getUsername().toLowerCase());
+				ps.setString(5, clerk.getFirstName());
+				ps.setString(6, clerk.getLastName());
+				ps.setBoolean(7, clerk.getActive());
+			} else if (obj instanceof Guest) {
+				Guest guest = (Guest)obj;
+				ps.setString(1, guest.userId.toString());
+				ps.setString(2, guest.getAccountType().name());
+				ps.setString(3, guest.getUsername().toLowerCase());
+				ps.setString(5, guest.getFirstName());
+				ps.setString(6, guest.getLastName());
+				ps.setBoolean(7, guest.getActive());
+			}
+			ps.setString(4, hashed_password);
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
 				return Response.SUCCESS;
-			};
+			}
+
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
 		}
@@ -490,19 +499,36 @@ public class Database {
 
 	/**
 	 * updates all attributes of a user profile in the database
-	 * @param user
+	 * @param obj A
 	 * @return
 	 */
-	public Response updateUserProfile(User user){
+	public Response updateUserProfile(Object obj){
 
 		try {
 			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user` " +
-					"SET `username`=?, `firstName`=?, `lastName`=? " +
+					"SET `username`=?, `firstName`=?, `lastName`=? `active`=? " +
 					"WHERE `username` LIKE ?");
-			ps.setString(1, user.getUsername().toLowerCase());
-			ps.setString(2, user.getFirstName());
-			ps.setString(3, user.getLastName());
-			ps.setString(4, user.getUsername());
+
+			// there must be a better way!
+			if (obj instanceof Admin) {
+				Admin admin = (Admin)obj;
+				ps.setString(1, admin.getUsername().toLowerCase());
+				ps.setString(2, admin.getFirstName());
+				ps.setString(3, admin.getLastName());
+				ps.setBoolean(4, admin.getActive());
+			} else if (obj instanceof Clerk) {
+				Clerk clerk = (Clerk)obj;
+				ps.setString(1, clerk.getUsername().toLowerCase());
+				ps.setString(2, clerk.getFirstName());
+				ps.setString(3, clerk.getLastName());
+				ps.setBoolean(4, clerk.getActive());
+			} else if (obj instanceof Guest) {
+				Guest guest = (Guest)obj;
+				ps.setString(1, guest.getUsername().toLowerCase());
+				ps.setString(2, guest.getFirstName());
+				ps.setString(3, guest.getLastName());
+				ps.setBoolean(4, guest.getActive());
+			}
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
@@ -600,7 +626,7 @@ public ArrayList<Room> getAllRooms() {
 				int numBeds = rs.getInt("numBeds");
 				Bed bedType = Bed.valueOf(rs.getString("bedType"));
 				boolean occupied = rs.getBoolean("occupied");
-				double nightly_rate = rs.getDouble("nightly_rate");
+				double nightly_rate = rs.getDouble("nightlyRate");
 
 				allRooms.add(new Room(roomId, bedType, numBeds, smoking, occupied, nightly_rate));
 			} while (rs.next());
