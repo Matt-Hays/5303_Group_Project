@@ -8,7 +8,8 @@ public class Room {
     private boolean occupied = false;
 
     private double nightly_rate;
-    public Room(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied) {
+    public Room(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate) {
+        this.roomId = roomId;
         this.smoking = smoking;
         this.numBeds = numBeds;
         this.bedType = bedType;
