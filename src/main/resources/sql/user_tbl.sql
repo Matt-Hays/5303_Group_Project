@@ -1,5 +1,5 @@
 CREATE TABLE `user` (
-	`id` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`id` INTEGER NOT NULL,
 	`type` TEXT NOT NULL,
 	`username` TEXT NOT NULL UNIQUE,
 	`password` TEXT NOT NULL,
@@ -15,5 +15,6 @@ CREATE TABLE `user` (
 	`billingState` TEXT,
 	`billingZip` TEXT,
 	`billingCountry` TEXT,
-	`active` INTEGER NOT NULL
+	`active` INTEGER NOT NULL,
+	PRIMARY KEY(`id`)
 );

@@ -6,5 +6,5 @@ CREATE TABLE `invoice` (
 	`subTotal`	REAL NOT NULL,
 	`isPaid`	INTEGER NOT NULL,
 	FOREIGN KEY(`reservationId`) REFERENCES `reservation` (`id`),
-	PRIMARY KEY(`id` AUTOINCREMENT)
+	PRIMARY KEY(`id`, `reservationId`)
 );
