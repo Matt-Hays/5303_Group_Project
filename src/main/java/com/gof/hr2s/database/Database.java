@@ -203,74 +203,82 @@ public class Database {
 		return null;
 	}
 
-	/**
-	 * Inserts a new reservation in the db and returns the reservationId
-	 * @param userId user id of the gues
-	 * @param roomId room
-	 * @param bookTime booking time
-	 * @param arrival arrival date
-	 * @param departure departure date
-	 * @return the reservationId on success or null on failure
-	 */
-	public UUID insertReservation(UUID userId, UUID invoiceId, int roomId, LocalDate bookTime,
-								  LocalDate arrival, LocalDate departure, ReservationStatus status) {
+
+	public Response insertReservation(Reservation r) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `reservation` " +
-							"(`userId`, `invoiceId`, `roomId`, `bookTime`, `arrival`, `departure`, `status`) " +
-							"VALUES (?,?,?,?,?,?,?)");
-			ps.setString(1, userId.toString());
-			ps.setString(2, invoiceId.toString());
-			ps.setInt(3, roomId);
-			ps.setString(4, bookTime.toString());
-			ps.setString(5, arrival.toString());
-			ps.setString(6, departure.toString());
-			ps.setString(7, status.name());
+							"(`id`, `userId`, `invoiceId`, `roomId`, `bookTime`, `arrival`, `departure`, `status`) " +
+							"VALUES (?,?,?,?,?,?,?,?)");
+			ps.setString(1, r.getReservationId().toString());
+			ps.setString(2, r.getCustomerId().toString());
+			ps.setString(3, r.getInvoiceId().toString());
+			ps.setInt(4, r.getRoomNumber());
+			ps.setString(5, r.getCreatedAt().toString());
+			ps.setString(6, r.getArrival().toString());
+			ps.setString(7, r.getDeparture().toString());
+			ps.setString(8, r.getStatus().name());
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
-				ps = db.conn.prepareStatement("SELECT `id` FROM `reservation` WHERE " +
-						"`userId`=?, `invoiceId`=?, `roomId`=?, `bookTime`=?, `arrival`=?, `departure`=?, `status`=?");
-				ps.setString(1, userId.toString());
-				ps.setString(2, invoiceId.toString());
-				ps.setInt(3, roomId);
-				ps.setString(4, bookTime.toString());
-				ps.setString(5, arrival.toString());
-				ps.setString(6, departure.toString());
-				ps.setString(7, status.name());
+				return Response.FAILURE;
+			}
+
+			return Response.SUCCESS;
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		// failure
+		return Response.FAILURE;
+	}
+
+	public Response insertInvoice(Invoice i) {
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `invoice` " +
+					"(`id`, `taxRate`, `fees`, `subTotal`, `isPaid`) " +
+					"VALUES (?,?,?,?,?)");
+			ps.setString(1, i.getInvoiceId().toString());
+			ps.setDouble(2, i.getTaxRate());
+			ps.setDouble(3, i.getFees());
+			ps.setDouble(4, i.getSubTotal());
+			ps.setBoolean(5, i.isPaid());
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
 
 				// Execute the query
 				ResultSet rs = ps.executeQuery();
 				// this shouldn't happen if the insert was successful
 				if (!validate(rs)) {
 					logger.info("Empty set after inserting reservation");
-					return null;
+					return Response.FAILURE;
 				}
 
 				// get the new reservationId
-				return UUID.fromString(rs.getString("id"));
+				return Response.SUCCESS;
 			}
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
 		}
 		// failure
-		return null;
+		return Response.FAILURE;
 	}
 
-	public Response updateReservation(UUID reservationID, UUID userId, UUID invoiceId, int roomId, LocalDate bookTime,
-									  LocalDate arrival, LocalDate departure, ReservationStatus status) {
+	public Response updateReservation(Reservation r) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("UPDATE `reservation` " +
 					"SET `userId`=?, `invoiceId`=?, `roomId`=?, `bookTime`=?, `arrival`=?, `departure`=?, `status`=? " +
 					"WHERE `id`=?;");
-			ps.setString(1, userId.toString());
-			ps.setString(2, invoiceId.toString());
-			ps.setInt(3, roomId);
-			ps.setString(4, bookTime.toString());
-			ps.setString(5, arrival.toString());
-			ps.setString(6, departure.toString());
-			ps.setString(7, status.name());
-			ps.setString(8, reservationID.toString());
+			ps.setString(1, r.getCustomerId().toString());
+			ps.setString(2, r.getInvoiceId().toString());
+			ps.setInt(3, r.getRoomNumber());
+			ps.setString(4, r.getCreatedAt().toString());
+			ps.setString(5, r.getArrival().toString());
+			ps.setString(6, r.getDeparture().toString());
+			ps.setString(7, r.getStatus().name());
+			ps.setString(8, r.getReservationId().toString());
 
 			// Execute the update
 			if (ps.executeUpdate() > 0) {
