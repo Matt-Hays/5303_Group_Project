@@ -6,6 +6,7 @@ import com.gof.hr2s.service.Response;
 import java.io.*;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class Database {
@@ -134,7 +135,7 @@ public class Database {
 		// Build the query
 		try {
 			PreparedStatement ps = db.conn.prepareStatement(
-					"SELECT `bedType`, `numBeds`, `smoking`, `occupied` FROM `room` WHERE `id`=?;"
+					"SELECT `bedType`, `numBeds`, `smoking`, `occupied`, `nightlyRate` FROM `room` WHERE `id`=?;"
 			);
 			ps.setInt(1, roomId);
 
@@ -149,8 +150,9 @@ public class Database {
 			int numBeds = rs.getInt("numBeds");
 			Boolean smoking = rs.getBoolean("smoking");
 			Boolean occupied = rs.getBoolean("occupied");
+			double nightlyRate = rs.getDouble("nightlyRate");
 
-			return new Room(roomId, bedType, numBeds, smoking, occupied);
+			return new Room(roomId, bedType, numBeds, smoking, occupied, nightlyRate);
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
