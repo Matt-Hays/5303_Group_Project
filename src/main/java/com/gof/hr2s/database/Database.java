@@ -244,27 +244,17 @@ public class Database {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `invoice` " +
 					"(`id`, `taxRate`, `fees`, `subTotal`, `isPaid`) " +
-					"VALUES (?,?,?,?,?)");
+					"VALUES (?,?,?,?,?);");
 			ps.setString(1, i.getInvoiceId().toString());
 			ps.setDouble(2, i.getTaxRate());
 			ps.setDouble(3, i.getFees());
 			ps.setDouble(4, i.getSubtotal());
 			ps.setBoolean(5, i.getIsPaid());
 
+
 			// Execute the query
-			if (ps.executeUpdate() > 0) {
-
-				// Execute the query
-				ResultSet rs = ps.executeQuery();
-				// this shouldn't happen if the insert was successful
-				if (!validate(rs)) {
-					logger.info("Empty set after inserting reservation");
-					return Response.FAILURE;
-				}
-
-				// get the new reservationId
-				return Response.SUCCESS;
-			}
+			ps.executeUpdate();
+			return Response.SUCCESS;
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
