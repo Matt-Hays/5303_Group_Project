@@ -1,12 +1,16 @@
 package com.gof.hr2s.database;
 
 import com.gof.hr2s.models.*;
+import com.gof.hr2s.service.HotelAuth;
 import com.gof.hr2s.service.Response;
 
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public class Database {
@@ -137,7 +141,7 @@ public class Database {
 		// Build the query
 		try {
 			PreparedStatement ps = db.conn.prepareStatement(
-					"SELECT `bedType`, `numBeds`, `smoking`, `occupied`, `nightlyRate` FROM `room` WHERE `id`=?;"
+					"SELECT `bedType`, `numBeds`, `roomRate`, `smoking`, `occupied` FROM `room` WHERE `id`=?;"
 			);
 			ps.setInt(1, roomId);
 
@@ -155,7 +159,6 @@ public class Database {
 			double nightlyRate = rs.getDouble("nightlyRate");
 
 			return new Room(roomId, bedType, numBeds, smoking, occupied, nightlyRate);
-
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
 		}
@@ -168,13 +171,13 @@ public class Database {
 	 * @param reservationId the reservation to look up
 	 * @return a Reservation instance or null
 	 */
-	public Reservation getReservation(int reservationId) {
+	public Reservation getReservation(UUID reservationId) {
 		// Build the query
 		try {
 			PreparedStatement ps = db.conn.prepareStatement(
 					"SELECT * FROM `reservation` WHERE `id`=?;"
 			);
-			ps.setInt(1, reservationId);
+			ps.setString(1, reservationId.toString());
 
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
@@ -183,7 +186,7 @@ public class Database {
 				return null;
 			}
 
-			int userId = rs.getInt("userId");
+			UUID userId = UUID.fromString(rs.getString("userId"));
 			int roomId = rs.getInt("roomId");
 			LocalDate bookTime = LocalDate.parse(rs.getString("bookTime"));
 			LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
@@ -210,7 +213,6 @@ public class Database {
 	 */
 	public int insertReservation(int userId, int roomId, LocalDate bookTime, LocalDate arrival, LocalDate departure) {
 		try {
-
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `reservation` " +
 							"(`userId`, `roomId`, `bookTime`, `arrival`, `departure`, `status`);" +
 							"VALUES (?,?,?,?,?,?)");
@@ -282,8 +284,8 @@ public class Database {
 			}
 
 			do {
-				int reservationId = rs.getInt("id");
-				int userId = rs.getInt("userId");
+				UUID reservationId = UUID.fromString(rs.getString("id"));
+				UUID userId = UUID.fromString(rs.getString("userId"));
 				int roomId = rs.getInt("roomId");
 				LocalDate bookTime = LocalDate.parse(rs.getString("bookTime"));
 				ReservationStatus status = ReservationStatus.valueOf("status");
