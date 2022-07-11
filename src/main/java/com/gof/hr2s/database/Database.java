@@ -338,3 +338,34 @@ public class Database {
 		return resultStringBuilder.toString();
 	}
 }
+
+
+public ArrayList<Room> getAllRooms() {
+		ArrayList<Room> allRooms = new ArrayList<Room>();
+
+		try {
+			// Query to pull all room information from db
+			PreparedStatement ps = db.conn.prepareStatement("SELECT * FROM `room`");
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				return allRooms;
+			}
+
+			do {
+				int roomId = rs.getInt("id");
+				boolean smoking = rs.getBoolean("smoking");
+				int numBeds = rs.getInt("numBeds");
+				Bed bedType = Bed.valueOf(rs.getString("bedType"));
+				boolean occupied = rs.getBoolean("occupied");
+				double nightly_rate = rs.getDouble("nightly_rate");
+
+				allRooms.add(new Room(roomId, bedType, numBeds, smoking, occupied, nightly_rate));
+			} while (rs.next());
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return allRooms;
+	}
