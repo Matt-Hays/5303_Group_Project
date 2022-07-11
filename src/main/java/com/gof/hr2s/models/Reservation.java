@@ -38,7 +38,7 @@ public class Reservation {
         this.departure = departure;
         this.status = status;
 
-        generateInvoice(room.getRoomRate(), lengthOfStay());
+        generateInvoice(room.getNightlyRate(), lengthOfStay());
     }
 
     /**

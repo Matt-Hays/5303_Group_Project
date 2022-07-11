@@ -141,7 +141,7 @@ public class Database {
 		// Build the query
 		try {
 			PreparedStatement ps = db.conn.prepareStatement(
-					"SELECT `bedType`, `numBeds`, `roomRate`, `smoking`, `occupied` FROM `room` WHERE `id`=?;"
+					"SELECT `bedType`, `numBeds`, `nightlyRate`, `smoking`, `occupied` FROM `room` WHERE `id`=?;"
 			);
 			ps.setInt(1, roomId);
 
@@ -302,8 +302,8 @@ public class Database {
 					"WHERE `id`=?;");
 			ps.setDouble(1, i.getTaxRate());
 			ps.setDouble(2, i.getFees());
-			ps.setDouble(3, i.getSubTotal());
-			ps.setBoolean(4, i.isPaid());
+			ps.setDouble(3, i.getSubtotal());
+			ps.setBoolean(4, i.getIsPaid());
 			ps.setString(5, i.getInvoiceId().toString());
 
 			// Execute the query

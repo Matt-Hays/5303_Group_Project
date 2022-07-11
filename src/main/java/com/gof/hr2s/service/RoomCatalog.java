@@ -29,7 +29,7 @@ public class RoomCatalog {
         int i, j;
         for(i = 0; i < all_rooms.size(); i++) {
             for(j = 0; j < occupiedRooms.size(); j++) {
-                if (all_rooms.get(i).roomId != occupiedRooms.get(j).getRoomId()) {
+                if (all_rooms.get(i).roomId != occupiedRooms.get(j).getRoomNumber()) {
                     filteredRooms.add(all_rooms.get(i));
                     break;
                 }
