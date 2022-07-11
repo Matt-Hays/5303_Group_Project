@@ -28,17 +28,19 @@ public class Reservation {
      * @param departure
      * @param status
      */
-    public Reservation(UUID customerId, Room room, LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
+    public Reservation(Guest guest, Room room, LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
         // randomly generate a reservationID
         this.reservationID = UUID.randomUUID();
-        this.customerId = customerId;
+        this.customerId = guest.userId;
         this.roomNumber = room.getRoomId();
         this.createdAt = createdAt;
         this.arrival = arrival;
         this.departure = departure;
         this.status = status;
+        db = Database.Database();
 
         generateInvoice(room.getNightlyRate(), lengthOfStay());
+        db.insertReservation(this);
     }
 
     /**
@@ -170,8 +172,6 @@ public class Reservation {
         this.invoiceId = invoice.getInvoiceId();
 
         db.insertInvoice(invoice);
-        db.updateReservation(this);
-
         return invoice;
     }
 

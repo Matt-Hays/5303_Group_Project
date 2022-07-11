@@ -31,7 +31,7 @@ public class ReservationCatalog {
      * @param departure departure date
      * @return list of reservations
      */
-    ArrayList<Reservation> findReservations(LocalDate arrival, LocalDate departure) {
+    public ArrayList<Reservation> findReservations(LocalDate arrival, LocalDate departure) {
         return db.getOverlappingReservations(arrival, departure);
     }
 }

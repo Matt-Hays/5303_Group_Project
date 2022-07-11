@@ -318,7 +318,7 @@ public class Database {
 	public Response updateReservation(Reservation r) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("UPDATE `reservation` " +
-					"SET `userId`=?, `invoiceId`=?, `roomId`=?, `bookTime`=?, `arrival`=?, `departure`=?, `status`=? " +
+					"SET `customerId`=?, `invoiceId`=?, `roomId`=?, `createdAt`=?, `arrival`=?, `departure`=?, `status`=? " +
 					"WHERE `id`=?;");
 			ps.setString(1, r.getCustomerId().toString());
 			ps.setString(2, r.getInvoiceId().toString());
@@ -343,7 +343,7 @@ public class Database {
 
 	/**
 	 * Delete a reservation from the database (invoice table and reservation table)
-	 * @param reservationID the reservation id
+	 * @param r the reservation id
 	 * @return success or fail
 	 */
 	public Response deleteReservation(Reservation r) {
@@ -389,7 +389,7 @@ public class Database {
 			// attempts to find reservations that overlap with requested arrival and departure dates
 			PreparedStatement ps = db.conn.prepareStatement("SELECT * FROM `reservation` WHERE " +
 					"(date(?) >= date(arrival) AND date(?) <  date(departure)) OR " +
-					"(date(?) >  date(arrival) AND date('?) <= date(departure)) OR " +
+					"(date(?) >  date(arrival) AND date(?) <= date(departure)) OR " +
 					"(date(?) <= date(arrival) AND date(?) >= date(departure));");
 
 			ps.setString(1, arrival.toString());
@@ -402,17 +402,17 @@ public class Database {
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
-				logger.info("Empty set after inserting reservation");
+				// an empty set could be normal
 				return reservations;
 			}
 
 			do {
 				UUID reservationId = UUID.fromString(rs.getString("id"));
-				UUID customerId = UUID.fromString(rs.getString("userId"));
+				UUID customerId = UUID.fromString(rs.getString("customerId"));
 				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
 				int roomId = rs.getInt("roomId");
 				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
-				ReservationStatus status = ReservationStatus.valueOf("status");
+				ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
 
 				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
 			} while (rs.next());
