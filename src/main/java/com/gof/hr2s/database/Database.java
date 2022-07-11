@@ -241,8 +241,8 @@ public class Database {
 			ps.setString(1, i.getInvoiceId().toString());
 			ps.setDouble(2, i.getTaxRate());
 			ps.setDouble(3, i.getFees());
-			ps.setDouble(4, i.getSubTotal());
-			ps.setBoolean(5, i.isPaid());
+			ps.setDouble(4, i.getSubtotal());
+			ps.setBoolean(5, i.getIsPaid());
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
