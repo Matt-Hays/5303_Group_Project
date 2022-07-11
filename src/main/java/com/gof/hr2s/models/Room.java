@@ -6,13 +6,7 @@ public class Room {
     private int numBeds = 2;
     private Bed bedType = Bed.QUEEN;
     private boolean occupied = false;
-
-    private double nightly_rate;
-
-    public double getNightlyRate() {    return nightly_rate;    }
-
-    public void setNightlyRate(double nightly_rate) {    this.nightly_rate = nightly_rate;    }
-
+    
     public Room(int roomId) {
         this.roomId = roomId;
     }

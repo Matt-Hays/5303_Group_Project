@@ -11,7 +11,15 @@ public class Invoice {
     private double total = subtotal + (subtotal*tax_rate) + fees;
 
     public Invoice() {
-        this.invoiceId = UUID.randomUUID;
+        this.invoiceId = UUID.randomUUID();
+    }
+
+    public Invoice(UUID invoiceId, double tax_rate, double fees, double subtotal, boolean isPaid) {
+        this.invoiceId = invoiceId;
+        this.tax_rate = tax_rate;
+        this.fees = fees;
+        this.subtotal = subtotal;
+        this.isPaid = isPaid;
     }
 
     public UUID getInvoiceId() {
@@ -50,7 +58,6 @@ public class Invoice {
     public boolean getIsPaid() {
         return this.isPaid;
     }
-
 
     @java.lang.Override
     public java.lang.String toString() {
