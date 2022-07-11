@@ -1,44 +1,79 @@
 package com.gof.hr2s.models;
 
+import com.gof.hr2s.database.Database;
+import com.gof.hr2s.service.Response;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 public class Reservation {
-    public final int reservationID;
-    public final int customerId;
-    private int roomId;
-    private LocalDate bookTime;
-    private LocalDate reservationStart;
-    private LocalDate reservationEnd;
-    private LocalDate checkIn;
-    private LocalDate checkout;
+    public final UUID reservationID;
+    public final UUID customerId;
+    private UUID invoiceId = null;
+    private int roomNumber;
+    private LocalDate createdAt;
+    private LocalDate arrival;
+    private LocalDate departure;
+    private ReservationStatus status = ReservationStatus.AWAITING;
 
-    public Reservation(int reservationId, int customerId, int roomId, LocalDate bookTime, LocalDate reservationStart, LocalDate reservationEnd) {
-        this.reservationID = reservationId;
+    Database db = null;
+
+    /**
+     * Used when a reservation doesn't exist
+     * @param customerId
+     * @param room
+     * @param createdAt
+     * @param arrival
+     * @param departure
+     * @param status
+     */
+    public Reservation(UUID customerId, Room room, LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
+        // randomly generate a reservationID
+        this.reservationID = UUID.randomUUID();
         this.customerId = customerId;
-        this.roomId = roomId;
-        this.bookTime = bookTime;
-        this.reservationStart = reservationStart;
-        this.reservationEnd = reservationEnd;
+        this.roomNumber = room.getRoomId();
+        this.createdAt = createdAt;
+        this.arrival = arrival;
+        this.departure = departure;
+        this.status = status;
+
+        generateInvoice(room.getNightlyRate(), lengthOfStay());
     }
 
-    public Reservation(int reservationId, int customerId, int roomId, LocalDate bookTime,
-                       LocalDate reservationStart, LocalDate reservationEnd, LocalDate checkIn, LocalDate checkout) {
-        this(reservationId, customerId, roomId, bookTime, reservationStart, reservationEnd);
-        this.checkIn = checkIn;
-        this.checkout = checkout;
+    /**
+     * Used when taking an existing reservation (already has a reservationID) from the DB and creating an object from it
+     * @param reservationID
+     * @param customerId
+     * @param room_number
+     * @param createdAt
+     * @param arrival
+     * @param departure
+     * @param status
+     */
+    public Reservation(UUID reservationID, UUID customerId, UUID invoiceId, int room_number, LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
+        this.reservationID = reservationID;
+        this.customerId = customerId;
+        this.invoiceId = invoiceId;
+        this.roomNumber = room_number;
+        this.createdAt = createdAt;
+        this.arrival = arrival;
+        this.departure = departure;
+        this.status = status;
+
+        db = Database.Database();
     }
 
-    public int getRoomId() {
-        return this.roomId;
+    public int getRoomNumber() {
+        return this.roomNumber;
     }
 
-    public void setRoomId(int roomId) {
-        this.roomId = roomId;
+    public void setRoomNumber(int roomNumber) {
+        this.roomNumber = roomNumber;
     }
 
-    public LocalDate getCheckIn() {
-        return this.checkIn;
+    public LocalDate getArrival() {
+        return this.arrival;
     }
 
     /**
@@ -49,16 +84,16 @@ public class Reservation {
      */
     public boolean setCheckIn(LocalDate checkIn) {
         // TODO: need to ensure this doesn't invalidate room availability
-        if (checkIn.compareTo(this.checkIn) <= 0 || ChronoUnit.DAYS.between(checkIn, this.checkout) < 1) {
+        if (checkIn.compareTo(this.arrival) <= 0 || ChronoUnit.DAYS.between(checkIn, this.departure) < 1) {
             return false;
         }
 
-        this.checkIn = checkIn;
+        this.arrival = checkIn;
         return true;
     }
 
-    public LocalDate getCheckout() {
-        return this.checkout;
+    public LocalDate getDeparture() {
+        return this.departure;
     }
 
     /**
@@ -69,19 +104,19 @@ public class Reservation {
      */
     public boolean setCheckout(LocalDate checkout) {
         // TODO: need to ensure this doesn't violate room availability
-        if (checkout.compareTo(this.checkIn) <= 0 || ChronoUnit.DAYS.between(this.checkIn, checkout) < 1) {
+        if (checkout.compareTo(this.arrival) <= 0 || ChronoUnit.DAYS.between(this.arrival, checkout) < 1) {
             return false;
         }
 
-        this.checkout = checkout;
+        this.departure = checkout;
         return true;
     }
 
-    public int getReservationId() {
+    public UUID getReservationId() {
         return this.reservationID;
     }
 
-    public int getCustomerId() {
+    public UUID getCustomerId() {
         return this.customerId;
     }
 
@@ -90,31 +125,15 @@ public class Reservation {
      * @return long representing the number of days
      */
     public long lengthOfStay() {
-        return ChronoUnit.DAYS.between(this.checkIn, this.checkout);
+        return ChronoUnit.DAYS.between(this.arrival, this.departure);
     }
 
-    public LocalDate getReservationStart() {
-        return reservationStart;
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
-    public void setReservationStart(LocalDate reservationStart) {
-        this.reservationStart = reservationStart;
-    }
-
-    public LocalDate getReservationEnd() {
-        return reservationEnd;
-    }
-
-    public void setReservationEnd(LocalDate reservationEnd) {
-        this.reservationEnd = reservationEnd;
-    }
-
-    public LocalDate getBookTime() {
-        return bookTime;
-    }
-
-    public void setBookTime(LocalDate bookTime) {
-        this.bookTime = bookTime;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     @java.lang.Override
@@ -122,9 +141,45 @@ public class Reservation {
         return "Reservation{" +
                 "reservationID=" + reservationID +
                 ", customerId=" + customerId +
-                ", roomId=" + roomId +
-                ", checkIn=" + checkIn +
-                ", checkout=" + checkout +
+                ", roomId=" + roomNumber +
+                ", checkIn=" + arrival +
+                ", checkout=" + departure +
                 '}';
+    }
+
+    public ReservationStatus isStatus() {
+        return status;
+    }
+
+    public void setStatus(ReservationStatus status) {
+        this.status = status;
+    }
+
+    public void deleteReservation() {
+        db.deleteReservation(this);
+    }
+    public void cancelReservation() {
+        status = ReservationStatus.CANCELLED;
+        db.updateReservation(this);
+        // TODO: calculate 80% if need be....
+    }
+
+    Invoice generateInvoice(double roomRate, long stayLength) {
+        Invoice invoice = new Invoice();
+        invoice.setSubtotal(roomRate, stayLength);
+        this.invoiceId = invoice.getInvoiceId();
+
+        db.insertInvoice(invoice);
+        db.updateReservation(this);
+
+        return invoice;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
+    }
+
+    public UUID getInvoiceId() {
+        return invoiceId;
     }
 }

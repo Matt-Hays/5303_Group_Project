@@ -1,12 +1,16 @@
 package com.gof.hr2s.database;
 
 import com.gof.hr2s.models.*;
+import com.gof.hr2s.service.HotelAuth;
 import com.gof.hr2s.service.Response;
 
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public class Database {
@@ -16,6 +20,8 @@ public class Database {
 	private Logger logger;
 
 	private static Database db = null;
+
+	private Database(){}
 
 	public static Database Database() {
 		if (null == db) {
@@ -135,7 +141,7 @@ public class Database {
 		// Build the query
 		try {
 			PreparedStatement ps = db.conn.prepareStatement(
-					"SELECT `bedType`, `numBeds`, `smoking`, `occupied`, `nightlyRate` FROM `room` WHERE `id`=?;"
+					"SELECT `bedType`, `numBeds`, `nightlyRate`, `smoking`, `occupied` FROM `room` WHERE `id`=?;"
 			);
 			ps.setInt(1, roomId);
 
@@ -153,7 +159,6 @@ public class Database {
 			double nightlyRate = rs.getDouble("nightlyRate");
 
 			return new Room(roomId, bedType, numBeds, smoking, occupied, nightlyRate);
-
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
 		}
@@ -166,51 +171,260 @@ public class Database {
 	 * @param reservationId the reservation to look up
 	 * @return a Reservation instance or null
 	 */
-	public Reservation getRegistration(int reservationId) {
+	public Reservation getReservation(UUID reservationId) {
 		// Build the query
 		try {
 			PreparedStatement ps = db.conn.prepareStatement(
-					"SELECT * FROM `registration` WHERE `id`=?;"
+					"SELECT * FROM `reservation` WHERE `id`=?;"
 			);
-			ps.setInt(1, reservationId);
+			ps.setString(1, reservationId.toString());
 
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
-				logger.info("Empty set for registration: " + reservationId);
+				logger.info("Empty set for reservation: " + reservationId);
 				return null;
 			}
 
-			int userId = rs.getInt("userId");
+			UUID userId = UUID.fromString(rs.getString("userId"));
+			UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
 			int roomId = rs.getInt("roomId");
 			LocalDate bookTime = LocalDate.parse(rs.getString("bookTime"));
-			LocalDate startTime = LocalDate.parse(rs.getString("startTime"));
-			LocalDate endTime = LocalDate.parse(rs.getString("endTime"));
-			String checkIn = rs.getString("checkIn");
-			String checkOut = rs.getString("checkOut");
+			LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
+			LocalDate departure = LocalDate.parse(rs.getString("departure"));
+			ReservationStatus status = ReservationStatus.valueOf("status");
 
-			// user has not checked in for reservation
-			if (null == checkIn) {
-				return new Reservation(reservationId, userId, roomId, bookTime, startTime, endTime);
-			}
-
-			LocalDate ciLocalDate = null;
-			LocalDate coLocalDate = null;
-			if (null != checkIn) {
-				ciLocalDate = LocalDate.parse(checkIn);
-				if (null != checkOut) {
-					coLocalDate = LocalDate.parse(checkOut);
-				}
-			}
-
-			// user has checked in for reservation
-			return new Reservation(reservationId, userId, roomId, bookTime, startTime, endTime, ciLocalDate, coLocalDate);
+			return new Reservation(reservationId, invoiceId, userId, roomId, bookTime, arrival, departure, status);
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
 		}
 
 		return null;
+	}
+
+
+	public Response insertReservation(Reservation r) {
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `reservation` " +
+							"(`id`, `userId`, `invoiceId`, `roomId`, `bookTime`, `arrival`, `departure`, `status`) " +
+							"VALUES (?,?,?,?,?,?,?,?)");
+			ps.setString(1, r.getReservationId().toString());
+			ps.setString(2, r.getCustomerId().toString());
+			ps.setString(3, r.getInvoiceId().toString());
+			ps.setInt(4, r.getRoomNumber());
+			ps.setString(5, r.getCreatedAt().toString());
+			ps.setString(6, r.getArrival().toString());
+			ps.setString(7, r.getDeparture().toString());
+			ps.setString(8, r.getStatus().name());
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				return Response.FAILURE;
+			}
+
+			return Response.SUCCESS;
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		// failure
+		return Response.FAILURE;
+	}
+
+	public Response insertInvoice(Invoice i) {
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `invoice` " +
+					"(`id`, `taxRate`, `fees`, `subTotal`, `isPaid`) " +
+					"VALUES (?,?,?,?,?)");
+			ps.setString(1, i.getInvoiceId().toString());
+			ps.setDouble(2, i.getTaxRate());
+			ps.setDouble(3, i.getFees());
+			ps.setDouble(4, i.getSubtotal());
+			ps.setBoolean(5, i.getIsPaid());
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+
+				// Execute the query
+				ResultSet rs = ps.executeQuery();
+				// this shouldn't happen if the insert was successful
+				if (!validate(rs)) {
+					logger.info("Empty set after inserting reservation");
+					return Response.FAILURE;
+				}
+
+				// get the new reservationId
+				return Response.SUCCESS;
+			}
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+		// failure
+		return Response.FAILURE;
+	}
+
+	public Invoice getInvoice(UUID invoiceId) {
+		// Build the query
+		try {
+			PreparedStatement ps = db.conn.prepareStatement(
+					"SELECT * FROM `invoice` WHERE `id`=?;"
+			);
+			ps.setString(1, invoiceId.toString());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set for reservation: " + invoiceId);
+				return null;
+			}
+
+			double taxRate = rs.getDouble("taxRate");
+			double fees = rs.getDouble("fees");
+			double subTotal = rs.getDouble("subTotal");
+			boolean isPaid = rs.getBoolean("isPaid");
+
+			return new Invoice(invoiceId, taxRate, fees, subTotal, isPaid);
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return null;
+	}
+
+	public Response updateInvoice(Invoice i) {
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("UPDATE `invoice` " +
+					"SET `taxRate`=?, `fees`=?, `subTotal`=?, `isPaid`=? " +
+					"WHERE `id`=?;");
+			ps.setDouble(1, i.getTaxRate());
+			ps.setDouble(2, i.getFees());
+			ps.setDouble(3, i.getSubtotal());
+			ps.setBoolean(4, i.getIsPaid());
+			ps.setString(5, i.getInvoiceId().toString());
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			}
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+		// failure
+		return Response.FAILURE;
+	}
+
+	public Response updateReservation(Reservation r) {
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("UPDATE `reservation` " +
+					"SET `userId`=?, `invoiceId`=?, `roomId`=?, `bookTime`=?, `arrival`=?, `departure`=?, `status`=? " +
+					"WHERE `id`=?;");
+			ps.setString(1, r.getCustomerId().toString());
+			ps.setString(2, r.getInvoiceId().toString());
+			ps.setInt(3, r.getRoomNumber());
+			ps.setString(4, r.getCreatedAt().toString());
+			ps.setString(5, r.getArrival().toString());
+			ps.setString(6, r.getDeparture().toString());
+			ps.setString(7, r.getStatus().name());
+			ps.setString(8, r.getReservationId().toString());
+
+			// Execute the update
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			};
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+		// failure
+		return Response.FAILURE;
+	}
+
+	/**
+	 * Delete a reservation from the database (invoice table and reservation table)
+	 * @param reservationID the reservation id
+	 * @return success or fail
+	 */
+	public Response deleteReservation(Reservation r) {
+		try {
+			// invoices for the reservation
+			PreparedStatement ps = db.conn.prepareStatement("DELETE FROM `invoice` " +
+					"WHERE `id`=?;");
+
+			ps.setString(1, r.getInvoiceId().toString());
+
+			// Execute the query
+			ps.executeQuery();
+
+			// remove the reservation
+			ps = db.conn.prepareStatement("DELETE FROM `reservation` " +
+					"WHERE `id`=?;");
+
+			ps.setString(1, r.getReservationId().toString());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set after deleting reservation");
+				return Response.FAILURE;
+			}
+			return Response.SUCCESS;
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return Response.FAILURE;
+	}
+	/**
+	 * Retrieves a list of reservations that overlap with the requested arrival and departure dates
+	 * @param arrival start date
+	 * @param departure end date
+	 * @return list of reservations
+	 */
+	public ArrayList<Reservation> getOverlappingReservations(LocalDate arrival, LocalDate departure) {
+		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+
+		try {
+			// attempts to find reservations that overlap with requested arrival and departure dates
+			PreparedStatement ps = db.conn.prepareStatement("SELECT * FROM `reservation` WHERE " +
+					"(date(?) >= date(arrival) AND date(?) <  date(departure)) OR " +
+					"(date(?) >  date(arrival) AND date('?) <= date(departure)) OR " +
+					"(date(?) <= date(arrival) AND date(?) >= date(departure));");
+
+			ps.setString(1, arrival.toString());
+			ps.setString(2, arrival.toString());
+			ps.setString(3, departure.toString());
+			ps.setString(4, departure.toString());
+			ps.setString(5, arrival.toString());
+			ps.setString(6, departure.toString());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set after inserting reservation");
+				return reservations;
+			}
+
+			do {
+				UUID reservationId = UUID.fromString(rs.getString("id"));
+				UUID customerId = UUID.fromString(rs.getString("userId"));
+				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
+				int roomId = rs.getInt("roomId");
+				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
+				ReservationStatus status = ReservationStatus.valueOf("status");
+
+				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
+			} while (rs.next());
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return reservations;
 	}
 
 	/**
@@ -275,12 +489,39 @@ public class Database {
 	}
 
 	/**
+	 * updates all attributes of a user profile in the database
+	 * @param user
+	 * @return
+	 */
+	public Response updateUserProfile(User user){
+
+		try {
+			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user` " +
+					"SET `username`=?, `firstName`=?, `lastName`=? " +
+					"WHERE `username` LIKE ?");
+			ps.setString(1, user.getUsername().toLowerCase());
+			ps.setString(2, user.getFirstName());
+			ps.setString(3, user.getLastName());
+			ps.setString(4, user.getUsername());
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			};
+		} catch (SQLException e) {
+			this.logger.severe(e.getMessage());
+		}
+
+		return Response.FAILURE;
+	}
+
+	/**
 	 * Reads in the SQL statement to create the user table and passes it to executeQuery
 	 * @return true (success) / false (fail)
 	 */
 	private Response createDatabase() {
 		// read in resource files in this order
-		String []sqlFiles = { "sql/user_tbl.sql", "sql/insert_users.sql", "sql/room_tbl.sql", "sql/insert_rooms.sql" , "sql/registration_tbl.sql"};
+		String []sqlFiles = { "sql/user_tbl.sql", "sql/insert_users.sql", "sql/room_tbl.sql", "sql/insert_rooms.sql" , "sql/reservation_tbl.sql", "sql/invoice_tbl.sql"};
 
 		for (String sqlFile : sqlFiles) {
 			logger.info("Processing: " + sqlFile);
