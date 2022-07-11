@@ -4,6 +4,6 @@ CREATE TABLE `room` (
     `numBeds` INTEGER NOT NULL,
     `smoking` INTEGER NOT NULL,
     `occupied` INTEGER NOT NULL,
-    `nightlyRate` REAL NOT NULL
+    `nightlyRate` REAL NOT NULL,
 	PRIMARY KEY(`id`)
 );
