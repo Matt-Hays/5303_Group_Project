@@ -1,33 +1,75 @@
 package com.gof.hr2s.models;
 
+import com.gof.hr2s.database.Database;
+import com.gof.hr2s.service.Response;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 public class Reservation {
-    public final int reservationID;
-    public final int customerId;
-    private int room_number;
+    public final UUID reservationID;
+    public final UUID customerId;
+    private UUID invoiceId = null;
+    private int roomNumber;
     private LocalDate createdAt;
     private LocalDate arrival;
     private LocalDate departure;
-    private ReservationStatus status;
+    private ReservationStatus status = ReservationStatus.AWAITING;
 
-    public Reservation(int reservationId, int customerId, int room_number, LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
-        this.reservationID = reservationId;
+    Database db = null;
+
+    /**
+     * Used when a reservation doesn't exist
+     * @param customerId
+     * @param room
+     * @param createdAt
+     * @param arrival
+     * @param departure
+     * @param status
+     */
+    public Reservation(UUID customerId, Room room, LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
+        // randomly generate a reservationID
+        this.reservationID = UUID.randomUUID();
         this.customerId = customerId;
-        this.room_number = room_number;
+        this.roomNumber = room.getRoomId();
         this.createdAt = createdAt;
         this.arrival = arrival;
         this.departure = departure;
         this.status = status;
+
+        generateInvoice(room.getRoomRate(), lengthOfStay());
     }
 
-    public int getRoom_number() {
-        return this.room_number;
+    /**
+     * Used when taking an existing reservation (already has a reservationID) from the DB and creating an object from it
+     * @param reservationID
+     * @param customerId
+     * @param room_number
+     * @param createdAt
+     * @param arrival
+     * @param departure
+     * @param status
+     */
+    public Reservation(UUID reservationID, UUID customerId, UUID invoiceId, int room_number, LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
+        this.reservationID = reservationID;
+        this.customerId = customerId;
+        this.invoiceId = invoiceId;
+        this.roomNumber = room_number;
+        this.createdAt = createdAt;
+        this.arrival = arrival;
+        this.departure = departure;
+        this.status = status;
+
+        db = Database.Database();
     }
 
-    public void setRoom_number(int room_number) {
-        this.room_number = room_number;
+    public int getRoomNumber() {
+        return this.roomNumber;
+    }
+
+    public void setRoomNumber(int roomNumber) {
+        this.roomNumber = roomNumber;
     }
 
     public LocalDate getArrival() {
@@ -70,11 +112,11 @@ public class Reservation {
         return true;
     }
 
-    public int getReservationId() {
+    public UUID getReservationId() {
         return this.reservationID;
     }
 
-    public int getCustomerId() {
+    public UUID getCustomerId() {
         return this.customerId;
     }
 
@@ -99,7 +141,7 @@ public class Reservation {
         return "Reservation{" +
                 "reservationID=" + reservationID +
                 ", customerId=" + customerId +
-                ", roomId=" + room_number +
+                ", roomId=" + roomNumber +
                 ", checkIn=" + arrival +
                 ", checkout=" + departure +
                 '}';
@@ -111,5 +153,33 @@ public class Reservation {
 
     public void setStatus(ReservationStatus status) {
         this.status = status;
+    }
+
+    public void deleteReservation() {
+        db.deleteReservation(this);
+    }
+    public void cancelReservation() {
+        status = ReservationStatus.CANCELLED;
+        db.updateReservation(this);
+        // TODO: calculate 80% if need be....
+    }
+
+    Invoice generateInvoice(double roomRate, long stayLength) {
+        Invoice invoice = new Invoice();
+        invoice.setSubtotal(roomRate, stayLength);
+        this.invoiceId = invoice.getInvoiceId();
+
+        db.insertInvoice(invoice);
+        db.updateReservation(this);
+
+        return invoice;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
+    }
+
+    public UUID getInvoiceId() {
+        return invoiceId;
     }
 }
