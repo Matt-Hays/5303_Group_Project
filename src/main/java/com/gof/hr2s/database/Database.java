@@ -600,7 +600,7 @@ public ArrayList<Room> getAllRooms() {
 				int numBeds = rs.getInt("numBeds");
 				Bed bedType = Bed.valueOf(rs.getString("bedType"));
 				boolean occupied = rs.getBoolean("occupied");
-				double nightly_rate = rs.getDouble("nightly_rate");
+				double nightly_rate = rs.getDouble("nightlyRate");
 
 				allRooms.add(new Room(roomId, bedType, numBeds, smoking, occupied, nightly_rate));
 			} while (rs.next());
