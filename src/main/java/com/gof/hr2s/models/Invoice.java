@@ -1,19 +1,19 @@
 package com.gof.hr2s.models;
 
+import java.util.UUID;
+
 public class Invoice {
-    public final int invoiceId;
+    private final UUID invoiceId;
+    private final UUID customerId;
     private double subtotal = 0.0;
     private double tax_rate = 0.0625;
     private double fees = 0.0;
     private boolean isPaid = false;
     private double total = subtotal + (subtotal*tax_rate) + fees;
 
-    public Invoice(int invoiceId) {
-        this.invoiceId = invoiceId;
-    }
-
-    public Invoice(int invoiceId, double subtotal, double tax_rate, double fees, boolean isPaid, double total) {
-        this(invoiceId);
+    public Invoice(UUID customerID, double subtotal, double tax_rate, double fees, boolean isPaid, double total) {
+        this.invoiceId = UUID.randomUUID;
+        this.customerId = customerID;
         this.subtotal = subtotal;
         this.tax_rate = tax_rate;
         this.fees = fees;
@@ -21,8 +21,12 @@ public class Invoice {
         this.total = total;
     }
 
-    public int getInvoiceId() {
-        return this.invoiceId;
+    public UUID getInvoiceId() {
+        return invoiceId;
+    }
+
+    public UUID getCustomerId(){
+        return customerId;
     }
 
     public void setLengthOfStay(Reservation lengthOfStay) {
@@ -42,7 +46,8 @@ public class Invoice {
     }
 
     public void setSubtotal(double nightly_rate, int lengthOfStay) {
-        this.subtotal = nightly_rate*lengthOfStay;
+        double subtotal = nightly_rate*lengthOfStay + fees;
+        return subtotal * (1+tax_rate);
     }
 
     public double getSubtotal() {
