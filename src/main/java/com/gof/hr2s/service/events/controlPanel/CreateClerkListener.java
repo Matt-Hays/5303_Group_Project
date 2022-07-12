@@ -1,13 +1,13 @@
-package com.gof.hr2s.service.events.updateAccountPage;
+package com.gof.hr2s.service.events.controlPanel;
 
 import com.gof.hr2s.controller.AppController;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ModifyAccountListener implements ActionListener {
+public class CreateClerkListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-        AppController.updateUserAccount();
+        AppController.adminCreateClerk();
     }
 }

@@ -56,6 +56,10 @@ public class RoomCatalog {
         return db.getRoom(Integer.parseInt(roomId));
     }
 
+    public ArrayList<Room> getAllRooms(){
+        return db.getAllRooms();
+    }
+
 /*    public Room getRoom(int roomId) {
         // Build the query
         try {

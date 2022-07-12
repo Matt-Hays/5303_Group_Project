@@ -59,10 +59,13 @@ public class HotelViews extends JFrame {
 //    }
 
     public void addControlPageListeners(ActionListener viewAccountListener, ActionListener searchRoomsListener,
-                                        ActionListener updateAccountListener){
+                                        ActionListener updateAccountListener, ActionListener createClerkListener,
+                                        ActionListener modifyRoomsListener){
         controlPanel.addViewAccountListener(viewAccountListener);
         controlPanel.addSearchRoomsListener(searchRoomsListener);
         controlPanel.addUpdateAccountListener(updateAccountListener);
+        controlPanel.addCreateClerkListener(createClerkListener);
+        controlPanel.modifyRoomsListener(modifyRoomsListener);
     }
 
     public void addRegisterPageListeners(ActionListener registerListener) {
@@ -185,6 +188,11 @@ public class HotelViews extends JFrame {
         return searchResultsPanel.createButton(btnLabel, roomId, arrival, departure);
     }
 
+    public JButton createNewButtonSearch(String btnLabel, String roomId, LocalDate arrival, LocalDate departure,
+                                         String guestUsername) {
+        return searchResultsPanel.createButton(btnLabel, roomId, arrival, departure, guestUsername);
+    }
+
     public void setSessionId(String newSessionId){
         this.sessionId = newSessionId;
     }
@@ -203,5 +211,21 @@ public class HotelViews extends JFrame {
 
     public String getPasswordUpdate(){
         return String.valueOf(updateAccount.getPassword());
+    }
+
+    public void toggleSearchRoomsGuestField(){
+        searchRoomsPanel.toggleClerkInputFieldOn();
+    }
+
+    public String getGuestUsername(){
+        return searchRoomsPanel.getGuestUsername();
+    }
+
+    public void toggleCreateClerkBtn(){
+        controlPanel.toggleCreateClerkOn();
+    }
+
+    public void toggleModifyRoomsBtn(){
+        controlPanel.toggleModifyRoomsOn();
     }
 }

@@ -26,6 +26,14 @@ public class SearchResults extends JPanel {
         return btn;
     }
 
+    public JButton createButton(String btnLabel, String roomId, LocalDate arrival, LocalDate departure,
+                                String guestUsername){
+        JButton btn = new JButton(btnLabel);
+        btn.setActionCommand(roomId + "," + arrival + "," + departure + "," + guestUsername);
+        this.add(btn);
+        return btn;
+    }
+
     public void addNewBtnEventListener(ActionListener listenForRoomBtn, JButton btn){
         btn.addActionListener(listenForRoomBtn);
     }

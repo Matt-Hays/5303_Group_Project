@@ -49,5 +49,8 @@ public class HotelModels {
         return roomCatalog.getRoom(roomId);
     }
 
+    public static ArrayList<Room> getAllRooms(){
+        return roomCatalog.getAllRooms();
+    }
 
 }

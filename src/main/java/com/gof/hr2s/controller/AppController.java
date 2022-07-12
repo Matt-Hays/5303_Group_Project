@@ -6,12 +6,10 @@ import com.gof.hr2s.database.Database;
 import com.gof.hr2s.models.*;
 import com.gof.hr2s.service.HotelAuth;
 import com.gof.hr2s.service.HotelModels;
-import com.gof.hr2s.service.events.controlPanel.UpdateAccountListener;
+import com.gof.hr2s.service.events.controlPanel.*;
 import com.gof.hr2s.service.events.searchResultsPanel.ReserveRoomListener;
 import com.gof.hr2s.service.events.searchRoomsPanel.SearchAvailableRoomsListener;
 import com.gof.hr2s.service.events.updateAccountPage.ModifyAccountListener;
-import com.gof.hr2s.service.events.controlPanel.SearchRoomsListener;
-import com.gof.hr2s.service.events.controlPanel.ViewAccountListener;
 import com.gof.hr2s.service.events.loginPage.LoginListener;
 import com.gof.hr2s.service.events.loginPage.RegistrationListener;
 import com.gof.hr2s.service.events.registrationPage.RegisterListener;
@@ -60,7 +58,8 @@ public class AppController {
 
         // Guest Registration Event Listeners
         this.views.addSearchRoomsPageListeners(new SearchAvailableRoomsListener());
-        this.views.addControlPageListeners(new ViewAccountListener(), new SearchRoomsListener(), new UpdateAccountListener());
+        this.views.addControlPageListeners(new ViewAccountListener(), new SearchRoomsListener(),
+                new UpdateAccountListener(), new CreateClerkListener(), new ModifyRoomsListener());
         this.views.addUpdateAccountPageListeners(new ModifyAccountListener());
     }
 
@@ -70,11 +69,10 @@ public class AppController {
 
     // Login User
     public static void login() throws NoSuchAlgorithmException, InvalidKeySpecException {
-//        views.setLoginPageTitle("This is a new Title!!!");
-//         Get fields from login page
+        // views.setLoginPageTitle("This is a new Title!!!");
+        // Get fields from login page
         String username = views.getUsernameLogin();
         String password = String.valueOf(views.getPasswordLogin());
-//
         // Find the user record in the db - get the hashed password
         String hashedPw = database.getPassword(username);
         Object user = models.getUserByUsernameCatalog(username);
@@ -86,8 +84,12 @@ public class AppController {
             UUID sessionId = models.createNewSession(user);
             // Return session id to GUI
             views.setSessionId(String.valueOf(sessionId));
-//            models.addSessionUser(user);
             // Swap page to Control Page
+            if(user instanceof Clerk){
+                views.toggleModifyRoomsBtn();
+            } else if (user instanceof Admin){
+                views.toggleCreateClerkBtn();
+            }
             views.changeScreen("control-panel");
         }
     }
@@ -98,10 +100,8 @@ public class AppController {
         String password = String.valueOf(views.getPasswordRegister());
         String firstName = views.getFirstNameRegister();
         String lastName = views.getLastNameRegister();
-
         // Hash the password
         String hashed_password = HotelAuth.generatePasswordHash(password);
-
         // Create a Guest object.
         models.createGuest(Account.GUEST, username, hashed_password, firstName, lastName, true);
         // Create a Session object with the User attached.
@@ -119,9 +119,9 @@ public class AppController {
         // Get arrival and departure dates from UI
         LocalDate arrival = LocalDate.parse(views.getArrivalSearch());
         LocalDate departure = LocalDate.parse(views.getDepartureSearch());
+        String guestUsername = views.getGuestUsername();
         // Search for Available Rooms
         ArrayList<Room> availableRooms = models.searchAvailableRooms(arrival, departure);
-        System.out.println(arrival);
 
 
         // Swap to view rooms screen and populate the screen with the found rooms
@@ -131,8 +131,14 @@ public class AppController {
             views.createNewLabelSearch(room.getBedType().toString());
             views.createNewLabelSearch(String.valueOf(room.getSmoking()));
             views.createNewLabelSearch(String.valueOf(room.getNumBeds()));
-            JButton btn = views.createNewButtonSearch(String.valueOf(room.getRoomId()),
-                    String.valueOf(room.getRoomId()), arrival, departure);
+            JButton btn;
+            if(guestUsername != null){
+                 btn = views.createNewButtonSearch(String.valueOf(room.getRoomId()),
+                        String.valueOf(room.getRoomId()), arrival, departure, guestUsername);
+            } else {
+                 btn = views.createNewButtonSearch(String.valueOf(room.getRoomId()),
+                        String.valueOf(room.getRoomId()), arrival, departure);
+            }
             views.addSearchResultsPageNewBtnListener(new ReserveRoomListener(), btn);
         }
         views.changeScreen("search-results");
@@ -146,15 +152,12 @@ public class AppController {
         String roomId = btnInputs[0];
         String arrival = btnInputs[1];
         String departure = btnInputs[2];
-        Room room = models.getRoom(roomId);
-        // Room Id
-//        System.out.println(btnInputs[0]);
-        // Arrival Date
-//        System.out.println(btnInputs[1]);
-        // Departure Date
-//        System.out.println(btnInputs[2]);
-        if(user instanceof Clerk){
 
+        Room room = models.getRoom(roomId);
+        if(user instanceof Clerk){
+            String guestUsername = btnInputs[3];
+            Guest guest = (Guest) models.getUserByUsernameCatalog(guestUsername);
+            guest.createReservation(LocalDate.parse(btnInputs[1]), LocalDate.parse(btnInputs[2]), room);
         } else if (user instanceof Guest){
             Guest guest = (Guest) user;
             guest.createReservation(LocalDate.parse(btnInputs[1]), LocalDate.parse(btnInputs[2]), room);
@@ -181,5 +184,22 @@ public class AppController {
             guest.setLastName(newLastName);
             guest.updateUser();
         }
+    }
+
+    public static void searchRoomsPageSetup(){
+        String sessionId = views.getSessionId();
+        Object user = models.getSessionUser(sessionId);
+        if(user instanceof Clerk){
+            views.toggleSearchRoomsGuestField();
+        }
+        callNewPage("search-rooms");
+    }
+
+    public static void clerkModifyRooms(){
+        ArrayList<Room> rooms = models.getAllRooms();
+    }
+
+    public static void adminCreateClerk(){
+
     }
 }

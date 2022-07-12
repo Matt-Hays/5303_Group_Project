@@ -8,6 +8,6 @@ import java.awt.event.ActionListener;
 public class SearchRoomsListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-        AppController.callNewPage("search-rooms");
+        AppController.searchRoomsPageSetup();
     }
 }
