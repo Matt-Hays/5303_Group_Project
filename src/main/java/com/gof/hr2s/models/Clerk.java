@@ -1,39 +1,45 @@
 package com.gof.hr2s.models;
 
+import com.gof.hr2s.database.Database;
+import com.gof.hr2s.service.Response;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.UUID;
+
+import static com.gof.hr2s.service.HotelAuth.generatePasswordHash;
+
 public class Clerk extends User{
 
-    private String clerkFirstName;
-    private String clerkLastName;
-    public String jobTitle;
-
-    public Clerk(int userId, Account accountType, String username, String firstName, String lastName, String jobTitle) {
+    public Clerk(UUID userId, String username, String firstName, String lastName) {
         super(userId, Account.CLERK, username, firstName, lastName);
-        this.clerkFirstName = firstName;
-        this.clerkLastName = lastName;
-        this.jobTitle = "Hotel Clerk";
+        db = Database.Database();
     }
 
-    public String getClerkFirstName() {
-        return clerkFirstName;
+    public Response updateRoom (Room room) {
+        return db.updateRoom(room);
     }
 
-    public void setClerkFirstName(String clerkFirstName) {
-        this.clerkFirstName = clerkFirstName;
+    /**
+     * Attempts to lookup a guest in the db based on username
+     * @param username
+     * @return Guest instance on success, null on fail
+     */
+    public Guest getUser(String username) {
+        Object obj = db.getUser(username);
+        if (obj instanceof Guest) {
+            return (Guest)obj;
+        } else {
+            return null;
+        }
     }
 
-    public String getClerkLastName() {
-        return clerkLastName;
-    }
-
-    public void setClerkLastName(String clerkLastName) {
-        this.clerkLastName = clerkLastName;
-    }
-
-    public String getJobTitle() {
-        return jobTitle;
-    }
-
-    public void setJobTitle(String jobTitle) {
-        this.jobTitle = jobTitle;
+    public Response setCustomer(String username) {
+        Guest guest = getUser(username);
+        if (guest != null) {
+            super.setCustomer(guest);
+            return Response.SUCCESS;
+        }
+        return Response.FAILURE;
     }
 }
