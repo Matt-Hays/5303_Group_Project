@@ -3,6 +3,7 @@ package com.gof.hr2s.ui;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 
 public class HotelViews extends JFrame {
     public JPanel cards; //a panel that uses CardLayout
@@ -10,11 +11,16 @@ public class HotelViews extends JFrame {
     public GuestRegistration registrationPanel;
 //    public UserPanel userPanel;
 
+    public SearchRooms searchRoomsPanel;
+    public SearchResults searchResultsPanel;
+
     public HotelViews() {
         //Create the "cards".
         loginPanel = new UserLogin();
         registrationPanel = new GuestRegistration();
 //        userPanel = new UserPanel();
+        searchRoomsPanel = new SearchRooms();
+        searchResultsPanel = new SearchResults();
     }
 
     private void addComponentToPane(Container pane) {
@@ -23,6 +29,8 @@ public class HotelViews extends JFrame {
         cards.add(loginPanel, "login");
         cards.add(registrationPanel, "registration");
 //        cards.add(userPanel, "user-panel");
+        cards.add(searchRoomsPanel, "search-rooms");
+        cards.add(searchResultsPanel, "search-results");
 
         pane.add(cards, BorderLayout.CENTER);
     }
@@ -44,6 +52,10 @@ public class HotelViews extends JFrame {
 
     public void addRegisterPageListeners(ActionListener registerListener) {
         registrationPanel.addRegisterListener(registerListener);
+    }
+
+    public void addSearchRoomsPageListeners(ActionListener searchRoomsListener) {
+        searchRoomsPanel.addSearchRoomsListener(searchRoomsListener);
     }
 
     private void constructGUI() {
@@ -133,5 +145,17 @@ public class HotelViews extends JFrame {
 
     public String getZipRegister() {
         return registrationPanel.getZip();
+    }
+
+    public String getArrivalSearch() {
+        return searchRoomsPanel.getArrival();
+    }
+
+    public String getDepartureSearch() {
+        return searchRoomsPanel.getDeparture();
+    }
+
+    public void createNewLabelSearch(String newLabel) {
+        searchResultsPanel.createTextField(newLabel);
     }
 }

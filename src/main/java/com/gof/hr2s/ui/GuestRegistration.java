@@ -15,6 +15,11 @@ public class GuestRegistration extends JPanel {
     private JPasswordField passwordField;
     private JTextField fNameField;
     private JTextField lNameField;
+    private JTextField address1;
+    private JTextField address2;
+    private JTextField city;
+    private JTextField state;
+    private JTextField zip;
 
     public GuestRegistration() {
         this.add(registrationPanel);
@@ -34,6 +39,26 @@ public class GuestRegistration extends JPanel {
 
     public String getLastNameField() {
         return lNameField.getText();
+    }
+
+    public String getAddress1() {
+        return address1.getText();
+    }
+
+    public String getAddress2() {
+        return address2.getText();
+    }
+
+    public String getCity() {
+        return city.getText();
+    }
+
+    public String getState() {
+        return state.getText();
+    }
+
+    public String getZip() {
+        return zip.getText();
     }
 
     public void addRegisterListener(ActionListener listenForRegisterBtn) {

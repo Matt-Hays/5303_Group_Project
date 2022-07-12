@@ -14,7 +14,8 @@ public class RoomCatalog {
 
     private static RoomCatalog roomCatalog = null;
     private Database db = null;
-    public RoomCatalog() {
+
+    private RoomCatalog() {
 
         db = Database.Database();
     }
@@ -26,6 +27,7 @@ public class RoomCatalog {
 
         return roomCatalog;
     }
+
     public ArrayList<Room> filterRooms(LocalDate arrival, LocalDate departure) {
 
         ArrayList<Room> all_rooms = db.getAllRooms();
@@ -33,16 +35,16 @@ public class RoomCatalog {
         ArrayList<Room> filteredRooms = new ArrayList<Room>();
 
         boolean found;
-        for(int i = 0; i < all_rooms.size(); i++) {
+        for (int i = 0; i < all_rooms.size(); i++) {
             found = false;
-            for(int j = 0; j < occupiedRooms.size(); j++) {
+            for (int j = 0; j < occupiedRooms.size(); j++) {
                 if (all_rooms.get(i).roomId == occupiedRooms.get(j).getRoomNumber()) {
                     found = true;
                     break;
                 }
             }
 
-            if(!found) {
+            if (!found) {
                 filteredRooms.add(all_rooms.get(i));
             }
         }
@@ -79,7 +81,6 @@ public class RoomCatalog {
 
         return null;
     }*/
-
 
 
 }

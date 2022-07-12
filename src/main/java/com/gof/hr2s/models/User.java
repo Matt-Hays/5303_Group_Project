@@ -2,13 +2,10 @@ package com.gof.hr2s.models;
 
 import com.gof.hr2s.database.Database;
 import com.gof.hr2s.service.Response;
-
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.UUID;
-
-import static com.gof.hr2s.service.HotelAuth.generatePasswordHash;
 
 abstract class User {
     public final UUID userId;
