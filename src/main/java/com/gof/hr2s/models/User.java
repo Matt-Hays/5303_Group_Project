@@ -22,15 +22,11 @@ abstract class User {
     private Guest customer = null;
     Database db;
 
-    public User(UUID userId, Account accountType, String username) {
+    public User(UUID userId, Account accountType, String username, String firstName,
+                String lastName) {
         this.userId = userId;
         this.accountType = accountType;
         this.username = username;
-    }
-
-    public User(UUID userId, Account accountType, String username, String firstName,
-                String lastName) {
-        this(userId, accountType, username);
         this.firstName = firstName;
         this.lastName = lastName;
     }
