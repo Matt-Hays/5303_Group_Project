@@ -291,7 +291,7 @@ public class Database {
 				return null;
 			}
 
-			UUID userId = UUID.fromString(rs.getString("customerId"));
+			UUID customerId = UUID.fromString(rs.getString("customerId"));
 			UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
 			int roomId = rs.getInt("roomId");
 			LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
@@ -299,7 +299,7 @@ public class Database {
 			LocalDate departure = LocalDate.parse(rs.getString("departure"));
 			ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
 
-			return new Reservation(reservationId, invoiceId, userId, roomId, createdAt, arrival, departure, status);
+			return new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status);
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
@@ -308,6 +308,43 @@ public class Database {
 		return null;
 	}
 
+	public ArrayList<Reservation> getReservationByGuestId(UUID customerId) {
+		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+		// Build the query
+		try {
+			PreparedStatement ps = db.conn.prepareStatement(
+					"SELECT * FROM `reservation` WHERE `customerId`=?;"
+			);
+			ps.setString(1, customerId.toString());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				// an empty set could be normal
+				return reservations;
+			}
+
+			do {
+
+				UUID reservationId = UUID.fromString(rs.getString("reservationId"));
+				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
+				int roomId = rs.getInt("roomId");
+				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
+				LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
+				LocalDate departure = LocalDate.parse(rs.getString("departure"));
+				ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
+
+				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
+			} while (rs.next());
+
+			return reservations;
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return reservations;
+	}
 
 	public Response insertReservation(Reservation r) {
 		try {

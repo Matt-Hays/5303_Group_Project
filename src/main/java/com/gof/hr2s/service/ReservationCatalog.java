@@ -4,6 +4,7 @@ import com.gof.hr2s.database.Database;
 import com.gof.hr2s.models.Reservation;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class ReservationCatalog {
     private static ReservationCatalog reservationCatalog = null;
@@ -33,5 +34,9 @@ public class ReservationCatalog {
      */
     public ArrayList<Reservation> findReservations(LocalDate arrival, LocalDate departure) {
         return db.getOverlappingReservations(arrival, departure);
+    }
+
+    public ArrayList<Reservation> findReservations(UUID guestId) {
+        return db.getReservationByGuestId(guestId);
     }
 }

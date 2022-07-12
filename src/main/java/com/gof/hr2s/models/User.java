@@ -87,9 +87,33 @@ abstract class User {
         return Response.FAILURE;
     }
 
+    /**
+     * Creates a reservation when you already have a room object.
+     * @param arrival
+     * @param departure
+     * @param room
+     * @return Reservation instance on success, null on failure
+     */
     public Reservation createReservation(LocalDate arrival, LocalDate departure, Room room) {
         if (null != customer) {
             return new Reservation(customer, room, LocalDate.now(), arrival, departure, ReservationStatus.AWAITING);
+        }
+        return null;
+    }
+
+    /**
+     * Used to create a reservation when you only have the roomId
+     * @param arrival
+     * @param departure
+     * @param roomId
+     * @return Reservation on success, null on failure
+     */
+    public Reservation createReservation(LocalDate arrival, LocalDate departure, int roomId) {
+        if (null != customer) {
+            Room room = db.getRoom(roomId);
+            if (null != room) {
+                return new Reservation(customer, room, LocalDate.now(), arrival, departure, ReservationStatus.AWAITING);
+            }
         }
         return null;
     }
