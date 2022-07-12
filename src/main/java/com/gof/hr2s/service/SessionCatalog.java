@@ -8,12 +8,24 @@ import java.util.Iterator;
 import java.util.UUID;
 
 public class SessionCatalog {
+    private static SessionCatalog sessionCatalog = null;
     private static ArrayList<Session> sessions;
 
-    public SessionCatalog() {
-        if (sessions == null) {
-            sessions = new ArrayList<Session>();
+    private SessionCatalog() {
+
+    }
+
+    public static SessionCatalog getSessionCatalog(){
+        if (null == sessionCatalog){
+            sessionCatalog = new SessionCatalog();
         }
+        return sessionCatalog;
+    }
+
+    public static UUID createSession(Object user){
+        Session newSession = new Session(user);
+        addSession(newSession);
+        return newSession.getId();
     }
 
     // Add a Session to the array list.

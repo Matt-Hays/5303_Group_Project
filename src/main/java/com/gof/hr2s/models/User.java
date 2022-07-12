@@ -13,6 +13,11 @@ abstract class User {
     private String username;
     private String firstName;
     private String lastName;
+    private String address1;
+    private String address2;
+    private String city;
+    private String state;
+    private String zip;
     private boolean active = true;
     private Guest customer = null;
     Database db;
@@ -23,10 +28,16 @@ abstract class User {
         this.username = username;
     }
 
-    public User(UUID userId, Account accountType, String username, String firstName, String lastName) {
+    public User(UUID userId, Account accountType, String username, String firstName,
+                String lastName, String address1, String address2, String city, String state, String zip) {
         this(userId, accountType, username);
         this.firstName = firstName;
         this.lastName = lastName;
+        this.address1 = address1;
+        this.address2 = address2;
+        this.city = city;
+        this.state = state;
+        this.zip = zip;
     }
 
     public Account getAccountType() {

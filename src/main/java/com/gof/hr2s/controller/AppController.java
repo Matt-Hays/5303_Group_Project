@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 
 
 public class AppController {
@@ -29,9 +30,10 @@ public class AppController {
     private static Database database;
 
 
-    public AppController(HotelModels models, HotelViews views) throws NoSuchMethodException {
+    public AppController(HotelModels models, HotelViews views, Database db) throws NoSuchMethodException {
         this.views = views;
         this.models = models;
+        this.database = db;
         initApp();
     }
 
@@ -61,7 +63,6 @@ public class AppController {
 
     // Login User
     public static void login() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        views.changeScreen("search-rooms");
 //        views.setLoginPageTitle("This is a new Title!!!");
 //         Get fields from login page
         String username = views.getUsernameLogin();
@@ -69,16 +70,19 @@ public class AppController {
 //
         // Find the user record in the db - get the hashed password
         String hashedPw = database.getPassword(username);
+        Object user = models.getUserByUsernameCatalog(username);
 
-        if(hashedPw.isEmpty()) return;
-        // Authenticate the password
-        if (HotelAuth.validatePassword(password, hashedPw)) {
+        if(hashedPw == null || hashedPw.isEmpty()) {
+            return;
+        } else if (HotelAuth.validatePassword(password, hashedPw)) {
             // Create and store a session
-
+            UUID sessionId = models.createNewSession(user);
             // Return session id to GUI
 
             // Swap page to Control Page
             views.changeScreen("control-page");
+
+            System.out.println(sessionId);
         }
     }
 
@@ -96,7 +100,8 @@ public class AppController {
 
 //        System.out.println(username + " " + password + " " + firstName + " " + lastName + " " + address1 + " " + address2 + " " + city + " " + state + " " + zip);
 
-        // Create a User object.
+        // Create a Guest object.
+        models.createGuest();
         // Create a Session object with the User attached.
         // Add the User to the Database.
         // Redirect the User to the Control Panel.

@@ -39,4 +39,10 @@ public class UserCatalog {
     public ArrayList<Object> getAllUsers() {
         return db.getAllUsers();
     }
+
+    public void createNewGuest(String username, String password, String firstName, String lastName,
+                               String address1, String address2, String city, String state, String zip){
+        Guest newGuest = new Guest(username, firstName, lastName, address1, address2, city, state, zip);
+        db.insertUser(newGuest, password);
+    }
 }
