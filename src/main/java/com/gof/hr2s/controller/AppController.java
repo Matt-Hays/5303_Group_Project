@@ -5,12 +5,14 @@ import com.gof.hr2s.database.Database;
 
 import com.gof.hr2s.models.Reservation;
 import com.gof.hr2s.models.Room;
+import com.gof.hr2s.service.HotelAuth;
 import com.gof.hr2s.service.HotelModels;
 import com.gof.hr2s.service.events.controlPanel.SearchRoomsListener;
 import com.gof.hr2s.service.events.loginPage.LoginListener;
 import com.gof.hr2s.service.events.loginPage.RegistrationListener;
 import com.gof.hr2s.service.events.registrationPage.RegisterListener;
 import com.gof.hr2s.ui.HotelViews;
+import org.springframework.security.core.userdetails.User;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -62,17 +64,22 @@ public class AppController {
         views.changeScreen("search-rooms");
 //        views.setLoginPageTitle("This is a new Title!!!");
 //         Get fields from login page
-//        String username = views.getUsernameLogin();
-//        String password = views.getPasswordLogin().toString();
+        String username = views.getUsernameLogin();
+        String password = String.valueOf(views.getPasswordLogin());
 //
-//        // Find the user record in the db - get the hashed password
-//        String hashedPw = database.getPassword(username);
-//        // Authenticate the password
-//        if (HotelAuth.validatePassword(password, hashedPw)) {
-//            // Create and store a session
-//            // Return session id to GUI
-//            // Swap page to Control Page
-//        }
+        // Find the user record in the db - get the hashed password
+        String hashedPw = database.getPassword(username);
+
+        if(hashedPw.isEmpty()) return;
+        // Authenticate the password
+        if (HotelAuth.validatePassword(password, hashedPw)) {
+            // Create and store a session
+
+            // Return session id to GUI
+
+            // Swap page to Control Page
+            views.changeScreen("control-page");
+        }
     }
 
     // Register a new User
