@@ -53,4 +53,12 @@ public class HotelModels {
         return roomCatalog.getAllRooms();
     }
 
+    public static Response modifyRoom(Room room){
+        return roomCatalog.updateRoom(room);
+    }
+
+    public static void createClerk(String username, String hashed_password, String fName, String lName){
+        userCatalog.createNewGuest(Account.CLERK, username, hashed_password, fName, lName, true);
+    }
+
 }

@@ -19,6 +19,9 @@ public class HotelViews extends JFrame {
     public SearchResults searchResultsPanel;
 
     public UpdateAccount updateAccount;
+    public ModifyRooms modifyRooms;
+    public ModifyRoom modifyRoom;
+    public CreateClerk createClerk;
 
     public HotelViews() {
         //Create the "cards".
@@ -28,6 +31,9 @@ public class HotelViews extends JFrame {
         searchRoomsPanel = new SearchRooms();
         searchResultsPanel = new SearchResults();
         updateAccount = new UpdateAccount();
+        modifyRooms = new ModifyRooms();
+        modifyRoom = new ModifyRoom();
+        createClerk = new CreateClerk();
     }
 
     private void addComponentToPane(Container pane) {
@@ -39,6 +45,9 @@ public class HotelViews extends JFrame {
         cards.add(searchRoomsPanel, "search-rooms");
         cards.add(searchResultsPanel, "search-results");
         cards.add(updateAccount, "update-account");
+        cards.add(modifyRooms, "modify-rooms");
+        cards.add(modifyRoom, "modify-room");
+        cards.add(createClerk, "create-clerk");
 
         pane.add(cards, BorderLayout.CENTER);
     }
@@ -82,6 +91,18 @@ public class HotelViews extends JFrame {
 
     public void addSearchResultsPageNewBtnListener(ActionListener newBtnReserveRoomListener, JButton btn){
         searchResultsPanel.addNewBtnEventListener(newBtnReserveRoomListener, btn);
+    }
+
+    public void addModifyRoomsPageListeners(ActionListener listenForModifyBtn, JButton btn){
+        modifyRooms.addActionListenerToBtns(listenForModifyBtn, btn);
+    }
+
+    public void addModifyRoomListener(ActionListener listenForModifyRoomBtn){
+        modifyRoom.addModifyRoomListener(listenForModifyRoomBtn);
+    }
+
+    public void addCreateClerkPageListeners(ActionListener listenForCreateClerk){
+        createClerk.addCreateClerkBtnListener(listenForCreateClerk);
     }
 
     private void constructGUI() {
@@ -227,5 +248,54 @@ public class HotelViews extends JFrame {
 
     public void toggleModifyRoomsBtn(){
         controlPanel.toggleModifyRoomsOn();
+    }
+
+    public void createLabelModifyRooms(String newLabel){
+        modifyRooms.createNewLabel(newLabel);
+    }
+
+    public JButton createNewBtnModifyRooms(String btnLabel, String actionCommands){
+        return modifyRooms.createNewButton("Modify Room #: " + btnLabel, actionCommands);
+    }
+
+    public void prePopulateModifyRoomPage(String roomId, String bedType, String numBeds, String smoking,
+                                      String nightlyRate){
+        modifyRoom.prePopulatePage(roomId,bedType, numBeds, smoking, nightlyRate);
+    }
+
+    public String getRoomIdModifyRoom(){
+        return modifyRoom.getRoomIdTextField();
+    }
+
+    public String getBedTypeModifyRoom(){
+        return modifyRoom.getBedTypeTextField();
+    }
+
+    public String getNumberOfBedsModifyRoom(){
+        return modifyRoom.getNumBedsTextField();
+    }
+
+    public String getSmokingModifyRoom(){
+        return modifyRoom.getSmokingTextField();
+    }
+
+    public String getNightlyRateModifyRoom(){
+        return modifyRoom.getNightlyRateTextField();
+    }
+
+    public String getNewClerkUsername(){
+        return createClerk.getUsername();
+    }
+
+    public char[] getNewClerkPassword(){
+        return createClerk.getPasswordField();
+    }
+
+    public String getNewClerkFirstName(){
+        return createClerk.getFirstName();
+    }
+
+    public String getNewClerkLastName(){
+        return createClerk.getLastName();
     }
 }

@@ -6,7 +6,11 @@ import com.gof.hr2s.database.Database;
 import com.gof.hr2s.models.*;
 import com.gof.hr2s.service.HotelAuth;
 import com.gof.hr2s.service.HotelModels;
+import com.gof.hr2s.service.Response;
 import com.gof.hr2s.service.events.controlPanel.*;
+import com.gof.hr2s.service.events.createClerkPage.CreateNewClerkListener;
+import com.gof.hr2s.service.events.modifyRoom.ModifyRoomListener;
+import com.gof.hr2s.service.events.modifyRooms.ModifyRoomsListener;
 import com.gof.hr2s.service.events.searchResultsPanel.ReserveRoomListener;
 import com.gof.hr2s.service.events.searchRoomsPanel.SearchAvailableRoomsListener;
 import com.gof.hr2s.service.events.updateAccountPage.ModifyAccountListener;
@@ -59,8 +63,10 @@ public class AppController {
         // Guest Registration Event Listeners
         this.views.addSearchRoomsPageListeners(new SearchAvailableRoomsListener());
         this.views.addControlPageListeners(new ViewAccountListener(), new SearchRoomsListener(),
-                new UpdateAccountListener(), new CreateClerkListener(), new ModifyRoomsListener());
+                new UpdateAccountListener(), new CreateClerkListener(), new com.gof.hr2s.service.events.controlPanel.ModifyRoomsListener());
         this.views.addUpdateAccountPageListeners(new ModifyAccountListener());
+        this.views.addModifyRoomListener(new ModifyRoomListener());
+        this.views.addCreateClerkPageListeners(new CreateNewClerkListener());
     }
 
     public static void callNewPage(String newPage) {
@@ -69,7 +75,6 @@ public class AppController {
 
     // Login User
     public static void login() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        // views.setLoginPageTitle("This is a new Title!!!");
         // Get fields from login page
         String username = views.getUsernameLogin();
         String password = String.valueOf(views.getPasswordLogin());
@@ -87,7 +92,7 @@ public class AppController {
             // Swap page to Control Page
             if(user instanceof Clerk){
                 views.toggleModifyRoomsBtn();
-            } else if (user instanceof Admin){
+            } else if (user instanceof Guest){
                 views.toggleCreateClerkBtn();
             }
             views.changeScreen("control-panel");
@@ -197,9 +202,73 @@ public class AppController {
 
     public static void clerkModifyRooms(){
         ArrayList<Room> rooms = models.getAllRooms();
+        for(Room room : rooms){
+            views.createLabelModifyRooms(String.valueOf(room.getRoomId()));
+            views.createLabelModifyRooms(String.valueOf(room.getNumBeds()));
+            views.createLabelModifyRooms(String.valueOf(room.getBedType()));
+            views.createLabelModifyRooms(String.valueOf(room.getSmoking()));
+            views.createLabelModifyRooms(String.valueOf(room.getNightlyRate()));
+            JButton btn = views.createNewBtnModifyRooms(String.valueOf(room.getRoomId()),
+                    String.valueOf(room.getRoomId()));
+            views.addModifyRoomsPageListeners(new ModifyRoomsListener(), btn);
+        }
+        callNewPage("modify-rooms");
     }
 
-    public static void adminCreateClerk(){
+    public static void clerkModifyRoomScreen(String roomId){
+        Room room = models.getRoom(roomId);
+        views.prePopulateModifyRoomPage(String.valueOf(room.getRoomId()), String.valueOf(room.getBedType()),
+                String.valueOf(room.getNumBeds()), String.valueOf(room.getSmoking()), String.valueOf(room.getNightlyRate()));
+        callNewPage("modify-room");
+    }
 
+    public static void clerkModifyRoom(){
+        String sessionId = views.getSessionId();
+        Object user = models.getSessionUser(sessionId);
+        if(!(user instanceof Clerk)){
+            return;
+        }
+        String roomId = views.getRoomIdModifyRoom();
+        String bedType = views.getBedTypeModifyRoom();
+        String numBeds = views.getNumberOfBedsModifyRoom();
+        String smoking = views.getSmokingModifyRoom();
+        String nightlyRate = views.getNightlyRateModifyRoom();
+
+        Room room = models.getRoom(roomId);
+        room.setBedType(Bed.valueOf(bedType));
+        room.setNumBeds(Integer.parseInt(numBeds));
+        room.setSmoking(Boolean.parseBoolean(smoking));
+        room.setNightlyRate(Double.parseDouble(nightlyRate));
+
+        models.modifyRoom(room);
+        callNewPage("control-panel");
+    }
+
+    public static void adminCreateClerkPage(){
+        System.out.println("Hello from btn click");
+        String sessionId = views.getSessionId();
+        Object user = models.getSessionUser(sessionId);
+        if(!(user instanceof Guest)){
+            return;
+        }
+        callNewPage("create-clerk");
+    }
+
+    public static void createANewClerk() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String sessionId = views.getSessionId();
+        Object user = models.getSessionUser(sessionId);
+        System.out.println("Method called!");
+        if(!(user instanceof Guest)){
+            System.out.println("Kicked");
+            return;
+        }
+        System.out.println("Passed if check");
+        String username = views.getNewClerkUsername();
+        String password = String.valueOf(views.getNewClerkPassword());
+        String hashed_password = HotelAuth.generatePasswordHash(password);
+        String firstName = views.getNewClerkFirstName();
+        String lastName = views.getNewClerkLastName();
+
+        models.createClerk(username, hashed_password, firstName, lastName);
     }
 }

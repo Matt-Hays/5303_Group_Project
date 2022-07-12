@@ -60,6 +60,10 @@ public class RoomCatalog {
         return db.getAllRooms();
     }
 
+    public Response updateRoom(Room room){
+        return db.updateRoom(room);
+    }
+
 /*    public Room getRoom(int roomId) {
         // Build the query
         try {
