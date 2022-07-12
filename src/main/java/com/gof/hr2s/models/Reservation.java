@@ -21,7 +21,7 @@ public class Reservation {
 
     /**
      * Used when a reservation doesn't exist
-     * @param customerId
+     * @param guest
      * @param room
      * @param createdAt
      * @param arrival
