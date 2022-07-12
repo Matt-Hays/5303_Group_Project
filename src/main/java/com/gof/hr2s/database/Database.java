@@ -722,11 +722,11 @@ public class Database {
 	 * @return
 	 */
 	public Response updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		if(HotelAuth.validatePassword(existingPassword, getPassword(username))){
+		String newPasswordHash = HotelAuth.generatePasswordHash(newPassword);
 			PreparedStatement ps = null;
 			try {
 				ps = db.conn.prepareStatement("UPDATE `user` SET `password` = ? WHERE `username`=?;");
-				ps.setString(1, newPassword);
+				ps.setString(1, newPasswordHash);
 				ps.setString(2, username.toLowerCase());
 				if (ps.executeUpdate() == 1) {
 					return Response.SUCCESS;
@@ -734,7 +734,6 @@ public class Database {
 			} catch (SQLException e) {
 				db.logger.severe(e.getMessage());
 			}
-		}
 
 		return Response.FAILURE;
 	}

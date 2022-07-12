@@ -9,6 +9,7 @@ public class UpdateAccount extends JPanel {
     private JButton updateAccountBtn;
     private JPanel updateUserPanel;
     private JPasswordField password;
+    private JPasswordField oldPassword;
 
     public UpdateAccount(){
         this.add(updateUserPanel);
@@ -32,6 +33,10 @@ public class UpdateAccount extends JPanel {
 
     public char[] getPassword(){
         return password.getPassword();
+    }
+
+    public char[] getOldPassword(){
+        return oldPassword.getPassword();
     }
 
     public void addModifyAccountListener(ActionListener listenForUpdateAccountBtn){
