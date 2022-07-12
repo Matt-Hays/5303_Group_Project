@@ -132,15 +132,33 @@ public class AppController {
             views.createNewLabelSearch(String.valueOf(room.getSmoking()));
             views.createNewLabelSearch(String.valueOf(room.getNumBeds()));
             JButton btn = views.createNewButtonSearch(String.valueOf(room.getRoomId()),
-                    String.valueOf(room.getRoomId()));
+                    String.valueOf(room.getRoomId()), arrival, departure);
             views.addSearchResultsPageNewBtnListener(new ReserveRoomListener(), btn);
         }
         views.changeScreen("search-results");
     }
 
     // Reserve a Room
-    public static void makeReservation(String roomId) {
+    public static void makeReservation(String btnParams) {
+        String sessionId = views.getSessionId();
+        Object user = models.getSessionUser(sessionId);
+        String[] btnInputs = btnParams.split(",");
+        String roomId = btnInputs[0];
+        String arrival = btnInputs[1];
+        String departure = btnInputs[2];
+        Room room = models.getRoom(roomId);
+        // Room Id
+//        System.out.println(btnInputs[0]);
+        // Arrival Date
+//        System.out.println(btnInputs[1]);
+        // Departure Date
+//        System.out.println(btnInputs[2]);
+        if(user instanceof Clerk){
 
+        } else if (user instanceof Guest){
+            Guest guest = (Guest) user;
+            guest.createReservation(LocalDate.parse(btnInputs[1]), LocalDate.parse(btnInputs[2]), room);
+        }
     }
 
     // Update a User Account

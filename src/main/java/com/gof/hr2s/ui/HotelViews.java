@@ -3,6 +3,7 @@ package com.gof.hr2s.ui;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.time.LocalDate;
 
 public class HotelViews extends JFrame {
@@ -180,8 +181,8 @@ public class HotelViews extends JFrame {
     public void createNewLabelSearch(String newLabel) {
         searchResultsPanel.createTextField(newLabel);
     }
-    public JButton createNewButtonSearch(String btnLabel, String roomId){
-        return searchResultsPanel.createButton(btnLabel, roomId);
+    public JButton createNewButtonSearch(String btnLabel, String roomId, LocalDate arrival, LocalDate departure) {
+        return searchResultsPanel.createButton(btnLabel, roomId, arrival, departure);
     }
 
     public void setSessionId(String newSessionId){

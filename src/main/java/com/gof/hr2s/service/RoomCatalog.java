@@ -52,6 +52,10 @@ public class RoomCatalog {
         return filteredRooms;
     }
 
+    public Room getRoom(String roomId){
+        return db.getRoom(Integer.parseInt(roomId));
+    }
+
 /*    public Room getRoom(int roomId) {
         // Build the query
         try {

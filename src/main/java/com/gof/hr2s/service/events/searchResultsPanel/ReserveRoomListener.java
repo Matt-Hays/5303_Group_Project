@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 public class ReserveRoomListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-        String roomId = e.getActionCommand();
-        AppController.makeReservation(roomId);
+        String btnParams = e.getActionCommand();
+        AppController.makeReservation(btnParams);
     }
 }

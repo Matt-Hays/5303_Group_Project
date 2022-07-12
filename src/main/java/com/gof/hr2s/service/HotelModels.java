@@ -45,5 +45,9 @@ public class HotelModels {
         userCatalog.createNewGuest(type, username, hashed_password, fName, lName, active);
     }
 
+    public static Room getRoom(String roomId){
+        return roomCatalog.getRoom(roomId);
+    }
+
 
 }

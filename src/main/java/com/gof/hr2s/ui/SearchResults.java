@@ -2,6 +2,10 @@ package com.gof.hr2s.ui;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.time.LocalDate;
 
 public class SearchResults extends JPanel {
     private JPanel searchResults;
@@ -15,9 +19,9 @@ public class SearchResults extends JPanel {
         this.add(newLabel);
     }
 
-    public JButton createButton(String btnLabel, String roomId){
+    public JButton createButton(String btnLabel, String roomId, LocalDate arrival, LocalDate departure) {
         JButton btn = new JButton(btnLabel);
-        btn.setActionCommand(roomId);
+        btn.setActionCommand(roomId + "," + arrival + "," + departure);
         this.add(btn);
         return btn;
     }
