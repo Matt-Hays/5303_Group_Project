@@ -27,8 +27,9 @@ public class Invoice {
     }
 
     public double setSubtotal(double nightly_rate, long lengthOfStay) {
-        double subtotal = nightly_rate*lengthOfStay + fees;
-        return subtotal * (1+tax_rate);
+        double temp = nightly_rate*lengthOfStay + fees;
+        subtotal =  temp * (1+tax_rate);
+        return subtotal;
     }
 
     public double getSubtotal() {
