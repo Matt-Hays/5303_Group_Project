@@ -326,7 +326,7 @@ public class Database {
 
 			do {
 
-				UUID reservationId = UUID.fromString(rs.getString("reservationId"));
+				UUID reservationId = UUID.fromString(rs.getString("id"));
 				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
 				int roomId = rs.getInt("roomId");
 				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));

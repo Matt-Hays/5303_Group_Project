@@ -61,4 +61,19 @@ public class HotelModels {
         userCatalog.createNewGuest(Account.CLERK, username, hashed_password, fName, lName, true);
     }
 
+    public ArrayList<Reservation> getAllGuestReservations(UUID userId){
+        return reservationCatalog.findReservations(userId);
+    }
+
+    public Reservation getReservation(UUID reservationId){
+        return reservationCatalog.findReservation(reservationId);
+    }
+
+    public void updateReservation(Reservation reservation){
+        reservationCatalog.updateReservation(reservation);
+    }
+
+    public void logout(UUID sessionId){
+        sessionCatalog.deleteSession(sessionId);
+    }
 }

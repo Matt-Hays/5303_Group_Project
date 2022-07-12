@@ -39,4 +39,12 @@ public class ReservationCatalog {
     public ArrayList<Reservation> findReservations(UUID guestId) {
         return db.getReservationByGuestId(guestId);
     }
+
+    public Reservation findReservation(UUID reservationId){
+        return db.getReservation(reservationId);
+    }
+
+    public void updateReservation(Reservation reservation){
+        db.updateReservation(reservation);
+    }
 }

@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 public class CreateClerk extends JPanel {
     private JTextField username;
     private JTextField firstName;
-    private JPasswordField passwordField;
     private JTextField lastName;
     private JButton createClerkBtn;
     private JPanel createClerkPanel;
@@ -29,14 +28,6 @@ public class CreateClerk extends JPanel {
 
     public void setFirstName(JTextField firstName) {
         this.firstName = firstName;
-    }
-
-    public char[] getPasswordField() {
-        return passwordField.getPassword();
-    }
-
-    public void setPasswordField(JPasswordField passwordField) {
-        this.passwordField = passwordField;
     }
 
     public String getLastName() {

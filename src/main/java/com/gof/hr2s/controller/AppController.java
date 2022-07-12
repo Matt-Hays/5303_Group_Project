@@ -6,9 +6,10 @@ import com.gof.hr2s.database.Database;
 import com.gof.hr2s.models.*;
 import com.gof.hr2s.service.HotelAuth;
 import com.gof.hr2s.service.HotelModels;
-import com.gof.hr2s.service.Response;
 import com.gof.hr2s.service.events.controlPanel.*;
 import com.gof.hr2s.service.events.createClerkPage.CreateNewClerkListener;
+import com.gof.hr2s.service.events.modifyReservation.ModifyReservationListener;
+import com.gof.hr2s.service.events.modifyReservations.ModifyReservationsListener;
 import com.gof.hr2s.service.events.modifyRoom.ModifyRoomListener;
 import com.gof.hr2s.service.events.modifyRooms.ModifyRoomsListener;
 import com.gof.hr2s.service.events.searchResultsPanel.ReserveRoomListener;
@@ -63,10 +64,12 @@ public class AppController {
         // Guest Registration Event Listeners
         this.views.addSearchRoomsPageListeners(new SearchAvailableRoomsListener());
         this.views.addControlPageListeners(new ViewAccountListener(), new SearchRoomsListener(),
-                new UpdateAccountListener(), new CreateClerkListener(), new com.gof.hr2s.service.events.controlPanel.ModifyRoomsListener());
+                new UpdateAccountListener(), new CreateClerkListener(), new ModifyRoomsBtnListener(),
+                new ModifyReservationsBtnListener(), new LogoutListener());
         this.views.addUpdateAccountPageListeners(new ModifyAccountListener());
         this.views.addModifyRoomListener(new ModifyRoomListener());
         this.views.addCreateClerkPageListeners(new CreateNewClerkListener());
+        this.views.addUpdateReservationListener(new ModifyReservationListener());
     }
 
     public static void callNewPage(String newPage) {
@@ -81,7 +84,7 @@ public class AppController {
         // Find the user record in the db - get the hashed password
         String hashedPw = database.getPassword(username);
         Object user = models.getUserByUsernameCatalog(username);
-
+        System.out.println(user);
         if(hashedPw == null || hashedPw.isEmpty()) {
             return;
         } else if (HotelAuth.validatePassword(password, hashedPw)) {
@@ -92,8 +95,11 @@ public class AppController {
             // Swap page to Control Page
             if(user instanceof Clerk){
                 views.toggleModifyRoomsBtn();
-            } else if (user instanceof Guest){
+            } else if (user instanceof Admin){
                 views.toggleCreateClerkBtn();
+            } else if (user instanceof Guest){
+                views.toggleModifyRoomsBtnOff();
+                views.toggleCreateClerkBtnOff();
             }
             views.changeScreen("control-panel");
         }
@@ -161,10 +167,10 @@ public class AppController {
         Room room = models.getRoom(roomId);
         if(user instanceof Clerk){
             String guestUsername = btnInputs[3];
-            Guest guest = (Guest) models.getUserByUsernameCatalog(guestUsername);
+            Clerk guest = (Clerk) models.getUserByUsernameCatalog(guestUsername);
             guest.createReservation(LocalDate.parse(btnInputs[1]), LocalDate.parse(btnInputs[2]), room);
-        } else if (user instanceof Guest){
-            Guest guest = (Guest) user;
+        } else if (user instanceof Admin){
+            Admin guest = (Admin) user;
             guest.createReservation(LocalDate.parse(btnInputs[1]), LocalDate.parse(btnInputs[2]), room);
         }
     }
@@ -248,7 +254,7 @@ public class AppController {
         System.out.println("Hello from btn click");
         String sessionId = views.getSessionId();
         Object user = models.getSessionUser(sessionId);
-        if(!(user instanceof Guest)){
+        if(!(user instanceof Admin)){
             return;
         }
         callNewPage("create-clerk");
@@ -257,18 +263,60 @@ public class AppController {
     public static void createANewClerk() throws NoSuchAlgorithmException, InvalidKeySpecException {
         String sessionId = views.getSessionId();
         Object user = models.getSessionUser(sessionId);
-        System.out.println("Method called!");
-        if(!(user instanceof Guest)){
-            System.out.println("Kicked");
+        if(!(user instanceof Admin)){
             return;
         }
-        System.out.println("Passed if check");
+        Admin admin = (Admin) user;
         String username = views.getNewClerkUsername();
-        String password = String.valueOf(views.getNewClerkPassword());
-        String hashed_password = HotelAuth.generatePasswordHash(password);
         String firstName = views.getNewClerkFirstName();
         String lastName = views.getNewClerkLastName();
 
-        models.createClerk(username, hashed_password, firstName, lastName);
+        admin.createUser(Account.CLERK, username, firstName, lastName);
+    }
+
+    public static void modifyReservations(){
+        String sessionId = views.getSessionId();
+        Object user = models.getSessionUser(sessionId);
+        if(!(user instanceof Guest)){
+            return;
+        }
+        Guest guest = (Guest) user;
+        ArrayList<Reservation> reservations = models.getAllGuestReservations(guest.getUserId());
+        for(Reservation reservation : reservations){
+            views.createNewUpdateReservationPageLabel(String.valueOf(reservation.getReservationId()));
+            views.createNewUpdateReservationPageLabel(String.valueOf(reservation.getArrival()));
+            views.createNewUpdateReservationPageLabel(String.valueOf(reservation.getDeparture()));
+            JButton btn = views.createNewUpdateReservationsBtn(String.valueOf(reservation.getReservationId()),
+                    String.valueOf(reservation.getReservationId()));
+            views.addUpdateReservationsListeners(new ModifyReservationsListener(), btn);
+        }
+        callNewPage("update-reservations");
+    }
+
+    public static void modifyReservationPage(String reservationId){
+        Reservation reservation = models.getReservation(UUID.fromString(reservationId));
+        views.updateReservationPageTitle(String.valueOf(reservation.getReservationId()));
+        views.prepopulateArrivalAndDeparture(String.valueOf(reservation.getArrival()), String.valueOf(reservation.getDeparture()));
+        views.setModifyReservationBtnCommands(String.valueOf(reservation.getReservationId()));
+        callNewPage("update-reservation");
+    }
+
+    public static void modifyReservation(String reservationId){
+        Reservation reservation =  models.getReservation(UUID.fromString(reservationId));
+        System.out.println(reservationId);
+        String arrival = views.getReservationArrival();
+        String departure = views.getReservationDeparture();
+        System.out.println(arrival);
+        System.out.println(departure);
+        reservation.setCheckIn(LocalDate.parse(arrival));
+        reservation.setCheckout(LocalDate.parse(departure));
+        models.updateReservation(reservation);
+    }
+
+    public static void logoutUser(){
+        String sessionId = views.getSessionId();
+        models.logout(UUID.fromString(sessionId));
+
+        callNewPage("login");
     }
 }

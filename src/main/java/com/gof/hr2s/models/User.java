@@ -35,6 +35,10 @@ abstract class User {
         this.lastName = lastName;
     }
 
+    public UUID getUserId(){
+        return this.userId;
+    }
+
     public Account getAccountType() {
         return this.accountType;
     }

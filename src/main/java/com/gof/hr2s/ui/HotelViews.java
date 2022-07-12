@@ -22,6 +22,8 @@ public class HotelViews extends JFrame {
     public ModifyRooms modifyRooms;
     public ModifyRoom modifyRoom;
     public CreateClerk createClerk;
+    public UpdateReservations updateReservations;
+    public UpdateReservation updateReservation;
 
     public HotelViews() {
         //Create the "cards".
@@ -34,6 +36,8 @@ public class HotelViews extends JFrame {
         modifyRooms = new ModifyRooms();
         modifyRoom = new ModifyRoom();
         createClerk = new CreateClerk();
+        updateReservations = new UpdateReservations();
+        updateReservation = new UpdateReservation();
     }
 
     private void addComponentToPane(Container pane) {
@@ -48,6 +52,8 @@ public class HotelViews extends JFrame {
         cards.add(modifyRooms, "modify-rooms");
         cards.add(modifyRoom, "modify-room");
         cards.add(createClerk, "create-clerk");
+        cards.add(updateReservations, "update-reservations");
+        cards.add(updateReservation, "update-reservation");
 
         pane.add(cards, BorderLayout.CENTER);
     }
@@ -69,12 +75,15 @@ public class HotelViews extends JFrame {
 
     public void addControlPageListeners(ActionListener viewAccountListener, ActionListener searchRoomsListener,
                                         ActionListener updateAccountListener, ActionListener createClerkListener,
-                                        ActionListener modifyRoomsListener){
+                                        ActionListener modifyRoomsListener, ActionListener listenForModifyReservation
+            , ActionListener listenForLogout){
         controlPanel.addViewAccountListener(viewAccountListener);
         controlPanel.addSearchRoomsListener(searchRoomsListener);
         controlPanel.addUpdateAccountListener(updateAccountListener);
         controlPanel.addCreateClerkListener(createClerkListener);
         controlPanel.modifyRoomsListener(modifyRoomsListener);
+        controlPanel.addModifyReservationsListener(listenForModifyReservation);
+        controlPanel.addLogoutBtnListener(listenForLogout);
     }
 
     public void addRegisterPageListeners(ActionListener registerListener) {
@@ -104,6 +113,15 @@ public class HotelViews extends JFrame {
     public void addCreateClerkPageListeners(ActionListener listenForCreateClerk){
         createClerk.addCreateClerkBtnListener(listenForCreateClerk);
     }
+
+    public void addUpdateReservationsListeners(ActionListener listenForUpdateReservations, JButton btn){
+        updateReservations.addBtnEventListeners(listenForUpdateReservations, btn);
+    }
+
+    public void addUpdateReservationListener(ActionListener listenForReservationBtn){
+        updateReservation.addModifyReservationListener(listenForReservationBtn);
+    }
+
 
     private void constructGUI() {
         try {
@@ -249,6 +267,12 @@ public class HotelViews extends JFrame {
     public void toggleModifyRoomsBtn(){
         controlPanel.toggleModifyRoomsOn();
     }
+    public void toggleModifyRoomsBtnOff(){
+        controlPanel.toggleModifyRoomsOff();
+    }
+    public void toggleCreateClerkBtnOff(){
+        controlPanel.toggleCreateClerkOff();
+    }
 
     public void createLabelModifyRooms(String newLabel){
         modifyRooms.createNewLabel(newLabel);
@@ -287,15 +311,40 @@ public class HotelViews extends JFrame {
         return createClerk.getUsername();
     }
 
-    public char[] getNewClerkPassword(){
-        return createClerk.getPasswordField();
-    }
-
     public String getNewClerkFirstName(){
         return createClerk.getFirstName();
     }
 
     public String getNewClerkLastName(){
         return createClerk.getLastName();
+    }
+
+    public void createNewUpdateReservationPageLabel(String newLabel){
+        updateReservations.createNewLabel(newLabel);
+    }
+
+    public JButton createNewUpdateReservationsBtn(String btnLabel, String btnCmds){
+        return updateReservations.createNewButton(btnLabel, btnCmds);
+    }
+
+    public void updateReservationPageTitle(String newTitle){
+        updateReservation.setReservationIdLabel(newTitle);
+    }
+
+    public String getReservationArrival(){
+        return updateReservation.getArrivalTextField();
+    }
+
+    public String getReservationDeparture(){
+        return updateReservation.getDepartureTextField();
+    }
+
+    public void prepopulateArrivalAndDeparture(String arrival, String departure){
+        updateReservation.setArrivalField(arrival);
+        updateReservation.setDepartureField(departure);
+    }
+
+    public void setModifyReservationBtnCommands(String reservationId){
+        updateReservation.setModifyReservationBtnCmds(reservationId);
     }
 }

@@ -11,6 +11,7 @@ public class ControlPanel extends JPanel {
     private JButton updateAccountBtn;
     private JButton modifyRoomsBtn;
     private JButton createClerkBtn;
+    private JButton modifyReservationBtn;
 
     public ControlPanel(){
         this.add(controlPanel);
@@ -24,6 +25,15 @@ public class ControlPanel extends JPanel {
 
     public void toggleCreateClerkOn(){
         createClerkBtn.setVisible(true);
+    }
+
+
+    public void toggleModifyRoomsOff(){
+        modifyRoomsBtn.setVisible(false);
+    }
+
+    public void toggleCreateClerkOff(){
+        createClerkBtn.setVisible(false);
     }
 
     public void addViewAccountListener(ActionListener listenForViewAccountBtn){
@@ -44,5 +54,13 @@ public class ControlPanel extends JPanel {
 
     public void modifyRoomsListener(ActionListener listenForModifyRoomsBtn){
         modifyRoomsBtn.addActionListener(listenForModifyRoomsBtn);
+    }
+
+    public void addModifyReservationsListener(ActionListener listenForModifyReservationBtn){
+        modifyReservationBtn.addActionListener(listenForModifyReservationBtn);
+    }
+
+    public void addLogoutBtnListener(ActionListener listenForLogoutBtn){
+        logout.addActionListener(listenForLogoutBtn);
     }
 }
