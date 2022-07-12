@@ -7,6 +7,8 @@ import com.gof.hr2s.models.ReservationStatus;
 import com.gof.hr2s.models.Room;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class UserCatalog {
     public static UserCatalog userCatalog = null;
