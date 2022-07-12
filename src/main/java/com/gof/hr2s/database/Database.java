@@ -596,6 +596,40 @@ public class Database {
 	}
 
 	/**
+	 * inserts a user into the database
+	 * @param type the type of user
+	 * @param username the username
+	 * @param hashed_password the prehashed/salted password
+	 * @param fName first name
+	 * @param lName lastname
+	 * @param active is the account active
+	 * @return
+	 */
+	public Response insertUser(Account type, String username, String hashed_password,
+							   String fName, String lName, boolean active) {
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
+					" (`type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
+					"values (?,?,?,?,?,?)");
+			ps.setString(1, type.name());
+			ps.setString(2, username.toLowerCase());
+			ps.setString(3, hashed_password);
+			ps.setString(4, fName);
+			ps.setString(5, lName);
+			ps.setBoolean(6, active);
+
+			// Execute the query
+			if (ps.executeUpdate() == 1) {
+				return Response.SUCCESS;
+			};
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return Response.FAILURE;
+	}
+
+	/**
 	 * updates all attributes of a user profile in the database
 	 * @param obj A
 	 * @return
