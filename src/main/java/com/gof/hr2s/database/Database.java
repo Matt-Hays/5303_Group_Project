@@ -252,13 +252,14 @@ public class Database {
 	public Response updateRoom (Room room) {
 		try {
 			PreparedStatement ps = this.conn.prepareStatement("UPDATE `room` " +
-					"SET `bedType`=?, `numBeds`=?, `smoking`=?, `occupied`=? " +
+					"SET `bedType`=?, `numBeds`=?, `smoking`=?, `occupied`=?, `nightlyRate` =? " +
 					"WHERE id = ?");
 			ps.setString(1, room.getBedType().name());
 			ps.setInt(2, room.getNumBeds());
 			ps.setBoolean(3, room.getSmoking());
 			ps.setBoolean(4, room.getOccupied());
-			ps.setInt(5, room.getRoomId());
+			ps.setDouble(5, room.getNightlyRate());
+			ps.setInt(6, room.getRoomId());
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
