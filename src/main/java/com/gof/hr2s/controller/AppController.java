@@ -3,11 +3,13 @@ package com.gof.hr2s.controller;
 
 import com.gof.hr2s.database.Database;
 
+import com.gof.hr2s.models.Account;
 import com.gof.hr2s.models.Reservation;
 import com.gof.hr2s.models.Room;
 import com.gof.hr2s.service.HotelAuth;
 import com.gof.hr2s.service.HotelModels;
 import com.gof.hr2s.service.events.controlPanel.SearchRoomsListener;
+import com.gof.hr2s.service.events.controlPanel.ViewAccountListener;
 import com.gof.hr2s.service.events.loginPage.LoginListener;
 import com.gof.hr2s.service.events.loginPage.RegistrationListener;
 import com.gof.hr2s.service.events.registrationPage.RegisterListener;
@@ -55,6 +57,7 @@ public class AppController {
         // Guest Registration Event Listeners
 
         this.views.addSearchRoomsPageListeners(new SearchRoomsListener());
+        this.views.addControlPageListeners(new ViewAccountListener(), new SearchRoomsListener());
     }
 
     public static void callNewPage(String newPage) {
@@ -78,33 +81,32 @@ public class AppController {
             // Create and store a session
             UUID sessionId = models.createNewSession(user);
             // Return session id to GUI
-
+            views.setSessionId(String.valueOf(sessionId));
             // Swap page to Control Page
-            views.changeScreen("control-page");
-
-            System.out.println(sessionId);
+            views.changeScreen("control-panel");
         }
     }
 
     // Register a new User
-    public static void registerUser() {
+    public static void registerUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
         String username = views.getUsernameRegister();
         String password = String.valueOf(views.getPasswordRegister());
         String firstName = views.getFirstNameRegister();
         String lastName = views.getLastNameRegister();
-        String address1 = views.getAddress1Register();
-        String address2 = views.getAddress2Register();
-        String city = views.getCityRegister();
-        String state = views.getStateRegister();
-        String zip = views.getZipRegister();
 
-//        System.out.println(username + " " + password + " " + firstName + " " + lastName + " " + address1 + " " + address2 + " " + city + " " + state + " " + zip);
+        // Hash the password
+        String hashed_password = HotelAuth.generatePasswordHash(password);
 
         // Create a Guest object.
-        models.createGuest();
+        models.createGuest(Account.GUEST, username, hashed_password, firstName, lastName, true);
         // Create a Session object with the User attached.
-        // Add the User to the Database.
+        Object user = models.getUserByUsernameCatalog(username);
+        // Create and store a session
+        UUID sessionId = models.createNewSession(user);
+        // Return session id to GUI
+        views.setSessionId(String.valueOf(sessionId));
         // Redirect the User to the Control Panel.
+        views.changeScreen("control-panel");
     }
 
     // Search for available Rooms
@@ -129,5 +131,6 @@ public class AppController {
 
     // Update a User Account
     public static void updateUserAccount() {
+
     }
 }

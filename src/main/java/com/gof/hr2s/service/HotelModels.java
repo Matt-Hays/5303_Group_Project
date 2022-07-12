@@ -1,5 +1,6 @@
 package com.gof.hr2s.service;
 
+import com.gof.hr2s.models.Account;
 import com.gof.hr2s.models.Reservation;
 import com.gof.hr2s.models.Room;
 import com.gof.hr2s.models.Session;
@@ -34,8 +35,8 @@ public class HotelModels {
         return sessionCatalog.createSession(user);
     }
 
-    public static void createGuest(String username, String password, String firstName, String lastName,
-                                   String address1, String address2, String city, String state, String zip){
-        userCatalog.createNewGuest(username, password, firstName, lastName, address1, address2, city, state, zip);
+    public static void createGuest(Account type, String username, String hashed_password,
+                                   String fName, String lName, boolean active){
+        userCatalog.createNewGuest(type, username, hashed_password, fName, lName, active);
     }
 }

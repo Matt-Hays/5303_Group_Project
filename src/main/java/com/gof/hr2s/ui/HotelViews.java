@@ -10,6 +10,9 @@ public class HotelViews extends JFrame {
     public UserLogin loginPanel;
     public GuestRegistration registrationPanel;
 //    public UserPanel userPanel;
+    public ControlPanel controlPanel;
+
+    public String sessionId = null;
 
     public SearchRooms searchRoomsPanel;
     public SearchResults searchResultsPanel;
@@ -18,7 +21,7 @@ public class HotelViews extends JFrame {
         //Create the "cards".
         loginPanel = new UserLogin();
         registrationPanel = new GuestRegistration();
-//        userPanel = new UserPanel();
+        controlPanel = new ControlPanel();
         searchRoomsPanel = new SearchRooms();
         searchResultsPanel = new SearchResults();
     }
@@ -28,7 +31,7 @@ public class HotelViews extends JFrame {
         cards = new JPanel(new CardLayout());
         cards.add(loginPanel, "login");
         cards.add(registrationPanel, "registration");
-//        cards.add(userPanel, "user-panel");
+        cards.add(controlPanel, "control-panel");
         cards.add(searchRoomsPanel, "search-rooms");
         cards.add(searchResultsPanel, "search-results");
 
@@ -49,6 +52,11 @@ public class HotelViews extends JFrame {
 //        userPanel.addSearchRoomsEventListener(searchRoomListener);
 //        userPanel.addLogoutEventListener(logoutListener);
 //    }
+
+    public void addControlPageListeners(ActionListener viewAccountListener, ActionListener searchRoomsListener){
+        controlPanel.addViewAccountListener(viewAccountListener);
+        controlPanel.addSearchRoomsListener(searchRoomsListener);
+    }
 
     public void addRegisterPageListeners(ActionListener registerListener) {
         registrationPanel.addRegisterListener(registerListener);
@@ -157,5 +165,13 @@ public class HotelViews extends JFrame {
 
     public void createNewLabelSearch(String newLabel) {
         searchResultsPanel.createTextField(newLabel);
+    }
+
+    public void setSessionId(String newSessionId){
+        this.sessionId = newSessionId;
+    }
+
+    public String getSessionId(){
+        return this.sessionId;
     }
 }

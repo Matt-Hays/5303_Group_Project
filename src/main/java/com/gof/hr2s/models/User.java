@@ -29,15 +29,10 @@ abstract class User {
     }
 
     public User(UUID userId, Account accountType, String username, String firstName,
-                String lastName, String address1, String address2, String city, String state, String zip) {
+                String lastName) {
         this(userId, accountType, username);
         this.firstName = firstName;
         this.lastName = lastName;
-        this.address1 = address1;
-        this.address2 = address2;
-        this.city = city;
-        this.state = state;
-        this.zip = zip;
     }
 
     public Account getAccountType() {
@@ -110,5 +105,9 @@ abstract class User {
 
     public Guest getCustomer() {
         return customer;
+    }
+
+    public Response updateUser(){
+        return db.updateUserProfile(this);
     }
 }

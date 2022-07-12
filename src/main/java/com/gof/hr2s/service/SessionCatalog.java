@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class SessionCatalog {
     private static SessionCatalog sessionCatalog = null;
-    private static ArrayList<Session> sessions;
+    private static ArrayList<Session> sessions = new ArrayList<Session>();
 
     private SessionCatalog() {
 
