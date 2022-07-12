@@ -196,6 +196,39 @@ public class AppController {
         }
     }
 
+    public static void displayUserAccount() {
+        String sessionId = views.getSessionId();
+        Object user = models.getSessionUser(sessionId);
+
+        String username;
+        String firstname;
+        String lastname;
+
+        if(user instanceof Clerk){
+            Clerk clerk = (Clerk) user;
+            firstname = clerk.getFirstName();
+            lastname = clerk.getLastName();
+            username = clerk.getUsername();
+        } else if (user instanceof Guest){
+            Guest guest = (Guest) user;
+            firstname = guest.getFirstName();
+            lastname = guest.getLastName();
+            username = guest.getUsername();
+        } else if (user instanceof Admin){
+            Admin admin = (Admin) user;
+            firstname = admin.getFirstName();
+            lastname = admin.getLastName();
+            username = admin.getUsername();
+        } else {
+            return;
+        }
+
+        views.updateAccount.setFirstName(firstname);
+        views.updateAccount.setLastName(lastname);
+
+        AppController.callNewPage("update-account");
+    }
+
     public static void searchRoomsPageSetup(){
         String sessionId = views.getSessionId();
         Object user = models.getSessionUser(sessionId);
