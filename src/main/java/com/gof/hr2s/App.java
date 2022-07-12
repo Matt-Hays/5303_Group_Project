@@ -108,13 +108,6 @@ public class App {
                     return;
                 }
 
-
-                // have the clerk modify a room
-                //Clerk clerk = (Clerk) obj;
-                //Room room = (Room) obj;
-
-                //clerk.updateRoom(room);
-
                 // Views
                 HotelReservationGUI gui = new HotelReservationGUI();
                 // Models
