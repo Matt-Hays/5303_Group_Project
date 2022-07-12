@@ -139,6 +139,82 @@ public class Database {
 		return null;
 	}
 
+	public ArrayList<Object> getAllUsers() {
+		ArrayList<Object> allUsers = new ArrayList<Object>();
+
+		try {
+			// Query to pull all room information from db
+			PreparedStatement ps = db.conn.prepareStatement("SELECT * FROM `user`");
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				return allUsers;
+			}
+
+			do {
+				UUID userId = UUID.fromString(rs.getString("id"));
+				String username = rs.getString("username");
+				String firstName = rs.getString("firstName");
+				String lastName = rs.getString("lastName");
+				boolean active = rs.getBoolean("active");
+				Account accountType = Account.valueOf(rs.getString("type"));
+
+				switch (accountType) {
+					case CLERK:
+						allUsers.add(new Clerk(userId, username.toLowerCase(), firstName, lastName));
+						break;
+					case ADMIN:
+						allUsers.add(new Admin(userId, username.toLowerCase(), firstName, lastName));
+						break;
+					case GUEST:
+						allUsers.add(new Guest(userId, username.toLowerCase(), firstName, lastName));
+				}
+
+			} while (rs.next());
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return allUsers;
+	}
+
+	public Object getUser(UUID userId) {
+		// Build the query
+		try {
+			PreparedStatement ps = db.conn.prepareStatement(
+					"SELECT * FROM `user` WHERE `id`=?;"
+			);
+			ps.setString(1, userId.toString());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set for userId: " + userId);
+				return null;
+			}
+			String username = rs.getString("username");
+			String firstName = rs.getString("firstName");
+			String lastName = rs.getString("lastName");
+			boolean active = rs.getBoolean("active");
+			Account accountType = Account.valueOf(rs.getString("type"));
+
+			switch (accountType) {
+				case CLERK:
+					return new Clerk(userId, username.toLowerCase(), firstName, lastName);
+				case ADMIN:
+					return new Admin(userId, username.toLowerCase(), firstName, lastName);
+				case GUEST:
+					return new Guest(userId, username.toLowerCase(), firstName, lastName);
+			}
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return null;
+	}
+
 	/**
 	 * queries the database for the room based on room number
 	 * @param roomId the room number
@@ -652,7 +728,6 @@ public class Database {
 		}
 		return resultStringBuilder.toString();
 	}
-
 
 public ArrayList<Room> getAllRooms() {
 		ArrayList<Room> allRooms = new ArrayList<Room>();
