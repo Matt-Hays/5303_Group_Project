@@ -252,13 +252,14 @@ public class Database {
 	public Response updateRoom (Room room) {
 		try {
 			PreparedStatement ps = this.conn.prepareStatement("UPDATE `room` " +
-					"SET `bedType`=?, `numBeds`=?, `smoking`=?, `occupied`=? " +
+					"SET `bedType`=?, `numBeds`=?, `smoking`=?, `occupied`=?, `nightlyRate` =? " +
 					"WHERE id = ?");
 			ps.setString(1, room.getBedType().name());
 			ps.setInt(2, room.getNumBeds());
 			ps.setBoolean(3, room.getSmoking());
 			ps.setBoolean(4, room.getOccupied());
-			ps.setInt(5, room.getRoomId());
+			ps.setDouble(5, room.getNightlyRate());
+			ps.setInt(6, room.getRoomId());
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
@@ -638,8 +639,8 @@ public class Database {
 
 		try {
 			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user` " +
-					"SET `username`=?, `firstName`=?, `lastName`=? `active`=? " +
-					"WHERE `username` LIKE ?");
+					"SET `username`=?, `firstName`=?, `lastName`=?, `active`=? " +
+					"WHERE `id` =?");
 
 			// there must be a better way!
 			if (obj instanceof Admin) {
@@ -648,18 +649,21 @@ public class Database {
 				ps.setString(2, admin.getFirstName());
 				ps.setString(3, admin.getLastName());
 				ps.setBoolean(4, admin.getActive());
+				ps.setString(5, admin.userId.toString());
 			} else if (obj instanceof Clerk) {
 				Clerk clerk = (Clerk)obj;
 				ps.setString(1, clerk.getUsername().toLowerCase());
 				ps.setString(2, clerk.getFirstName());
 				ps.setString(3, clerk.getLastName());
 				ps.setBoolean(4, clerk.getActive());
+				ps.setString(5, clerk.userId.toString());
 			} else if (obj instanceof Guest) {
 				Guest guest = (Guest)obj;
 				ps.setString(1, guest.getUsername().toLowerCase());
 				ps.setString(2, guest.getFirstName());
 				ps.setString(3, guest.getLastName());
 				ps.setBoolean(4, guest.getActive());
+				ps.setString(5, guest.userId.toString());
 			}
 
 			// Execute the query
