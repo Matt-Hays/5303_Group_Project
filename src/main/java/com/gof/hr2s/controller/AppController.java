@@ -163,14 +163,13 @@ public class AppController {
         String roomId = btnInputs[0];
         String arrival = btnInputs[1];
         String departure = btnInputs[2];
-
         Room room = models.getRoom(roomId);
         if(user instanceof Clerk){
             String guestUsername = btnInputs[3];
-            Clerk guest = (Clerk) models.getUserByUsernameCatalog(guestUsername);
+            Guest guest = (Guest) models.getUserByUsernameCatalog(guestUsername);
             guest.createReservation(LocalDate.parse(btnInputs[1]), LocalDate.parse(btnInputs[2]), room);
-        } else if (user instanceof Admin){
-            Admin guest = (Admin) user;
+        } else if (user instanceof Guest){
+            Guest guest = (Guest) user;
             guest.createReservation(LocalDate.parse(btnInputs[1]), LocalDate.parse(btnInputs[2]), room);
         }
     }
