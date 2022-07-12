@@ -3,27 +3,33 @@ package com.gof.hr2s.controller;
 
 import com.gof.hr2s.database.Database;
 
-import com.gof.hr2s.ui.loginPage.LoginListener;
-import com.gof.hr2s.ui.loginPage.RegistrationListener;
-import com.gof.hr2s.services.events.registerPage.RegisterListener;
+import com.gof.hr2s.models.Reservation;
+import com.gof.hr2s.models.Room;
+import com.gof.hr2s.service.HotelModels;
+import com.gof.hr2s.service.events.controlPanel.SearchRoomsListener;
+import com.gof.hr2s.service.events.loginPage.LoginListener;
+import com.gof.hr2s.service.events.loginPage.RegistrationListener;
+import com.gof.hr2s.service.events.registrationPage.RegisterListener;
 import com.gof.hr2s.ui.HotelViews;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 
 public class AppController {
     // Views
     private static HotelViews views;
     // Models
-//    private static HotelModels models;
+    private static HotelModels models;
     // Database
     private static Database database;
 
 
-    public AppController(HotelViews views) throws NoSuchMethodException {
+    public AppController(HotelModels models, HotelViews views) throws NoSuchMethodException {
         this.views = views;
-//        this.models = models;
+        this.models = models;
         initApp();
     }
 
@@ -43,6 +49,8 @@ public class AppController {
         // User Login Event Listeners
         this.views.addLoginPageListeners(new LoginListener(), new RegistrationListener());
         // Guest Registration Event Listeners
+
+        this.views.addSearchRoomsPageListeners(new SearchRoomsListener());
     }
 
     public static void callNewPage(String newPage) {
@@ -51,6 +59,7 @@ public class AppController {
 
     // Login User
     public static void login() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        views.changeScreen("search-rooms");
 //        views.setLoginPageTitle("This is a new Title!!!");
 //         Get fields from login page
 //        String username = views.getUsernameLogin();
@@ -78,6 +87,8 @@ public class AppController {
         String state = views.getStateRegister();
         String zip = views.getZipRegister();
 
+//        System.out.println(username + " " + password + " " + firstName + " " + lastName + " " + address1 + " " + address2 + " " + city + " " + state + " " + zip);
+
         // Create a User object.
         // Create a Session object with the User attached.
         // Add the User to the Database.
@@ -86,6 +97,18 @@ public class AppController {
 
     // Search for available Rooms
     public static void searchAvailableRooms() {
+        // Get arrival and departure dates from UI
+        LocalDate arrival = LocalDate.parse(views.getArrivalSearch());
+        LocalDate departure = LocalDate.parse(views.getDepartureSearch());
+        // Search for Available Rooms
+        ArrayList<Room> availableRooms = models.searchAvailableRooms(arrival, departure);
+
+        // Swap to view rooms screen and populate the screen with the found rooms
+        for (int i = 0; i < 20; i++) {
+            // Populate The Search Results page with room information
+            views.createNewLabelSearch("New Label");
+        }
+        views.changeScreen("search-results");
     }
 
     // Reserve a Room

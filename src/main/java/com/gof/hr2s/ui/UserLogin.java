@@ -25,6 +25,18 @@ public class UserLogin extends JPanel {
         return passwordField.getPassword();
     }
 
+    public void setInput1Txt(JLabel input1Txt) {
+        this.input1Txt = input1Txt;
+    }
+
+    public void setPanelTitle(String panelTitle) {
+        this.panelTitle.setText(panelTitle);
+    }
+
+    public void setPanelSubtitle(JLabel panelSubtitle) {
+        this.panelSubtitle = panelSubtitle;
+    }
+
     public void addLoginListener(ActionListener listenForLoginBtn) {
         loginBtn.addActionListener(listenForLoginBtn);
     }
