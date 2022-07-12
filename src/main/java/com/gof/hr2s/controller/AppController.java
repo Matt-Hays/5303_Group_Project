@@ -3,19 +3,21 @@ package com.gof.hr2s.controller;
 
 import com.gof.hr2s.database.Database;
 
-import com.gof.hr2s.models.Account;
-import com.gof.hr2s.models.Reservation;
-import com.gof.hr2s.models.Room;
+import com.gof.hr2s.models.*;
 import com.gof.hr2s.service.HotelAuth;
 import com.gof.hr2s.service.HotelModels;
+import com.gof.hr2s.service.events.controlPanel.UpdateAccountListener;
+import com.gof.hr2s.service.events.searchResultsPanel.ReserveRoomListener;
+import com.gof.hr2s.service.events.searchRoomsPanel.SearchAvailableRoomsListener;
+import com.gof.hr2s.service.events.updateAccountPage.ModifyAccountListener;
 import com.gof.hr2s.service.events.controlPanel.SearchRoomsListener;
 import com.gof.hr2s.service.events.controlPanel.ViewAccountListener;
 import com.gof.hr2s.service.events.loginPage.LoginListener;
 import com.gof.hr2s.service.events.loginPage.RegistrationListener;
 import com.gof.hr2s.service.events.registrationPage.RegisterListener;
 import com.gof.hr2s.ui.HotelViews;
-import org.springframework.security.core.userdetails.User;
 
+import javax.swing.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
@@ -52,12 +54,14 @@ public class AppController {
         // User Panel Event Listeners
 //        this.views.addControlPageListeners(new ViewAccountListener(), new SearchRoomsListener(), new LogoutListener());
         this.views.addRegisterPageListeners(new RegisterListener());
+
         // User Login Event Listeners
         this.views.addLoginPageListeners(new LoginListener(), new RegistrationListener());
-        // Guest Registration Event Listeners
 
-        this.views.addSearchRoomsPageListeners(new SearchRoomsListener());
-        this.views.addControlPageListeners(new ViewAccountListener(), new SearchRoomsListener());
+        // Guest Registration Event Listeners
+        this.views.addSearchRoomsPageListeners(new SearchAvailableRoomsListener());
+        this.views.addControlPageListeners(new ViewAccountListener(), new SearchRoomsListener(), new UpdateAccountListener());
+        this.views.addUpdateAccountPageListeners(new ModifyAccountListener());
     }
 
     public static void callNewPage(String newPage) {
@@ -82,6 +86,7 @@ public class AppController {
             UUID sessionId = models.createNewSession(user);
             // Return session id to GUI
             views.setSessionId(String.valueOf(sessionId));
+//            models.addSessionUser(user);
             // Swap page to Control Page
             views.changeScreen("control-panel");
         }
@@ -116,21 +121,47 @@ public class AppController {
         LocalDate departure = LocalDate.parse(views.getDepartureSearch());
         // Search for Available Rooms
         ArrayList<Room> availableRooms = models.searchAvailableRooms(arrival, departure);
+        System.out.println(arrival);
+
 
         // Swap to view rooms screen and populate the screen with the found rooms
-        for (int i = 0; i < 20; i++) {
+        for (Room room : availableRooms) {
             // Populate The Search Results page with room information
-            views.createNewLabelSearch("New Label");
+            views.createNewLabelSearch(String.valueOf(room.getRoomId()));
+            views.createNewLabelSearch(room.getBedType().toString());
+            views.createNewLabelSearch(String.valueOf(room.getSmoking()));
+            views.createNewLabelSearch(String.valueOf(room.getNumBeds()));
+            JButton btn = views.createNewButtonSearch(String.valueOf(room.getRoomId()),
+                    String.valueOf(room.getRoomId()));
+            views.addSearchResultsPageNewBtnListener(new ReserveRoomListener(), btn);
         }
         views.changeScreen("search-results");
     }
 
     // Reserve a Room
-    public static void makeReservation() {
+    public static void makeReservation(String roomId) {
+
     }
 
     // Update a User Account
     public static void updateUserAccount() {
+        String sessionId = views.getSessionId();
+        String newFirstName = views.getFirstNameUpdate();
+        String newLastName = views.getLastNameUpdate();
 
+        Object user = models.getSessionUser(sessionId);
+        if(user instanceof Clerk){
+            Clerk clerk = (Clerk) user;
+            clerk.setFirstName(newFirstName);
+            clerk.setLastName(newLastName);
+            clerk.changePassword(clerk.getUsername(), database.getPassword(clerk.getUsername()),
+                    views.getPasswordUpdate());
+            clerk.updateUser();
+        } else if (user instanceof Guest){
+            Guest guest = (Guest) user;
+            guest.setFirstName(newFirstName);
+            guest.setLastName(newLastName);
+            guest.updateUser();
+        }
     }
 }

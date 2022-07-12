@@ -9,10 +9,10 @@ import java.util.UUID;
 
 public class SessionCatalog {
     private static SessionCatalog sessionCatalog = null;
-    private static ArrayList<Session> sessions = new ArrayList<Session>();
+    private static ArrayList<Session> sessions;
 
     private SessionCatalog() {
-
+    sessions = new ArrayList<Session>();
     }
 
     public static SessionCatalog getSessionCatalog(){
@@ -34,11 +34,14 @@ public class SessionCatalog {
     }
 
     // R ead
-    public static Object getSession(UUID sessionId) {
+    public static Object getSession(String sessionId) {
         Iterator<Session> itr = sessions.iterator();
         while (itr.hasNext()) {
-            if (itr.next().getId().equals(sessionId)) {
-                Object sessionUser = itr.next().getUser();
+            Session nextItr = itr.next();
+            System.out.println(nextItr.toString());
+            if (nextItr.getId().toString().equals(sessionId)) {
+                Object sessionUser = nextItr.getUser();
+                System.out.println(sessionUser);
                 return sessionUser;
             }
         }

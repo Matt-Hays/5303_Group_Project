@@ -35,8 +35,15 @@ public class HotelModels {
         return sessionCatalog.createSession(user);
     }
 
+    public static Object getSessionUser(String sessionId){
+        return sessionCatalog.getSession(sessionId);
+    }
+
+
     public static void createGuest(Account type, String username, String hashed_password,
                                    String fName, String lName, boolean active){
         userCatalog.createNewGuest(type, username, hashed_password, fName, lName, active);
     }
+
+
 }

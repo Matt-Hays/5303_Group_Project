@@ -17,6 +17,8 @@ public class HotelViews extends JFrame {
     public SearchRooms searchRoomsPanel;
     public SearchResults searchResultsPanel;
 
+    public UpdateAccount updateAccount;
+
     public HotelViews() {
         //Create the "cards".
         loginPanel = new UserLogin();
@@ -24,6 +26,7 @@ public class HotelViews extends JFrame {
         controlPanel = new ControlPanel();
         searchRoomsPanel = new SearchRooms();
         searchResultsPanel = new SearchResults();
+        updateAccount = new UpdateAccount();
     }
 
     private void addComponentToPane(Container pane) {
@@ -34,6 +37,7 @@ public class HotelViews extends JFrame {
         cards.add(controlPanel, "control-panel");
         cards.add(searchRoomsPanel, "search-rooms");
         cards.add(searchResultsPanel, "search-results");
+        cards.add(updateAccount, "update-account");
 
         pane.add(cards, BorderLayout.CENTER);
     }
@@ -53,9 +57,11 @@ public class HotelViews extends JFrame {
 //        userPanel.addLogoutEventListener(logoutListener);
 //    }
 
-    public void addControlPageListeners(ActionListener viewAccountListener, ActionListener searchRoomsListener){
+    public void addControlPageListeners(ActionListener viewAccountListener, ActionListener searchRoomsListener,
+                                        ActionListener updateAccountListener){
         controlPanel.addViewAccountListener(viewAccountListener);
         controlPanel.addSearchRoomsListener(searchRoomsListener);
+        controlPanel.addUpdateAccountListener(updateAccountListener);
     }
 
     public void addRegisterPageListeners(ActionListener registerListener) {
@@ -64,6 +70,14 @@ public class HotelViews extends JFrame {
 
     public void addSearchRoomsPageListeners(ActionListener searchRoomsListener) {
         searchRoomsPanel.addSearchRoomsListener(searchRoomsListener);
+    }
+
+    public void addUpdateAccountPageListeners(ActionListener updateAccountListener){
+        updateAccount.addModifyAccountListener(updateAccountListener);
+    }
+
+    public void addSearchResultsPageNewBtnListener(ActionListener newBtnReserveRoomListener, JButton btn){
+        searchResultsPanel.addNewBtnEventListener(newBtnReserveRoomListener, btn);
     }
 
     private void constructGUI() {
@@ -166,6 +180,9 @@ public class HotelViews extends JFrame {
     public void createNewLabelSearch(String newLabel) {
         searchResultsPanel.createTextField(newLabel);
     }
+    public JButton createNewButtonSearch(String btnLabel, String roomId){
+        return searchResultsPanel.createButton(btnLabel, roomId);
+    }
 
     public void setSessionId(String newSessionId){
         this.sessionId = newSessionId;
@@ -173,5 +190,17 @@ public class HotelViews extends JFrame {
 
     public String getSessionId(){
         return this.sessionId;
+    }
+
+    public String getFirstNameUpdate(){
+        return updateAccount.getFirstName();
+    }
+
+    public String getLastNameUpdate(){
+        return updateAccount.getLastName();
+    }
+
+    public String getPasswordUpdate(){
+        return String.valueOf(updateAccount.getPassword());
     }
 }

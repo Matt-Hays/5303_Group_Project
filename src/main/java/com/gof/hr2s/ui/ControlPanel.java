@@ -8,6 +8,7 @@ public class ControlPanel extends JPanel {
     private JButton searchRoomsBtn;
     private JButton logout;
     private JPanel controlPanel;
+    private JButton updateAccountBtn;
 
     public ControlPanel(){
         this.add(controlPanel);
@@ -19,5 +20,9 @@ public class ControlPanel extends JPanel {
 
     public void addSearchRoomsListener(ActionListener listenForSearchRoomsBtn){
         searchRoomsBtn.addActionListener(listenForSearchRoomsBtn);
+    }
+
+    public void addUpdateAccountListener(ActionListener listenForUpdateAccount){
+        updateAccountBtn.addActionListener(listenForUpdateAccount);
     }
 }

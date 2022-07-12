@@ -41,4 +41,5 @@ public class UserCatalog {
                                String fName, String lName, boolean active){
         db.insertUser(type, username, hashed_password, fName, lName, active);
     }
+
 }
