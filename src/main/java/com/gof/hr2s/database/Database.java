@@ -608,14 +608,15 @@ public class Database {
 							   String fName, String lName, boolean active) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
-					" (`type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
-					"values (?,?,?,?,?,?)");
-			ps.setString(1, type.name());
-			ps.setString(2, username.toLowerCase());
-			ps.setString(3, hashed_password);
-			ps.setString(4, fName);
-			ps.setString(5, lName);
-			ps.setBoolean(6, active);
+					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
+					"values (?,?,?,?,?,?,?)");
+			ps.setString(1, String.valueOf(UUID.randomUUID()));
+			ps.setString(2, type.name());
+			ps.setString(3, username.toLowerCase());
+			ps.setString(4, hashed_password);
+			ps.setString(5, fName);
+			ps.setString(6, lName);
+			ps.setBoolean(7, active);
 
 			// Execute the query
 			if (ps.executeUpdate() == 1) {

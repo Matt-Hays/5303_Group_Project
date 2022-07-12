@@ -1,10 +1,7 @@
 package com.gof.hr2s.service;
 
 import com.gof.hr2s.database.Database;
-import com.gof.hr2s.models.Guest;
-import com.gof.hr2s.models.Reservation;
-import com.gof.hr2s.models.ReservationStatus;
-import com.gof.hr2s.models.Room;
+import com.gof.hr2s.models.*;
 
 
 import java.time.LocalDate;
@@ -40,9 +37,8 @@ public class UserCatalog {
         return db.getAllUsers();
     }
 
-    public void createNewGuest(String username, String password, String firstName, String lastName,
-                               String address1, String address2, String city, String state, String zip){
-        Guest newGuest = new Guest(username, firstName, lastName, address1, address2, city, state, zip);
-        db.insertUser(newGuest, password);
+    public void createNewGuest(Account type, String username, String hashed_password,
+                               String fName, String lName, boolean active){
+        db.insertUser(type, username, hashed_password, fName, lName, active);
     }
 }
