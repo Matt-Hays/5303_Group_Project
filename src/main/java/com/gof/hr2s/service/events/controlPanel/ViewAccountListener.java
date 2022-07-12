@@ -8,6 +8,6 @@ import java.awt.event.ActionListener;
 public class ViewAccountListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        AppController.displayUserAccount();
     }
 }
