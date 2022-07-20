@@ -4,43 +4,23 @@ import java.util.UUID;
 
 public interface IUserDAO {
 
-    public UUID getUserId(){
-        return this.userId;
-    }
+    public UUID getUserId();
 
-    public Account getAccountType() {
-        return this.accountType;
-    }
+    public Account getAccountType();
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public void setUsername(String username);
 
-    public String getUsername() {
-        return this.username;
-    }
+    public String getUsername();
 
-    public String getFirstName() {
-        return this.firstName;
-    }
+    public String getFirstName();
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    public void setFirstName(String firstName);
 
-    public String getLastName() {
-        return this.lastName;
-    }
+    public String getLastName();
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+    public void setLastName(String lastName);
 
-    public boolean getActive() {
-        return this.active;
-    }
+    public boolean getActive();
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+    public void setActive(boolean active);
 }
