@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
-public class PanelTheme extends JPanel {
+public class ThemedJPanel extends JPanel {
     /**
      * Paint the background with a gradient.
      * @param g the <code>Graphics</code> object to protect

@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 
-public class AppController {
+public class AppController implements ReservationHandler {
     // Views
     private static HotelViews views;
     // Models
@@ -43,7 +43,7 @@ public class AppController {
     private static Database database;
 
 
-    public AppController(HotelModels models, HotelViews views, Database db) throws NoSuchMethodException {
+    public AppController(HotelModels models, Database db) throws NoSuchMethodException {
         this.views = views;
         this.models = models;
         this.database = db;
@@ -51,8 +51,8 @@ public class AppController {
     }
 
     private void initApp() throws NoSuchMethodException {
-        startGUI();
-        addActionListeners();
+//        startGUI();
+//        addActionListeners();
     }
 
     private void startGUI() {
@@ -356,5 +356,20 @@ public class AppController {
         models.logout(UUID.fromString(sessionId));
 
         callNewPage("login");
+    }
+
+    @Override
+    public UUID loginUser(String username, char[] password) {
+        return null;
+    }
+
+    @Override
+    public void registerUser(String username, char[] password, String firstName, String lastName, String address, String city, String state, String zipCode) {
+
+    }
+
+    @Override
+    public void searchRooms(LocalDate arrival, LocalDate departure) {
+
     }
 }
