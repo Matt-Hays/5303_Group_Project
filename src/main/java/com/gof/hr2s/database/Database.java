@@ -291,7 +291,7 @@ public class Database {
 				return null;
 			}
 
-			UUID userId = UUID.fromString(rs.getString("customerId"));
+			UUID customerId = UUID.fromString(rs.getString("customerId"));
 			UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
 			int roomId = rs.getInt("roomId");
 			LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
@@ -299,7 +299,7 @@ public class Database {
 			LocalDate departure = LocalDate.parse(rs.getString("departure"));
 			ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
 
-			return new Reservation(reservationId, invoiceId, userId, roomId, createdAt, arrival, departure, status);
+			return new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status);
 
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
@@ -308,6 +308,43 @@ public class Database {
 		return null;
 	}
 
+	public ArrayList<Reservation> getReservationByGuestId(UUID customerId) {
+		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+		// Build the query
+		try {
+			PreparedStatement ps = db.conn.prepareStatement(
+					"SELECT * FROM `reservation` WHERE `customerId`=?;"
+			);
+			ps.setString(1, customerId.toString());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				// an empty set could be normal
+				return reservations;
+			}
+
+			do {
+
+				UUID reservationId = UUID.fromString(rs.getString("id"));
+				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
+				int roomId = rs.getInt("roomId");
+				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
+				LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
+				LocalDate departure = LocalDate.parse(rs.getString("departure"));
+				ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
+
+				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
+			} while (rs.next());
+
+			return reservations;
+
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return reservations;
+	}
 
 	public Response insertReservation(Reservation r) {
 		try {
@@ -596,6 +633,41 @@ public class Database {
 	}
 
 	/**
+	 * inserts a user into the database
+	 * @param type the type of user
+	 * @param username the username
+	 * @param hashed_password the prehashed/salted password
+	 * @param fName first name
+	 * @param lName lastname
+	 * @param active is the account active
+	 * @return
+	 */
+	public Response insertUser(Account type, String username, String hashed_password,
+							   String fName, String lName, boolean active) {
+		try {
+			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
+					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
+					"values (?,?,?,?,?,?,?)");
+			ps.setString(1, String.valueOf(UUID.randomUUID()));
+			ps.setString(2, type.name());
+			ps.setString(3, username.toLowerCase());
+			ps.setString(4, hashed_password);
+			ps.setString(5, fName);
+			ps.setString(6, lName);
+			ps.setBoolean(7, active);
+
+			// Execute the query
+			if (ps.executeUpdate() == 1) {
+				return Response.SUCCESS;
+			};
+		} catch (SQLException e) {
+			db.logger.severe(e.getMessage());
+		}
+
+		return Response.FAILURE;
+	}
+
+	/**
 	 * updates all attributes of a user profile in the database
 	 * @param obj A
 	 * @return
@@ -650,11 +722,11 @@ public class Database {
 	 * @return
 	 */
 	public Response updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		if(HotelAuth.validatePassword(existingPassword, getPassword(username))){
+		String newPasswordHash = HotelAuth.generatePasswordHash(newPassword);
 			PreparedStatement ps = null;
 			try {
 				ps = db.conn.prepareStatement("UPDATE `user` SET `password` = ? WHERE `username`=?;");
-				ps.setString(1, newPassword);
+				ps.setString(1, newPasswordHash);
 				ps.setString(2, username.toLowerCase());
 				if (ps.executeUpdate() == 1) {
 					return Response.SUCCESS;
@@ -662,7 +734,6 @@ public class Database {
 			} catch (SQLException e) {
 				db.logger.severe(e.getMessage());
 			}
-		}
 
 		return Response.FAILURE;
 	}

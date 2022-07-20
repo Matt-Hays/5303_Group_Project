@@ -7,13 +7,10 @@ import java.util.UUID;
 
 public class Guest extends User{
 
-    public Guest(UUID userId, String username) {
-        super(userId, Account.GUEST, username);
-        setCustomer(this);
-    }
     public Guest(UUID userId, String username, String firstName, String lastName) {
-        this(userId, username);
+        super(userId, Account.GUEST, username, firstName, lastName);
         db = Database.Database();
+        setCustomer(this);
     }
 
     /**

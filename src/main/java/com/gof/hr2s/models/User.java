@@ -2,13 +2,10 @@ package com.gof.hr2s.models;
 
 import com.gof.hr2s.database.Database;
 import com.gof.hr2s.service.Response;
-
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.UUID;
-
-import static com.gof.hr2s.service.HotelAuth.generatePasswordHash;
 
 abstract class User {
     public final UUID userId;
@@ -16,20 +13,26 @@ abstract class User {
     private String username;
     private String firstName;
     private String lastName;
+    private String address1;
+    private String address2;
+    private String city;
+    private String state;
+    private String zip;
     private boolean active = true;
     private Guest customer = null;
     Database db;
 
-    public User(UUID userId, Account accountType, String username) {
+    public User(UUID userId, Account accountType, String username, String firstName,
+                String lastName) {
         this.userId = userId;
         this.accountType = accountType;
         this.username = username;
-    }
-
-    public User(UUID userId, Account accountType, String username, String firstName, String lastName) {
-        this(userId, accountType, username);
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public UUID getUserId(){
+        return this.userId;
     }
 
     public Account getAccountType() {
@@ -84,9 +87,33 @@ abstract class User {
         return Response.FAILURE;
     }
 
+    /**
+     * Creates a reservation when you already have a room object.
+     * @param arrival
+     * @param departure
+     * @param room
+     * @return Reservation instance on success, null on failure
+     */
     public Reservation createReservation(LocalDate arrival, LocalDate departure, Room room) {
         if (null != customer) {
             return new Reservation(customer, room, LocalDate.now(), arrival, departure, ReservationStatus.AWAITING);
+        }
+        return null;
+    }
+
+    /**
+     * Used to create a reservation when you only have the roomId
+     * @param arrival
+     * @param departure
+     * @param roomId
+     * @return Reservation on success, null on failure
+     */
+    public Reservation createReservation(LocalDate arrival, LocalDate departure, int roomId) {
+        if (null != customer) {
+            Room room = db.getRoom(roomId);
+            if (null != room) {
+                return new Reservation(customer, room, LocalDate.now(), arrival, departure, ReservationStatus.AWAITING);
+            }
         }
         return null;
     }
@@ -102,5 +129,9 @@ abstract class User {
 
     public Guest getCustomer() {
         return customer;
+    }
+
+    public Response updateUser(){
+        return db.updateUserProfile(this);
     }
 }
