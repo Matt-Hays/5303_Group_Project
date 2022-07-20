@@ -1,8 +1,8 @@
 package hotel.reservations.services;
 
-import hotel.reservations.models.Account;
-import hotel.reservations.models.Reservation;
-import hotel.reservations.models.Room;
+import hotel.reservations.models.user.Account;
+import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.room.Room;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

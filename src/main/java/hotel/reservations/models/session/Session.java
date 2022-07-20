@@ -1,4 +1,4 @@
-package hotel.reservations.models;
+package hotel.reservations.models.session;
 
 
 import java.sql.Timestamp;

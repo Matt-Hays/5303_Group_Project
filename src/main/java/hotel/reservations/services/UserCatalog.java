@@ -1,8 +1,7 @@
 package hotel.reservations.services;
 
 import hotel.reservations.persistence.Database;
-import com.gof.hr2s.models.*;
-import hotel.reservations.models.Account;
+import hotel.reservations.models.user.Account;
 
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package hotel.reservations.services;
 
 import hotel.reservations.persistence.Database;
-import hotel.reservations.models.Reservation;
+import hotel.reservations.models.reservation.Reservation;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

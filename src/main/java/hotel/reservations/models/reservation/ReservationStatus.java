@@ -1,4 +1,4 @@
-package hotel.reservations.models;
+package hotel.reservations.models.reservation;
 
 public enum ReservationStatus {
     AWAITING,

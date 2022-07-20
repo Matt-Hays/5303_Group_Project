@@ -1,4 +1,4 @@
-package hotel.reservations.models;
+package hotel.reservations.models.user;
 
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.authentication.HotelAuth;
@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
 
-public class Admin extends User{
+public class Admin extends User {
 
     public Admin(UUID userId, String username, String firstName, String lastName) {
         super(userId, Account.ADMIN, username, firstName, lastName);

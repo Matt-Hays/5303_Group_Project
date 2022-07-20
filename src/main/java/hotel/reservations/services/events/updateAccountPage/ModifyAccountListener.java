@@ -1,6 +1,6 @@
 package hotel.reservations.services.events.updateAccountPage;
 
-import hotel.reservations.controllers.AppController;
+import hotel.reservations.controllers.reservation.AppController;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

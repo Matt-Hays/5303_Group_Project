@@ -1,9 +1,16 @@
 package hotel.reservations.persistence;
 
-import com.gof.hr2s.models.*;
+import hotel.reservations.models.reservation.Invoice;
+import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.reservation.ReservationStatus;
+import hotel.reservations.models.room.Bed;
+import hotel.reservations.models.room.Room;
+import hotel.reservations.models.user.Account;
+import hotel.reservations.models.user.Admin;
+import hotel.reservations.models.user.Clerk;
+import hotel.reservations.models.user.Guest;
 import hotel.reservations.services.authentication.HotelAuth;
 import hotel.reservations.services.Response;
-import hotel.reservations.models.*;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;

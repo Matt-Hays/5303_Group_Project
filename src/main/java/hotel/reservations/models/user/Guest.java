@@ -1,11 +1,11 @@
-package hotel.reservations.models;
+package hotel.reservations.models.user;
 
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.Response;
 
 import java.util.UUID;
 
-public class Guest extends User{
+public class Guest extends User {
 
     public Guest(UUID userId, String username, String firstName, String lastName) {
         super(userId, Account.GUEST, username, firstName, lastName);

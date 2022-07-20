@@ -1,4 +1,6 @@
-package hotel.reservations.models;
+package hotel.reservations.models.room;
+
+import hotel.reservations.models.room.Bed;
 
 public class Room {
     public final int roomId;

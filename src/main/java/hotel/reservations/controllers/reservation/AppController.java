@@ -1,13 +1,17 @@
-package hotel.reservations.controllers;
+package hotel.reservations.controllers.reservation;
 
 
-import hotel.reservations.models.*;
+import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.room.Bed;
+import hotel.reservations.models.room.Room;
+import hotel.reservations.models.user.Account;
+import hotel.reservations.models.user.Admin;
+import hotel.reservations.models.user.Clerk;
+import hotel.reservations.models.user.Guest;
 import hotel.reservations.persistence.Database;
 
-import com.gof.hr2s.models.*;
 import hotel.reservations.services.authentication.HotelAuth;
 import hotel.reservations.services.HotelModels;
-import com.gof.hr2s.services.events.controlPanel.*;
 import hotel.reservations.services.events.controlPanel.*;
 import hotel.reservations.services.events.createClerkPage.CreateNewClerkListener;
 import hotel.reservations.services.events.modifyReservation.ModifyReservationListener;

@@ -1,5 +1,8 @@
-package hotel.reservations.models;
+package hotel.reservations.models.user;
 
+import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.reservation.ReservationStatus;
+import hotel.reservations.models.room.Room;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.Response;
 import java.security.NoSuchAlgorithmException;

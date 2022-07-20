@@ -1,7 +1,7 @@
 package hotel.reservations.services;
 
 
-import hotel.reservations.models.Session;
+import hotel.reservations.models.session.Session;
 
 import java.util.ArrayList;
 import java.util.Iterator;
