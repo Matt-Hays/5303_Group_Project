@@ -1,6 +1,6 @@
 package hotel.reservations.services.events.registrationPage;
 
-import hotel.reservations.controllers.reservation.AppController;
+import hotel.reservations.controller.AppController;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

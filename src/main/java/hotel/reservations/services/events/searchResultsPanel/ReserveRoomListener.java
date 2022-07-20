@@ -1,6 +1,6 @@
 package hotel.reservations.services.events.searchResultsPanel;
 
-import hotel.reservations.controllers.reservation.AppController;
+import hotel.reservations.controller.AppController;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

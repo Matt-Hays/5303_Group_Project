@@ -1,4 +1,4 @@
-package hotel.reservations.controllers.reservation;
+package hotel.reservations.controller;
 
 
 import hotel.reservations.models.reservation.Reservation;

@@ -1,6 +1,6 @@
 package hotel.reservations;
 
-import hotel.reservations.controllers.reservation.AppController;
+import hotel.reservations.controller.AppController;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.HotelModels;
 import hotel.reservations.views.HotelViews;
