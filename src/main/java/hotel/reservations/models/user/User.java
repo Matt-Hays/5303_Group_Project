@@ -10,7 +10,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.UUID;
 
-abstract class User {
+public class User {
     public final UUID userId;
     public final Account accountType;
     private String username;
