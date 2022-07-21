@@ -23,17 +23,48 @@ import java.util.logging.Logger;
 
 public class Database {
 
-	private final String dbName = "hr2s.sqlite";
+	private String dbName = "hr2s.sqlite";
 	private Connection conn = null;
 	private Logger logger;
 
 	private static Database db = null;
 
-	private Database(){}
+	/**
+	 * primary constructor (private) to force use of the singleton
+	 */
+	private Database() {
+	}
 
+	/**
+	 * test constructor for a test database that allows changing the db name
+	 * @param dbName
+	 */
+	private Database(String dbName) {
+		this.dbName = dbName;
+	}
+
+	/**
+	 * Singleton for ensuring only a single database instance exists
+	 * @return a database instance
+	 */
 	public static Database Database() {
 		if (null == db) {
 			db = new Database();
+			db.logger = Logger.getLogger(Database.class.getName());
+			db.connect();
+		}
+
+		return db;
+	}
+
+	/**
+	 * Allows for the testing of a database without affecting the main database (if one exists)
+	 * @param dbName the name of the test database
+	 * @return a database instance
+	 */
+	public static Database testDatabase(String dbName) {
+		if (null == db) {
+			db = new Database(dbName);
 			db.logger = Logger.getLogger(Database.class.getName());
 			db.connect();
 		}
@@ -77,6 +108,18 @@ public class Database {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Checks to see if the database is ready
+	 * @return true (ready) / false (not ready)
+	 */
+	public boolean ready() {
+		try {
+			return !db.conn.isClosed() && !db.conn.isReadOnly();
+		} catch (SQLException e) {
+			return false;
+		}
 	}
 
 	private Response dbInit() {
