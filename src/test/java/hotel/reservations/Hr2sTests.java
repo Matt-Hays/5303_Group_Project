@@ -9,8 +9,6 @@ import hotel.reservations.services.*;
 import hotel.reservations.services.authentication.HotelAuth;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.TestMethodOrder;
 
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
