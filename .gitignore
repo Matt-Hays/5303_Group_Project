@@ -67,5 +67,6 @@ buildNumber.properties
 ####################################
 
 *.sqlite
+*.log
 Hotel Reservation Final.iml
 
