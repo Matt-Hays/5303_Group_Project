@@ -19,6 +19,8 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.logging.FileHandler;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class Database {
@@ -51,6 +53,14 @@ public class Database {
 		if (null == db) {
 			db = new Database();
 			db.logger = Logger.getLogger(Database.class.getName());
+			// log to file rather than console
+			try {
+				FileHandler handler = new FileHandler("hr2s.log");
+				db.logger.addHandler(handler);
+				LogManager.getLogManager().reset();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 			db.connect();
 		}
 
@@ -66,10 +76,25 @@ public class Database {
 		if (null == db) {
 			db = new Database(dbName);
 			db.logger = Logger.getLogger(Database.class.getName());
+			// log to file rather than console
+			try {
+				FileHandler handler = new FileHandler("hr2s_test.log");
+				db.logger.addHandler(handler);
+				LogManager.getLogManager().reset();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 			db.connect();
 		}
 
 		return db;
+	}
+
+	/**
+	 * Allows for the deletion of the singleton for testing purposes
+	 */
+	public void destroy() {
+		db = null;
 	}
 
 	public Response connect() {
