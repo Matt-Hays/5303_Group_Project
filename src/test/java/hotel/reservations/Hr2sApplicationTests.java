@@ -1,2 +1,0 @@
-package hotel.reservations;
-
