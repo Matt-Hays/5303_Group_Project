@@ -1,31 +1,22 @@
-package hotel.reservations.services;
+package hotel.reservations.services.reservationDAOImpl;
 
-import hotel.reservations.persistence.Database;
+//import hotel.reservations.services.reservationDAO;
 import hotel.reservations.models.reservation.Reservation;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class ReservationCatalog {
-    private static ReservationCatalog reservationCatalog = null;
-    private Database db = null;
+public class reservationDAOImpl implements reservationDAO {
 
-    private ReservationCatalog() {
-        db = Database.Database();
-    }
-
-    /**
-     * method for creating a singleton
-     * @return
-     */
-    public static ReservationCatalog getReservationCatalog() {
-        if (null == reservationCatalog) {
-            reservationCatalog = new ReservationCatalog();
+    public static ReservationDAO getReservationDAO() {
+        if (null == reservationDAO) {
+            reservationDAO = new ReservationDAO();
         }
 
-        return reservationCatalog;
+        return reservationDAO;
     }
+
 
     /**
      * Returns a list of reservations that overlap with the requested arrival and departure dates
@@ -33,19 +24,25 @@ public class ReservationCatalog {
      * @param departure departure date
      * @return list of reservations
      */
+
+    @Override
     public ArrayList<Reservation> findReservations(LocalDate arrival, LocalDate departure) {
         return db.getOverlappingReservations(arrival, departure);
     }
 
+    @Override
     public ArrayList<Reservation> findReservations(UUID guestId) {
         return db.getReservationByGuestId(guestId);
     }
 
+    @Override
     public Reservation findReservation(UUID reservationId){
         return db.getReservation(reservationId);
     }
 
+    @Override
     public void updateReservation(Reservation reservation){
         db.updateReservation(reservation);
     }
+
 }
