@@ -6,16 +6,25 @@ import hotel.reservations.services.Response;
 
 import java.util.UUID;
 
-public class Clerk extends User {
+public class Clerk implements User {
+
+    public final UUID userId;
+    public final Account accountType;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private boolean active = true;
+    private Guest customer = null;
+    Database db;
 
     public Clerk(UUID userId, String username, String firstName, String lastName) {
-        super(userId, Account.CLERK, username, firstName, lastName);
-        db = Database.Database();
+        this.userId = userId;
+        this.accountType = Account.CLERK;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
-    public Response updateRoom (Room room) {
-        return db.updateRoom(room);
-    }
 
     /**
      * Attempts to lookup a guest in the db based on username
@@ -34,9 +43,71 @@ public class Clerk extends User {
     public Response setCustomer(String username) {
         Guest guest = getUser(username);
         if (guest != null) {
-            super.setCustomer(guest);
+            setCustomer(guest);
             return Response.SUCCESS;
         }
         return Response.FAILURE;
+    }
+
+    public UUID getUserId(){
+        return this.userId;
+    }
+
+    public Account getAccountType() {
+        return this.accountType;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getFirstName() {
+        return this.firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return this.lastName = lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public boolean getActive() {
+        return this.active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Response setCustomer(Guest guest) {
+        if (guest != null) {
+            this.setCustomer(guest);
+            return Response.SUCCESS;
+        }
+        return Response.FAILURE;
+    }
+
+    @Override
+    public Guest getCustomer() {
+        return this.customer;
+    }
+
+    public Response updateUser(){
+        return db.updateUserProfile(this);
+    }
+
+    public Response updateRoom (Room room) {
+
+        return db.updateRoom(room);
     }
 }

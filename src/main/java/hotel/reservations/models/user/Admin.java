@@ -1,5 +1,6 @@
 package hotel.reservations.models.user;
 
+import hotel.reservations.models.room.Room;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.authentication.HotelAuth;
 import hotel.reservations.services.Response;
@@ -8,41 +9,95 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
 
-public class Admin extends User {
+public class Admin implements User {
+
+    public final UUID userId;
+    public final Account accountType = Account.ADMIN;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private boolean active = true;
+    private Guest customer = null;
+    Database db;
 
     public Admin(UUID userId, String username, String firstName, String lastName) {
-        super(userId, Account.ADMIN, username, firstName, lastName);
+        this.userId = userId;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         db = Database.Database();
     }
 
-    /**
-     * This creates any type of User account (Guest, Clerk, Admin) with a set Username and default password.
-     * @param accountType
-     * @param username
-     * @param firstName
-     * @param lastName
-     * @return Response.SUCCESS or Response.FAIL
-     */
-    public Response createUser(Account accountType, String username, String firstName, String lastName) {
-        String hashed_password;
 
-        try {
-            hashed_password = HotelAuth.generatePasswordHash("password123$");
-        } catch (NoSuchAlgorithmException|InvalidKeySpecException e) {
-            return Response.FAILURE;
+    @Override
+    public UUID getUserId() {
+        return this.userId;
+    }
+
+    @Override
+    public Account getAccountType() {
+        return this.accountType;
+    }
+
+    @Override
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    @Override
+    public String getFirstName() {
+        return this.firstName;
+    }
+
+    @Override
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Override
+    public String getLastName() {
+        return this.lastName;
+    }
+
+    @Override
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @Override
+    public boolean getActive() {
+        return this.active;
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Response setCustomer(Guest guest) {
+        if (guest != null) {
+            this.setCustomer(guest);
+            return Response.SUCCESS;
         }
-
-        if (accountType == Account.CLERK) {
-            Clerk clerk = new Clerk(UUID.randomUUID(), username.toLowerCase(), firstName, lastName);
-            return db.insertUser(clerk, hashed_password);
-        } else if (accountType == Account.ADMIN) {
-            Admin admin = new Admin(UUID.randomUUID(), username.toLowerCase(), firstName, lastName);
-            return db.insertUser(admin, hashed_password);
-        } else if (accountType == Account.GUEST) {
-            Guest guest = new Guest(UUID.randomUUID(), username.toLowerCase(), firstName, lastName);
-            return db.insertUser(guest, hashed_password);
-        }
-
         return Response.FAILURE;
+    }
+
+    @Override
+    public Guest getCustomer() {
+        return this.customer;
+    }
+
+    public Response updateUser(){
+        return db.updateUserProfile(this);
+    }
+
+    public Response updateRoom (Room room) {
+
+        return db.updateRoom(room);
     }
 }

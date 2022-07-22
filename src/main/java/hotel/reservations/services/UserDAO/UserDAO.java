@@ -31,12 +31,13 @@ public class UserDAO implements IUserDAO {
         return Response.FAILURE;
     }
 
-
     public boolean authenticateUser(String username, String password){
+
         return false;
     }
 
     public Object getUserById(UUID userId) {
+
         return db.getUser(userId);
     }
 
