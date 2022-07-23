@@ -1,6 +1,7 @@
 package hotel.reservations.services.reservationDAOImpl;
 
-//import hotel.reservations.services.reservationDAO;
+import hotel.reservations.services.reservationDAO;
+import hotel.reservations.persistence.Database;
 import hotel.reservations.models.reservation.Reservation;
 
 import java.time.LocalDate;
@@ -8,17 +9,22 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class reservationDAOImpl implements reservationDAO {
+    private static reservationDAOImpl dao = null;
+    private static Database db = null;
 
-    public static ReservationDAO getReservationDAO() {
-        if (null == reservationDAO) {
-            reservationDAO = new ReservationDAO();
+    private reservationDAOImpl() {
+    }
+    public static reservationDAOImpl getReservationDAO() {
+        if (null == dao) {
+            dao = new reservationDAOImpl();
+            db = Database.Database();
         }
 
-        return reservationDAO;
+        return dao;
     }
 
 
-    /**
+     /**
      * Returns a list of reservations that overlap with the requested arrival and departure dates
      * @param arrival arrival date
      * @param departure departure date
