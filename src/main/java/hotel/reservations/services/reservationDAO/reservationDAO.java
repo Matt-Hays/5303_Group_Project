@@ -19,6 +19,9 @@ public interface reservationDAO {
     public ArrayList<Reservation> findReservations(UUID guestId);
 
     public Reservation findReservation(UUID reservationId);
+    // what is the difference between findReservation and getReservation (from HotelModels)??
+
+    public ArrayList<Reservation> getAllGuestReservations(UUID userId);
 
     public void updateReservation(Reservation reservation);
 }

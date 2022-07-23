@@ -1,5 +1,6 @@
 package hotel.reservations.services.invoiceDAO;
 
+import hotel.reservations.services.reservationDAOImpl.reservationDAOImpl;
 import hotel.reservations.persistence.Database;
 
 public class invoiceDAOImpl extends reservationDAOImpl {

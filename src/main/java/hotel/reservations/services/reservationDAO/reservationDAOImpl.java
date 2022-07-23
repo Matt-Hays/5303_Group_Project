@@ -2,7 +2,7 @@ package hotel.reservations.services.reservationDAOImpl;
 
 import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.ReservationStatus;
-import hotel.reservations.services.reservationDAO;
+import hotel.reservations.services.reservationDAO.reservationDAO;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.models.reservation.Reservation;
 
