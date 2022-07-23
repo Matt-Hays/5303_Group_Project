@@ -158,24 +158,6 @@ public class Reservation {
         this.status = status;
     }
 
-    public void deleteReservation() {
-        db.deleteReservation(this);
-    }
-    public void cancelReservation() {
-        status = ReservationStatus.CANCELLED;
-        db.updateReservation(this);
-        // TODO: calculate 80% if need be....
-    }
-
-    Invoice generateInvoice(double roomRate, long stayLength) {
-        Invoice invoice = new Invoice();
-        invoice.setSubtotal(roomRate, stayLength);
-        this.invoiceId = invoice.getInvoiceId();
-
-        db.insertInvoice(invoice);
-        return invoice;
-    }
-
     public ReservationStatus getStatus() {
         return status;
     }

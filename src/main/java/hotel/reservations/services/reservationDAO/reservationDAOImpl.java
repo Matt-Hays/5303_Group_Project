@@ -1,5 +1,7 @@
 package hotel.reservations.services.reservationDAOImpl;
 
+import hotel.reservations.models.reservation.Invoice;
+import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.services.reservationDAO;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.models.reservation.Reservation;
@@ -49,6 +51,28 @@ public class reservationDAOImpl implements reservationDAO {
     @Override
     public void updateReservation(Reservation reservation){
         db.updateReservation(reservation);
+    }
+
+    @Override
+    public void deleteReservation() {
+        db.deleteReservation(this);
+    }
+
+    @Override
+    public void cancelReservation() {
+        status = ReservationStatus.CANCELLED;
+        db.updateReservation(this);
+        // TODO: calculate 80% if need be....
+    }
+
+    @Override
+    Invoice generateInvoice(double roomRate, long stayLength) {
+        Invoice invoice = new Invoice();
+        invoice.setSubtotal(roomRate, stayLength);
+        this.invoiceId = invoice.getInvoiceId();
+
+        db.insertInvoice(invoice);
+        return invoice;
     }
 
 }
