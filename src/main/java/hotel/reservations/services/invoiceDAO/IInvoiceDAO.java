@@ -1,18 +1,18 @@
 package hotel.reservations.services.invoiceDAO;
 
-import hotel.reservations.services.reservationDAOImpl.reservationDAOImpl;
+import hotel.reservations.services.reservationDAO.IReservationDAO;
 import hotel.reservations.persistence.Database;
 
-public class invoiceDAOImpl extends reservationDAOImpl {
-    private static invoiceDAOImpl dao = null;
+public class IInvoiceDAO extends IReservationDAO {
+    private static IInvoiceDAO dao = null;
     private static Database db = null;
 
-    private invoiceDAOImpl() {
+    private IInvoiceDAO() {
     }
 
-    public static invoiceDAOImpl getInvoiceDAO() {
+    public static IInvoiceDAO getInvoiceDAO() {
         if (null == dao) {
-            dao = new invoiceDAOImpl();
+            dao = new IInvoiceDAO();
             db = Database.Database();
         }
 
@@ -24,4 +24,5 @@ public class invoiceDAOImpl extends reservationDAOImpl {
     // updateInvoice
     // deleteInvoice
 }
+
 
