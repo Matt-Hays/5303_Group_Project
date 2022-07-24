@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class ReservationDAO implements IReservationDAO<Reservation>, IInvoiceDAO<Invoice> {
-    private static reservationDAO dao = null;
+    private static ReservationDAO dao = null;
     private Database db = null;
 
-    public reservationDAO(Database db) {
+    public ReservationDAO(Database db) {
         this.db = db;
     }
 
