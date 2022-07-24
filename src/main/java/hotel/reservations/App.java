@@ -1,10 +1,7 @@
 package hotel.reservations;
 
 import hotel.reservations.controller.AppController;
-import hotel.reservations.models.user.IUser;
 import hotel.reservations.persistence.Database;
-import hotel.reservations.services.HotelModels;
-import hotel.reservations.views.HotelViews;
 
 public class App {
     public static void main(String[] args) throws NoSuchMethodException {

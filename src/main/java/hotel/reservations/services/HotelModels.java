@@ -3,6 +3,7 @@ package hotel.reservations.services;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
+import hotel.reservations.models.user.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class HotelModels {
         return userCatalog.getUserByUsername(username);
     }
 
-    public static UUID createNewSession(Object user){
+    public static UUID createNewSession(User user){
         return sessionCatalog.createSession(user);
     }
 

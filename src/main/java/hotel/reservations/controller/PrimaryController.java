@@ -2,10 +2,10 @@ package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
-import hotel.reservations.models.user.Admin;
-import hotel.reservations.models.user.Clerk;
-import hotel.reservations.models.user.Guest;
-import hotel.reservations.models.user.IUser;
+import hotel.reservations.models.session.ISessionDAO;
+import hotel.reservations.models.user.User;
+import hotel.reservations.services.UserDAO.IUserDAO;
+import hotel.reservations.services.UserDAO.UserDAO;
 import hotel.reservations.services.authentication.HotelAuth;
 import hotel.reservations.views.GuiHandler;
 
@@ -23,7 +23,7 @@ public class PrimaryController implements ApplicationController{
     private IRoomDAO roomDAO;
 
 
-    public PrimaryController(GuiHandler guiHandler, ISessionDAO sessionDAO, IUserDAO userDAO,
+    public PrimaryController(GuiHandler guiHandler, ISessionDAO sessionDAO, UserDAO userDAO,
                              IReservationDAO reservationDAO, IRoomDAO roomDAO){
         this.guiHandler=guiHandler;
         this.sessionDAO=sessionDAO;
@@ -33,7 +33,7 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
-    public void createReservation(IUser guest, Room room, LocalDate arrival, LocalDate departure) {
+    public void createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
         // Associate Guest & Room with Reservation.
         // Invoice is created in DAO flow.
         Reservation reservation = getReservationDAO().createReservation(guest, room, arrival, departure);
@@ -114,14 +114,10 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
-    public void logIn() {
-
-    }
-
-    @Override
-    public void logIn(String username, char[] password) {
+    public void logIn(String username, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         // Login the user - retrieve the User object.
-        IUser user = getUserDAO().logIn(username, password);
+        User user = getUserDAO().logIn(username, password);
+
         if(user != null){
             // Create a session attaching the user object. Return a UUID sessionId.
             UUID sessionId = getSessionDAO().createSession(user);
@@ -142,7 +138,7 @@ public class PrimaryController implements ApplicationController{
             , InvalidKeySpecException {
 
         // Register a new user. Return the new user object.
-        IUser user = getUserDAO().createUser(username, HotelAuth.generatePasswordHash(String.valueOf(password)),
+        User user = getUserDAO().createUser(username, HotelAuth.generatePasswordHash(String.valueOf(password)),
                 firstName, lastName, address, city, state, zipCode);
 
         if(user != null){
@@ -172,7 +168,7 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
-    public void resetPassword(IUser user, char[] oldPassword, char[] newPassword) {
+    public void resetPassword(User user, char[] oldPassword, char[] newPassword) {
         // Make sure the old password is valid.
         getUserDAO().resetPassword(user, oldPassword, newPassword);
     }
@@ -183,7 +179,7 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
-    public void modifyUser(IUser modifiedUser) {
+    public void modifyUser(User modifiedUser) {
 
     }
 
@@ -193,7 +189,7 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
-    public void createClerk(IUser newClerk) {
+    public void createClerk(User newClerk) {
 
     }
 
