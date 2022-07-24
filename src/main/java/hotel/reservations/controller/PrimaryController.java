@@ -7,6 +7,7 @@ import hotel.reservations.models.user.Clerk;
 import hotel.reservations.models.user.Guest;
 import hotel.reservations.models.user.IUser;
 import hotel.reservations.services.authentication.HotelAuth;
+import hotel.reservations.views.GuiHandler;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -15,15 +16,16 @@ import java.util.List;
 import java.util.UUID;
 
 public class PrimaryController implements ApplicationController{
+    private GuiHandler guiHandler;
     private ISessionDAO sessionDAO;
     private IUserDAO userDAO;
     private IReservationDAO reservationDAO;
     private IRoomDAO roomDAO;
 
 
-    public PrimaryController(GUIController guiController, ISessionDAO sessionDAO, IUserDAO userDAO,
+    public PrimaryController(GuiHandler guiHandler, ISessionDAO sessionDAO, IUserDAO userDAO,
                              IReservationDAO reservationDAO, IRoomDAO roomDAO){
-        this.guiController=guiController;
+        this.guiHandler=guiHandler;
         this.sessionDAO=sessionDAO;
         this.userDAO=userDAO;
         this.reservationDAO=reservationDAO;
@@ -34,7 +36,7 @@ public class PrimaryController implements ApplicationController{
     public void createReservation(IUser guest, Room room, LocalDate arrival, LocalDate departure) {
         // Associate Guest & Room with Reservation.
         // Invoice is created in DAO flow.
-        getReservationDAO().createReservation(guest, room, arrival, departure);
+        Reservation reservation = getReservationDAO().createReservation(guest, room, arrival, departure);
         // Return user to the Reservation Page displaying their new Reservation.
     }
 
@@ -47,8 +49,8 @@ public class PrimaryController implements ApplicationController{
 
     @Override
     public void modifyReservation(Reservation modifiedReservation) {
-        // Update a given reservation.
-        getReservationDAO().modifyReservation(modifiedReservation);
+        // Update a given reservation. Return the updated Reservation.
+        Reservation reservation = getReservationDAO().modifyReservation(modifiedReservation);
         // Display the updated result in the UI.
     }
 
@@ -64,6 +66,11 @@ public class PrimaryController implements ApplicationController{
         // Check out a user.
         getReservationDAO().checkOut(reservation);
         // // Update the reservation checked-in field & date in the UI.
+    }
+
+    @Override
+    public void viewReport() {
+
     }
 
     @Override
@@ -93,11 +100,21 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
+    public void modifyRoom() {
+
+    }
+
+    @Override
     public void modifyRoom(Room modifiedRoom) {
         // Validate User is logged-in & Validate User is a Clerk or an Admin.
         if(getSessionDAO().validateSession(sessionId).equals("Clerk") || getSessionDAO().validateSession(sessionId).equals("Admin")){
             getRoomDAO().modifyRoom(modifiedRoom);
         }
+    }
+
+    @Override
+    public void logIn() {
+
     }
 
     @Override
@@ -114,8 +131,14 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
+    public void registerUser() {
+
+    }
+
+    @Override
     public void registerUser(String username, char[] password, String firstName, String lastName, String address,
-                             String city, String state, String zipCode, GUIController guiController) throws NoSuchAlgorithmException, InvalidKeySpecException {
+                             String city, String state, String zipCode) throws NoSuchAlgorithmException
+            , InvalidKeySpecException {
 
         // Register a new user. Return the new user object.
         IUser user = getUserDAO().createUser(username, HotelAuth.generatePasswordHash(String.valueOf(password)),
@@ -126,34 +149,7 @@ public class PrimaryController implements ApplicationController{
             UUID sessionId = getSessionDAO().createSession(user);
             // The user is now logged in. Notify the gui of the change.
             // Pass in the type of user returned from our validate user method.
-            guiController.onUserLogin(getUserDAO().validateUser(sessionId));
-
-            // Add the sessionId to the GUI context.
-//            guiController.addSessionCtx(sessionId);
-//            /**
-//             *  Return the user to the Home Page with appropriate buttons.
-//             *  This section needs the observer pattern.
-//             *  Producer = ApplicationController
-//             *  Subscribers = HomePanel & GUIFrame
-//             *  On login we want the following to occur:
-//             *  --> Home Page: Change Login Button to Logout Button
-//             *  --> Home Page: Add a Reservations Route & Button
-//             *  --> Reservations Page: to become accessible
-//             *  --> Home Page (Clerk+): Add a Modify Rooms Button & Route
-//             *  --> Home Page (Admin): Add Create Clerk Button & Route
-//             *  --> Home Page (Admin): Add View Report Button & Route
-//             */
-//            guiController.getHomePage().setLoginBtn("Logout");
-//            guiController.getHomePage().setLoginBtn("Reservations");
-//            // Determine object type & Add appropriate buttons.
-//            if (user instanceof Clerk){
-//                guiController.getHomePage().addBtn("Modify Rooms");
-//            } else if ( user instanceof Admin){
-//                guiController.getHomePage().addBtn("Create Clerk");
-//                guiController.getHomePage().addBtn("View Report");
-//            }
-
-
+            getGuiHandler().setHomePanel(getSessionDAO().validateUser(sessionId));
         }
     }
 
@@ -170,13 +166,28 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
+    public void resetPassword() {
+
+    }
+
+    @Override
     public void resetPassword(IUser user, char[] oldPassword, char[] newPassword) {
         // Make sure the old password is valid.
         getUserDAO().resetPassword(user, oldPassword, newPassword);
     }
 
     @Override
+    public void modifyUser() {
+
+    }
+
+    @Override
     public void modifyUser(IUser modifiedUser) {
+
+    }
+
+    @Override
+    public void createClerk() {
 
     }
 
@@ -186,16 +197,21 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
+    public void payInvoice() {
+
+    }
+
+    @Override
     public void payInvoice(Reservation reservation) {
 
     }
 
-    private GUIController getGuiController() {
-        return guiController;
+    private GuiHandler getGuiHandler() {
+        return guiHandler;
     }
 
-    private void setGuiController(GUIController guiController) {
-        this.guiController = guiController;
+    private void setGuiController(GuiHandler guiHandler) {
+        this.guiHandler = guiHandler;
     }
 
     private ISessionDAO getSessionDAO() {
