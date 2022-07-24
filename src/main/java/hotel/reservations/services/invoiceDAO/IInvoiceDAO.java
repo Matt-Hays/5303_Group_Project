@@ -1,28 +1,29 @@
 package hotel.reservations.services.invoiceDAO;
 
-import hotel.reservations.services.reservationDAO.IReservationDAO;
-import hotel.reservations.persistence.Database;
+import hotel.reservations.models.reservation.Invoice;
 
-public class IInvoiceDAO extends IReservationDAO {
-    private static IInvoiceDAO dao = null;
-    private static Database db = null;
-
-    private IInvoiceDAO() {
-    }
-
-    public static IInvoiceDAO getInvoiceDAO() {
-        if (null == dao) {
-            dao = new IInvoiceDAO();
-            db = Database.Database();
-        }
-
-        return dao;
-    }
+public interface IInvoiceDAO {
 
     // getInvoice
+    public Invoice getInvoice(UUID invoiceId) {
+        return Invoice;
+    }
+
     // createInvoice
+    public Invoice createInvoice(){
+        invoice = new Invoice();
+        return invoice;
+    }
+
     // updateInvoice
+    public Invoice updateInvoice(Invoice invoice){
+        return invoice;
+    }
+
     // deleteInvoice
+    public deleteInvoice(Invoice invoice){
+        return invoice;
+    }
 }
 
 

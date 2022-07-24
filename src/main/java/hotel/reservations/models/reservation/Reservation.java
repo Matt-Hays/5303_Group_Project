@@ -1,5 +1,6 @@
 package hotel.reservations.models.reservation;
 
+import hotel.reservations.services.reservationDAO.reservationDAO;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.Guest;
 import hotel.reservations.persistence.Database;
@@ -40,7 +41,8 @@ public class Reservation {
         this.status = status;
         db = Database.Database();
 
-        generateInvoice(room.getNightlyRate(), lengthOfStay());
+        reservationDAO rDAO = new reservationDAO();
+        reservationDAO.generateInvoice(room.getNightlyRate(), lengthOfStay());
         db.insertReservation(this);
     }
 

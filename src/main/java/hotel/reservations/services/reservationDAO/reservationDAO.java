@@ -1,5 +1,6 @@
 package hotel.reservations.services.reservationDAO;
 
+import hotel.reservations.services.invoiceDAO.IInvoiceDAO;
 import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.persistence.Database;
@@ -9,21 +10,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class reservationDAO implements IReservationDAO {
+public class reservationDAO implements IReservationDAO, IInvoiceDAO {
     private static reservationDAO dao = null;
-    private static Database db = null;
+    private Database db = null;
 
-    private reservationDAO() {
+    public reservationDAO(Database db) {
+        this.db = db;
     }
-    public static reservationDAO getReservationDAO() {
-        if (null == dao) {
-            dao = new reservationDAO();
-            db = Database.Database();
-        }
-
-        return dao;
-    }
-
 
      /**
      * Returns a list of reservations that overlap with the requested arrival and departure dates
@@ -65,7 +58,7 @@ public class reservationDAO implements IReservationDAO {
     }
 
     @Override
-    Invoice generateInvoice(double roomRate, long stayLength) {
+    public Invoice generateInvoice(double roomRate, long stayLength) {
         Invoice invoice = new Invoice();
         invoice.setSubtotal(roomRate, stayLength);
         this.invoiceId = invoice.getInvoiceId();
