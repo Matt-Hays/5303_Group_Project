@@ -5,10 +5,7 @@ import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
-import hotel.reservations.models.user.Account;
-import hotel.reservations.models.user.Admin;
-import hotel.reservations.models.user.Clerk;
-import hotel.reservations.models.user.Guest;
+import hotel.reservations.models.user.*;
 import hotel.reservations.services.authentication.HotelAuth;
 import hotel.reservations.services.Response;
 
@@ -19,85 +16,33 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.logging.FileHandler;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-public class Database {
+public class Database implements IDatabase {
 
-	private String dbName = "hr2s.sqlite";
+	private String dbName = null;
 	private Connection conn = null;
 	private Logger logger;
 
 	private static Database db = null;
 
 	/**
-	 * primary constructor (private) to force use of the singleton
+	 * primary constructor
 	 */
-	private Database() {
+	public Database() {
+		this("hr2s.sqlite");
 	}
 
 	/**
 	 * test constructor for a test database that allows changing the db name
 	 * @param dbName
 	 */
-	private Database(String dbName) {
+	public Database(String dbName) {
 		this.dbName = dbName;
+		db.connect();
 	}
 
-	/**
-	 * Singleton for ensuring only a single database instance exists
-	 * @return a database instance
-	 */
-	public static Database Database() {
-		if (null == db) {
-			db = new Database();
-			db.logger = Logger.getLogger(Database.class.getName());
-			// log to file rather than console
-			try {
-				FileHandler handler = new FileHandler("hr2s.log");
-				db.logger.addHandler(handler);
-				LogManager.getLogManager().reset();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			db.connect();
-		}
-
-		return db;
-	}
-
-	/**
-	 * Allows for the testing of a database without affecting the main database (if one exists)
-	 * @param dbName the name of the test database
-	 * @return a database instance
-	 */
-	public static Database testDatabase(String dbName) {
-		if (null == db) {
-			db = new Database(dbName);
-			db.logger = Logger.getLogger(Database.class.getName());
-			// log to file rather than console
-			try {
-				FileHandler handler = new FileHandler("hr2s_test.log");
-				db.logger.addHandler(handler);
-				LogManager.getLogManager().reset();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			db.connect();
-		}
-
-		return db;
-	}
-
-	/**
-	 * Allows for the deletion of the singleton for testing purposes
-	 */
-	public void destroy() {
-		db = null;
-	}
-
-	public Response connect() {
+	private void connect() {
 		File dbFile = new File(dbName);
 		boolean exists = dbFile.exists();
 
@@ -108,17 +53,13 @@ public class Database {
 
 			if (!exists) {
 				db.logger.info("DB " + dbName + " does not exist.");
-				return dbInit();
+				dbInit();
 			} else {
 				db.logger.info("DB " + dbName + " exists.");
 			}
-
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
-			return Response.FAILURE;
 		}
-
-		return Response.SUCCESS;
 	}
 
 	public boolean close() {
@@ -178,7 +119,7 @@ public class Database {
 	 * @param username the username to lookup
 	 * @return a User instance
 	 */
-	public Object getUser(String username) {
+	public User getUser(String username) {
 		// Build the query
 		try {
 			PreparedStatement ps = db.conn.prepareStatement(
@@ -215,8 +156,8 @@ public class Database {
 		return null;
 	}
 
-	public ArrayList<Object> getAllUsers() {
-		ArrayList<Object> allUsers = new ArrayList<Object>();
+	public ArrayList<User> getAllUsers() {
+		ArrayList<User> allUsers = new ArrayList<User>();
 
 		try {
 			// Query to pull all room information from db
@@ -255,7 +196,7 @@ public class Database {
 		return allUsers;
 	}
 
-	public Object getUser(UUID userId) {
+	public User getUser(UUID userId) {
 		// Build the query
 		try {
 			PreparedStatement ps = db.conn.prepareStatement(
@@ -421,6 +362,8 @@ public class Database {
 
 		return reservations;
 	}
+
+
 
 	public Response insertReservation(Reservation r) {
 		try {
@@ -662,38 +605,19 @@ public class Database {
 		return null;
 	}
 
-	public Response insertUser(Object obj, String hashed_password) {
+	public Response insertUser(User user, String hashed_password) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
 					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
 					"values (?,?,?,?,?,?,?)");
 
-			// there must be a better way!
-			if (obj instanceof Admin) {
-				Admin admin = (Admin)obj;
-				ps.setString(1, admin.userId.toString());
-				ps.setString(2, admin.getAccountType().name());
-				ps.setString(3, admin.getUsername().toLowerCase());
-				ps.setString(5, admin.getFirstName());
-				ps.setString(6, admin.getLastName());
-				ps.setBoolean(7, admin.getActive());
-			} else if (obj instanceof Clerk) {
-				Clerk clerk = (Clerk)obj;
-				ps.setString(1, clerk.userId.toString());
-				ps.setString(2, clerk.getAccountType().name());
-				ps.setString(3, clerk.getUsername().toLowerCase());
-				ps.setString(5, clerk.getFirstName());
-				ps.setString(6, clerk.getLastName());
-				ps.setBoolean(7, clerk.getActive());
-			} else if (obj instanceof Guest) {
-				Guest guest = (Guest)obj;
-				ps.setString(1, guest.userId.toString());
-				ps.setString(2, guest.getAccountType().name());
-				ps.setString(3, guest.getUsername().toLowerCase());
-				ps.setString(5, guest.getFirstName());
-				ps.setString(6, guest.getLastName());
-				ps.setBoolean(7, guest.getActive());
-			}
+			ps.setString(1, user.getUserId().toString());
+			ps.setString(2, user.getAccountType().name());
+			ps.setString(3, user.getUsername().toLowerCase());
+			ps.setString(5, user.getFirstName());
+			ps.setString(6, user.getLastName());
+			ps.setBoolean(7, user.getActive());
+
 			ps.setString(4, hashed_password);
 
 			// Execute the query
@@ -745,39 +669,21 @@ public class Database {
 
 	/**
 	 * updates all attributes of a user profile in the database
-	 * @param obj A
+	 * @param user an objects that implements the user interface
 	 * @return
 	 */
-	public Response updateUserProfile(Object obj){
+	public Response updateUserProfile(User user){
 
 		try {
 			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user` " +
 					"SET `username`=?, `firstName`=?, `lastName`=?, `active`=? " +
 					"WHERE `id` =?");
 
-			// there must be a better way!
-			if (obj instanceof Admin) {
-				Admin admin = (Admin)obj;
-				ps.setString(1, admin.getUsername().toLowerCase());
-				ps.setString(2, admin.getFirstName());
-				ps.setString(3, admin.getLastName());
-				ps.setBoolean(4, admin.getActive());
-				ps.setString(5, admin.userId.toString());
-			} else if (obj instanceof Clerk) {
-				Clerk clerk = (Clerk)obj;
-				ps.setString(1, clerk.getUsername().toLowerCase());
-				ps.setString(2, clerk.getFirstName());
-				ps.setString(3, clerk.getLastName());
-				ps.setBoolean(4, clerk.getActive());
-				ps.setString(5, clerk.userId.toString());
-			} else if (obj instanceof Guest) {
-				Guest guest = (Guest)obj;
-				ps.setString(1, guest.getUsername().toLowerCase());
-				ps.setString(2, guest.getFirstName());
-				ps.setString(3, guest.getLastName());
-				ps.setBoolean(4, guest.getActive());
-				ps.setString(5, guest.userId.toString());
-			}
+			ps.setString(1, user.getUsername().toLowerCase());
+			ps.setString(2, user.getFirstName());
+			ps.setString(3, user.getLastName());
+			ps.setBoolean(4, user.getActive());
+			ps.setString(5, user.getUserId().toString());
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {

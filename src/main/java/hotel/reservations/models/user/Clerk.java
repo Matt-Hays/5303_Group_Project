@@ -6,37 +6,74 @@ import hotel.reservations.services.Response;
 
 import java.util.UUID;
 
-public class Clerk extends User {
+public class Clerk implements User {
+
+    public final UUID userId;
+    public final Account accountType;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private boolean active = true;
+    private Guest customer = null;
 
     public Clerk(UUID userId, String username, String firstName, String lastName) {
-        super(userId, Account.CLERK, username, firstName, lastName);
-        db = Database.Database();
+        this.userId = userId;
+        this.accountType = Account.CLERK;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
-    public Response updateRoom (Room room) {
-        return db.updateRoom(room);
+
+    public UUID getUserId(){
+        return this.userId;
     }
 
-    /**
-     * Attempts to lookup a guest in the db based on username
-     * @param username
-     * @return Guest instance on success, null on fail
-     */
-    public Guest getUser(String username) {
-        Object obj = db.getUser(username);
-        if (obj instanceof Guest) {
-            return (Guest)obj;
-        } else {
-            return null;
-        }
+    public Account getAccountType() {
+        return this.accountType;
     }
 
-    public Response setCustomer(String username) {
-        Guest guest = getUser(username);
-        if (guest != null) {
-            super.setCustomer(guest);
-            return Response.SUCCESS;
-        }
-        return Response.FAILURE;
+    public void setUsername(String username) {
+        this.username = username;
     }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getFirstName() {
+        return this.firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return this.lastName = lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public boolean getActive() {
+        return this.active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setCustomer(Guest guest) {
+            this.setCustomer(guest);
+    }
+
+    @Override
+    public Guest getCustomer() {
+        return this.customer;
+    }
+
+
+
 }
