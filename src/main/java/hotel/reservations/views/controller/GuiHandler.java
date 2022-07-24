@@ -1,11 +1,13 @@
-package hotel.reservations.views;
+package hotel.reservations.views.controller;
+
+import hotel.reservations.controller.ApplicationController;
 
 import java.util.UUID;
 
 public interface GuiHandler {
     public void changeScreen(String screenName);
 
-    public void getApplicationHandler();
+    public ApplicationController getApplicationController();
 
     public void setSessionCtx(UUID sessionCtx);
     public UUID getSessionCtx();
