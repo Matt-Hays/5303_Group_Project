@@ -137,16 +137,19 @@ public class Database implements IDatabase {
 			UUID userId = UUID.fromString(rs.getString("id"));
 			String firstName = rs.getString("firstName");
 			String lastName = rs.getString("lastName");
+			String address = rs.getString("street");
+			String state = rs.getString("state");
+			String zipCode = rs.getString("zip");
 			boolean active = rs.getBoolean("active");
 			Account accountType = Account.valueOf(rs.getString("type"));
 
 			switch (accountType) {
 				case CLERK:
-					return new Clerk(userId, username.toLowerCase(), firstName, lastName);
+					return new Clerk(userId, username.toLowerCase(), firstName, lastName, address, state, zipCode);
 				case ADMIN:
-					return new Admin(userId, username.toLowerCase(), firstName, lastName);
+					return new Admin(userId, username.toLowerCase(), firstName, lastName, address, state, zipCode);
 				case GUEST:
-					return new Guest(userId, username.toLowerCase(), firstName, lastName);
+					return new Guest(userId, username.toLowerCase(), firstName, lastName, address, state, zipCode);
 			}
 
 		} catch (SQLException e) {
@@ -173,18 +176,21 @@ public class Database implements IDatabase {
 				String username = rs.getString("username");
 				String firstName = rs.getString("firstName");
 				String lastName = rs.getString("lastName");
+				String address = rs.getString("street");
+				String state = rs.getString("state");
+				String zipCode = rs.getString("zip");
 				boolean active = rs.getBoolean("active");
 				Account accountType = Account.valueOf(rs.getString("type"));
 
 				switch (accountType) {
 					case CLERK:
-						allUsers.add(new Clerk(userId, username.toLowerCase(), firstName, lastName));
+						allUsers.add(new Clerk(userId, username.toLowerCase(), firstName, lastName, address, state, zipCode));
 						break;
 					case ADMIN:
-						allUsers.add(new Admin(userId, username.toLowerCase(), firstName, lastName));
+						allUsers.add(new Admin(userId, username.toLowerCase(), firstName, lastName, address, state, zipCode));
 						break;
 					case GUEST:
-						allUsers.add(new Guest(userId, username.toLowerCase(), firstName, lastName));
+						allUsers.add(new Guest(userId, username.toLowerCase(), firstName, lastName, address, state, zipCode));
 				}
 
 			} while (rs.next());
@@ -213,16 +219,19 @@ public class Database implements IDatabase {
 			String username = rs.getString("username");
 			String firstName = rs.getString("firstName");
 			String lastName = rs.getString("lastName");
+			String address = rs.getString("street");
+			String state = rs.getString("state");
+			String zipCode = rs.getString("zip");
 			boolean active = rs.getBoolean("active");
 			Account accountType = Account.valueOf(rs.getString("type"));
 
 			switch (accountType) {
 				case CLERK:
-					return new Clerk(userId, username.toLowerCase(), firstName, lastName);
+					return new Clerk(userId, username.toLowerCase(), firstName, lastName, address, state, zipCode);
 				case ADMIN:
-					return new Admin(userId, username.toLowerCase(), firstName, lastName);
+					return new Admin(userId, username.toLowerCase(), firstName, lastName, address, state, zipCode);
 				case GUEST:
-					return new Guest(userId, username.toLowerCase(), firstName, lastName);
+					return new Guest(userId, username.toLowerCase(), firstName, lastName, address, state, zipCode);
 			}
 
 		} catch (SQLException e) {
@@ -634,56 +643,61 @@ public class Database implements IDatabase {
 
 	/**
 	 * inserts a user into the database
-	 * @param type the type of user
 	 * @param username the username
 	 * @param hashed_password the prehashed/salted password
 	 * @param fName first name
 	 * @param lName lastname
-	 * @param active is the account active
 	 * @return
 	 */
-	public Response insertUser(Account type, String username, String hashed_password,
-							   String fName, String lName, boolean active) {
+	public User insertUser(String username, String hashed_password,
+							   String fName, String lName, String address, String state, String zipCode) {
 		try {
 			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
-					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
-					"values (?,?,?,?,?,?,?)");
-			ps.setString(1, String.valueOf(UUID.randomUUID()));
-			ps.setString(2, type.name());
-			ps.setString(3, username.toLowerCase());
-			ps.setString(4, hashed_password);
-			ps.setString(5, fName);
-			ps.setString(6, lName);
-			ps.setBoolean(7, active);
+					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `street`, `state`, `zip`, " +
+					"`active`) " +
+					"values (?,?,?,?,?,?,?,?,?,?)");
+			ps.setString(1, String.valueOf(UUID.randomUUID())); // id
+			ps.setString(2, "GUEST"); // type
+			ps.setString(3, username.toLowerCase()); // username
+			ps.setString(4, hashed_password); // password
+			ps.setString(5, fName); // firs name
+			ps.setString(6, lName); // last name
+			ps.setString(7, address); // address
+			ps.setString(8, state); // city
+			ps.setString(9, zipCode); // zip code
+			ps.setBoolean(10, true); // active
 
 			// Execute the query
 			if (ps.executeUpdate() == 1) {
-				return Response.SUCCESS;
+				return db.getUser(username);
 			};
 		} catch (SQLException e) {
 			db.logger.severe(e.getMessage());
 		}
 
-		return Response.FAILURE;
+		return null;
 	}
 
 	/**
 	 * updates all attributes of a user profile in the database
-	 * @param user an objects that implements the user interface
 	 * @return
 	 */
-	public Response updateUserProfile(User user){
+	public Response updateUserProfile(UUID userId, String newUsername, String firstName, String lastName,
+									  String address, String state, String zipCode, boolean active){
 
 		try {
 			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user` " +
-					"SET `username`=?, `firstName`=?, `lastName`=?, `active`=? " +
+					"SET `username`=?, `firstName`=?, `lastName`=?, `street` = ?, `state`=?, `zip`=?, `active`=? " +
 					"WHERE `id` =?");
 
-			ps.setString(1, user.getUsername().toLowerCase());
-			ps.setString(2, user.getFirstName());
-			ps.setString(3, user.getLastName());
-			ps.setBoolean(4, user.getActive());
-			ps.setString(5, user.getUserId().toString());
+			ps.setString(1, newUsername);
+			ps.setString(2, firstName);
+			ps.setString(3, lastName);
+			ps.setString(4, address);
+			ps.setString(5, state);
+			ps.setString(6, zipCode);
+			ps.setBoolean(7, active);
+			ps.setString(8, String.valueOf(userId));
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
@@ -699,12 +713,10 @@ public class Database implements IDatabase {
 	/**
 	 * updates the password for a user in the database
 	 * @param username the username to match on
-	 * @param existingPassword to validate the user
-	 * @param newPassword to update in the database
 	 * @return
 	 */
-	public Response updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		String newPasswordHash = HotelAuth.generatePasswordHash(newPassword);
+	public Response updatePassword(String username, String newPasswordHash) throws NoSuchAlgorithmException,
+			InvalidKeySpecException {
 			PreparedStatement ps = null;
 			try {
 				ps = db.conn.prepareStatement("UPDATE `user` SET `password` = ? WHERE `username`=?;");

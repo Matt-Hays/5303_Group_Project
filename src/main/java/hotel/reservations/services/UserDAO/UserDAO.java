@@ -12,10 +12,12 @@ import java.util.UUID;
 
 public class UserDAO implements IUserDAO <User> {
 
-    private Database db = null;
-    User customer = null;
-    private UserDAO(Database db) {
-        this.db = Database.Database();
+    private Database db;
+
+    User customer;
+
+    public UserDAO(Database db) {
+        this.db = db;
     }
 
     /**
@@ -25,9 +27,11 @@ public class UserDAO implements IUserDAO <User> {
      * @param newPassword new password of the user
      */
     @Override
-    public Response changePassword(String username, String currentPassword, String newPassword) {
+    public Response changePassword(String username, char[] currentPassword, char[] newPassword) {
         try {
-            return db.updatePassword(username, currentPassword, newPassword);
+            if(HotelAuth.validatePassword(String.valueOf(currentPassword), db.getPassword(username))){
+                return db.updatePassword(username, HotelAuth.generatePasswordHash(String.valueOf(newPassword)));
+            }
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
         }
 
@@ -35,8 +39,9 @@ public class UserDAO implements IUserDAO <User> {
     }
 
 
-    public Response updateUser(User user) {
-        return db.updateUserProfile(user);
+    public Response updateUser(UUID userId, String newUsername, String firstName, String lastName, String address,
+                               String state, String zipCode, boolean active) {
+        return db.updateUserProfile(userId, newUsername, firstName, lastName, address, state, zipCode, active);
     }
 
     public User logIn(String username, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -58,12 +63,8 @@ public class UserDAO implements IUserDAO <User> {
         return db.getUser(username);
     }
 
-
-    public Response updateUser(){
-        return db.updateUserProfile(this);
-    }
-
-    public Response createDefaultUser(Account accountType, String username, String firstName, String lastName) {
+    public Response createDefaultUser(Account accountType, String username, String firstName, String lastName,
+                                      String address, String state, String zipCode) {
         String hashed_password;
 
         try {
@@ -73,22 +74,28 @@ public class UserDAO implements IUserDAO <User> {
         }
 
         if (accountType == Account.CLERK) {
-            Clerk clerk = new Clerk(UUID.randomUUID(), username.toLowerCase(), firstName, lastName);
+            Clerk clerk = new Clerk(UUID.randomUUID(), username.toLowerCase(), firstName, lastName, address, state,
+                    zipCode);
             return db.insertUser(clerk, hashed_password);
         } else if (accountType == Account.ADMIN) {
-            Admin admin = new Admin(UUID.randomUUID(), username.toLowerCase(), firstName, lastName);
+            Admin admin = new Admin(UUID.randomUUID(), username.toLowerCase(), firstName, lastName, address, state,
+                    zipCode);
             return db.insertUser(admin, hashed_password);
         } else if (accountType == Account.GUEST) {
-            Guest guest = new Guest(UUID.randomUUID(), username.toLowerCase(), firstName, lastName);
+            Guest guest = new Guest(UUID.randomUUID(), username.toLowerCase(), firstName, lastName, address, state,
+                    zipCode);
             return db.insertUser(guest, hashed_password);
         }
 
         return Response.FAILURE;
     }
 
-    public void createUser(Account type, String username, String hashed_password,
-                           String fName, String lName, boolean active){
-        db.insertUser(type, username, hashed_password, fName, lName, active);
+    @Override
+    public User createUser(String username, char[] password, String fName, String lName, String address,
+                           String state, String zipCode) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        return db.insertUser(username, HotelAuth.generatePasswordHash(String.valueOf(password)), fName, lName, address,
+                state,
+                zipCode);
     }
 
     public ArrayList<User> getAllUsers() {

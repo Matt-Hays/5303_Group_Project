@@ -11,11 +11,13 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public interface IUserDAO<T> {
-    public Response changePassword(String username, String currentPassword, String newPassword);
+    public Response changePassword(String username, char[] currentPassword, char[] newPassword);
 
-    public Response updateUser(T user);
+    public Response updateUser(UUID userId, String newUsername, String firstName, String lastName, String address,
+                               String state, String zipCode, boolean active);
 
-    public Response createDefaultUser(Account accountType, String username, String firstName, String lastName);
+    public Response createDefaultUser(Account accountType, String username, String firstName, String lastName,
+                                      String address, String state, String zipCode);
 
     public User logIn(String username, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException;
 
@@ -23,8 +25,8 @@ public interface IUserDAO<T> {
 
     public Object getUserByUsername(String username);
 
-    public void createUser(Account type, String username, String hashed_password,
-                           String fName, String lName, boolean active);
+    public User createUser(String username, char[] password, String fName, String lName, String address,
+                           String state, String zipCode) throws NoSuchAlgorithmException, InvalidKeySpecException;
 
     public ArrayList<User> getAllUsers();
 

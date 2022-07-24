@@ -36,7 +36,7 @@ public class Session {
         this.id = id;
     }
 
-    public Object getUser() {
+    public User getUser() {
         return user;
     }
 

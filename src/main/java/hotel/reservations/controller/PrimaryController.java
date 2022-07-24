@@ -3,7 +3,10 @@ package hotel.reservations.controller;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.session.ISessionDAO;
+import hotel.reservations.models.session.SessionDAO;
+import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
+import hotel.reservations.persistence.Database;
 import hotel.reservations.services.UserDAO.IUserDAO;
 import hotel.reservations.services.UserDAO.UserDAO;
 import hotel.reservations.services.authentication.HotelAuth;
@@ -23,15 +26,17 @@ public class PrimaryController implements ApplicationController{
     private IRoomDAO roomDAO;
 
 
-    public PrimaryController(GuiHandler guiHandler, ISessionDAO sessionDAO, UserDAO userDAO,
-                             IReservationDAO reservationDAO, IRoomDAO roomDAO){
-        this.guiHandler=guiHandler;
-        this.sessionDAO=sessionDAO;
-        this.userDAO=userDAO;
-        this.reservationDAO=reservationDAO;
-        this.roomDAO = roomDAO;
+    public PrimaryController(GuiHandler guiHandler, Database db){
+        this.guiHandler = guiHandler;
+        this.sessionDAO = new SessionDAO();
+        this.userDAO = new UserDAO(db);
+        this.reservationDAO = new ResvationDAO(db);
+        this.roomDAO = new RoomDAO(db);
     }
 
+    /**
+     * RESERVATION ROUTES BEGIN
+     */
     @Override
     public void createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
         // Associate Guest & Room with Reservation.
@@ -70,11 +75,6 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
-    public void viewReport() {
-
-    }
-
-    @Override
     public void viewReport(UUID sessionId) {
         // Validate User is logged-in & Validate User is an Admin.
         if(getSessionDAO().validateSession(sessionId).equals("Admin")){
@@ -83,6 +83,20 @@ public class PrimaryController implements ApplicationController{
         };
     }
 
+    @Override
+    public void getInvoice(Reservation reservation) {
+        // Get the invoice a reservation.
+        getReservationDAO().getInvoice(reservation);
+    }
+
+    @Override
+    public void payInvoice(Reservation reservation) {
+
+    }
+
+    /**
+     * ROOM ROUTES BEGIN
+     */
     @Override
     public void addRoom(Room newRoom) {
         // Validate User is logged-in & Validate User is a Clerk or an Admin.
@@ -101,11 +115,6 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
-    public void modifyRoom() {
-
-    }
-
-    @Override
     public void modifyRoom(Room modifiedRoom) {
         // Validate User is logged-in & Validate User is a Clerk or an Admin.
         if(getSessionDAO().validateSession(sessionId).equals("Clerk") || getSessionDAO().validateSession(sessionId).equals("Admin")){
@@ -113,6 +122,15 @@ public class PrimaryController implements ApplicationController{
         }
     }
 
+    @Override
+    public void viewStatus(List<Room> roomReport) {
+        // Get all rooms in a List<Room>. Sort the list based on checked-in (currently in-use) 1st and reserved
+        // status 2nd.
+    }
+
+    /**
+     * USER ROUTES BEGIN
+     */
     @Override
     public void logIn(String username, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         // Login the user - retrieve the User object.
@@ -122,87 +140,70 @@ public class PrimaryController implements ApplicationController{
             // Create a session attaching the user object. Return a UUID sessionId.
             UUID sessionId = getSessionDAO().createSession(user);
             // Add the sessionId to the GUI context.
-
-            // Return the user to the Home Page with appropriate buttons.
+            getGuiHandler().setSessionCtx(sessionId);
+            // Pass in the type of user returned from our validate user method to allow the view to properly
+            // configure the Home Panel based on user type.
+            getGuiHandler().setHomePanel(getSessionDAO().validateSession(sessionId));
         }
     }
 
     @Override
-    public void registerUser() {
-
-    }
-
-    @Override
     public void registerUser(String username, char[] password, String firstName, String lastName, String address,
-                             String city, String state, String zipCode) throws NoSuchAlgorithmException
-            , InvalidKeySpecException {
+                             String state, String zipCode) {
 
         // Register a new user. Return the new user object.
-        User user = getUserDAO().createUser(username, HotelAuth.generatePasswordHash(String.valueOf(password)),
-                firstName, lastName, address, city, state, zipCode);
+        User user = null;
+        try {
+            user = getUserDAO().createUser(username, password, firstName, lastName, address, state, zipCode);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
 
         if(user != null){
             // Create a session attaching the user object. Return a UUID sessionId.
             UUID sessionId = getSessionDAO().createSession(user);
             // The user is now logged in. Notify the gui of the change.
-            // Pass in the type of user returned from our validate user method.
-            getGuiHandler().setHomePanel(getSessionDAO().validateUser(sessionId));
+            getGuiHandler().setSessionCtx(sessionId);
+            // Pass in the type of user returned from our validate user method to allow the view to properly
+            // configure the Home Panel based on user type.
+            getGuiHandler().setHomePanel(getSessionDAO().validateSession(sessionId));
         }
     }
 
     @Override
-    public void getInvoice(Reservation reservation) {
-        // Get the invoice a reservation.
-        getReservationDAO().getInvoice(reservation);
+    public void resetPassword(String username, char[] oldPassword, char[] newPassword) {
+        // Reset the user's password in the database.
+        getUserDAO().changePassword(username, oldPassword, newPassword);
+        // Return the user to the Home Page with appropriate buttons.
+        getGuiHandler().setHomePanel(getSessionDAO().validateSession(getGuiHandler().getSessionCtx()));
     }
 
     @Override
-    public void viewStatus(List<Room> roomReport) {
-        // Get all rooms in a List<Room>. Sort the list based on checked-in (currently in-use) 1st and reserved
-        // status 2nd.
+    public void modifyUser(String newUsername, String firstName, String lastName, String address, String state,
+                           String zipCode, boolean active) {
+        // Modify the user
+        UUID userSessionId = getGuiHandler().getSessionCtx();
+        UUID sessionUserId = getSessionDAO().getSessionUser(userSessionId).getUserId();
+        getUserDAO().updateUser(sessionUserId, newUsername, firstName, lastName, address, state, zipCode, active);
+        // Return the user to their Profile Page with updated values
     }
 
     @Override
-    public void resetPassword() {
-
+    public void createClerk(String username, String firstName, String lastName, String address, String state,
+                            String zipCode) {
+        // Restrict route to only Admin
+        if(getSessionDAO().validateSession(getGuiHandler().getSessionCtx()).equals("Admin")){
+            getUserDAO().createDefaultUser(Account.CLERK, username, firstName, lastName, address, state, zipCode);
+            // Flash a success message to the Admin and clear the textFields on the page.
+        }
+        return;
     }
 
-    @Override
-    public void resetPassword(User user, char[] oldPassword, char[] newPassword) {
-        // Make sure the old password is valid.
-        getUserDAO().resetPassword(user, oldPassword, newPassword);
-    }
-
-    @Override
-    public void modifyUser() {
-
-    }
-
-    @Override
-    public void modifyUser(User modifiedUser) {
-
-    }
-
-    @Override
-    public void createClerk() {
-
-    }
-
-    @Override
-    public void createClerk(User newClerk) {
-
-    }
-
-    @Override
-    public void payInvoice() {
-
-    }
-
-    @Override
-    public void payInvoice(Reservation reservation) {
-
-    }
-
+    /**
+     * APP CONTROLLER PRIVATE ACCESS METHODS
+     */
     private GuiHandler getGuiHandler() {
         return guiHandler;
     }

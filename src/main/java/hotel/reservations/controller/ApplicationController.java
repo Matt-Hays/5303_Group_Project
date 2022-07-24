@@ -43,7 +43,7 @@ public interface ApplicationController {
 
     // Use Case 11
     public void registerUser(String username, char[] password, String firstName, String lastName, String address,
-                             String city, String state, String zipCode) throws NoSuchAlgorithmException,
+                             String state, String zipCode) throws NoSuchAlgorithmException,
             InvalidKeySpecException;
 
     // Use Case 12
@@ -53,13 +53,15 @@ public interface ApplicationController {
     public void viewStatus(List<Room> roomReport);
 
     // Use Case 14
-    public void resetPassword(User user, char[] oldPassword, char[] newPassword);
+    public void resetPassword(String username, char[] oldPassword, char[] newPassword);
 
     // Use Case 15
-    public void modifyUser(User modifiedUser);
+    public void modifyUser(String newUsername, String firstName, String lastName, String address, String state,
+                           String zipCode, boolean active);
 
     // Use Case 16
-    public void createClerk(User newClerk);
+    public void createClerk(String username, String firstName, String lastName, String address, String state,
+                            String zipCode);
 
     // Use Case 17
     public void payInvoice(Reservation reservation);

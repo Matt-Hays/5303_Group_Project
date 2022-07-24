@@ -22,10 +22,11 @@ public interface IDatabase {
     public User getUser(UUID userId);
     public String getPassword(String username);
     public Response insertUser(User user, String hashed_password);
-    public Response insertUser(Account type, String username, String hashed_password,
-                               String fName, String lName, boolean active);
-    public Response updateUserProfile(User user);
-    public Response updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException;
+    public User insertUser(String username, String hashed_password,
+                               String fName, String lName, String address, String city, String state, String zipCode);
+    public Response updateUserProfile(UUID userId, String newUsername, String firstName, String lastName,
+                                      String address, String state, String zipCode, boolean active);
+    public Response updatePassword(String username, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException;
 
     // room methods
     public Room getRoom(int roomId);
