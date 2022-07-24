@@ -38,7 +38,6 @@ public class Reservation {
         this.arrival = arrival;
         this.departure = departure;
         this.status = status;
-        db = Database.Database();
 
         generateInvoice(room.getNightlyRate(), lengthOfStay());
         db.insertReservation(this);
@@ -64,7 +63,6 @@ public class Reservation {
         this.departure = departure;
         this.status = status;
 
-        db = Database.Database();
     }
 
     public int getRoomNumber() {

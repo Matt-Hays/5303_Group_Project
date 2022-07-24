@@ -39,6 +39,8 @@ public class Database implements IDatabase {
 	 */
 	public Database(String dbName) {
 		this.dbName = dbName;
+		db = this;
+		logger = Logger.getLogger(Database.class.getName());
 		db.connect();
 	}
 
@@ -639,6 +641,11 @@ public class Database implements IDatabase {
 		}
 
 		return Response.FAILURE;
+	}
+
+	@Override
+	public User insertUser(String username, String hashed_password, String fName, String lName, String address, String city, String state, String zipCode) {
+		return null;
 	}
 
 	/**

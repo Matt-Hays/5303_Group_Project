@@ -3,6 +3,7 @@ package hotel.reservations.controller;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.User;
+import hotel.reservations.views.controller.GuiHandler;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -65,4 +66,7 @@ public interface ApplicationController {
 
     // Use Case 17
     public void payInvoice(Reservation reservation);
+
+    // Misc. Methods
+    public void addViewsHandler(GuiHandler guiHandler);
 }
