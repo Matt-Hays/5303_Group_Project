@@ -205,10 +205,10 @@ public class Database implements IDatabase {
 			String username = rs.getString("username");
 			String firstName = rs.getString("firstName");
 			String lastName = rs.getString("lastName");
-			boolean active = rs.getBoolean("active");
 			String street = rs.getString("street");
 			String state = rs.getString("state");
 			String zip = rs.getString("zip");
+			boolean active = rs.getBoolean("active");
 			Account accountType = Account.valueOf(rs.getString("type"));
 
 			switch (accountType) {
@@ -628,7 +628,6 @@ public class Database implements IDatabase {
 
 	/**
 	 * inserts a user into the database
-	 * @param type the type of user
 	 * @param username the username
 	 * @param hashed_password the prehashed/salted password
 	 * @param fName first name
@@ -668,21 +667,24 @@ public class Database implements IDatabase {
 
 	/**
 	 * updates all attributes of a user profile in the database
-	 * @param user an objects that implements the user interface
 	 * @return
 	 */
-	public Response updateUserProfile(User user){
+	public Response updateUserProfile(UUID userId, String newUsername, String firstName, String lastName,
+									  String street, String state, String zipCode, boolean active){
 
 		try {
-			PreparedStatement ps = conn.prepareStatement("UPDATE `user` " +
-					"SET `username`=?, `firstName`=?, `lastName`=?, `active`=? " +
+			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user` " +
+					"SET `username`=?, `firstName`=?, `lastName`=?, `street` = ?, `state`=?, `zip`=?, `active`=? " +
 					"WHERE `id` =?");
 
-			ps.setString(1, user.getUsername().toLowerCase());
-			ps.setString(2, user.getFirstName());
-			ps.setString(3, user.getLastName());
-			ps.setBoolean(4, user.getActive());
-			ps.setString(5, user.getUserId().toString());
+			ps.setString(1, newUsername);
+			ps.setString(2, firstName);
+			ps.setString(3, lastName);
+			ps.setString(4, street);
+			ps.setString(5, state);
+			ps.setString(6, zipCode);
+			ps.setBoolean(7, active);
+			ps.setString(8, String.valueOf(userId));
 
 
 			// Execute the query

@@ -85,4 +85,23 @@ public class Admin implements User {
         return this.customer;
     }
 
+    public String getStreet() {
+        return this.street;
+    }
+
+    public String getState() {
+        return this.state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getZipCode() {
+        return this.zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
 }

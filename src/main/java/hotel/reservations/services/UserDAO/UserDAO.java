@@ -10,7 +10,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class UserDAO implements IUserDAO <User> {
+public class UserDAO implements IUserDAO {
 
     private Database db;
 

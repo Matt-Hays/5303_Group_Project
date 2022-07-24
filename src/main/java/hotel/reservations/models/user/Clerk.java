@@ -82,7 +82,7 @@ public class Clerk implements User {
     }
 
     public String getLastName() {
-        return this.lastName = lastName;
+        return this.lastName;
     }
 
     public void setLastName(String lastName) {
@@ -106,6 +106,15 @@ public class Clerk implements User {
         return this.customer;
     }
 
+    @Override
+    public String getStreet() {
+        return this.street;
+    }
+
+    @Override
+    public void setStreet(String street) {
+        this.street = street;
+    }
 
 
 }

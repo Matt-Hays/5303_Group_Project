@@ -84,18 +84,13 @@ public class Guest implements User {
         return this.active;
     }
 
+    public String getStreet() {
+        return this.street;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
+    public void setStreet(String street) {
+        this.street = street;
+    }
 
     public String getState() {
         return this.state;
@@ -138,7 +133,5 @@ public class Guest implements User {
 
         return this.customer;
     }
-
-
 
 }
