@@ -1,9 +1,5 @@
 package hotel.reservations.models.user;
 
-import hotel.reservations.models.room.Room;
-import hotel.reservations.persistence.Database;
-import hotel.reservations.services.Response;
-
 import java.util.UUID;
 
 public class Guest implements User {
@@ -20,14 +16,12 @@ public class Guest implements User {
     private String zip;
     private boolean active = true;
     private Guest customer = null;
-    Database db;
 
     public Guest(UUID userId, String username, String firstName, String lastName) {
         this.userId = userId;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
-        db = Database.Database();
         setCustomer(this);
     }
 
@@ -153,46 +147,22 @@ public class Guest implements User {
 
 
     @Override
-    public Response setCustomer(Guest guest) {
-        if (guest != null) {
+    public void setCustomer(Guest guest) {
             this.customer = guest;
-            return Response.SUCCESS;
-        }
-        return Response.FAILURE;
     }
 
 
-    public Response setCustomer(String username) {
-        Object guest = db.getUser(username);
-        if (guest != null) {
-            setCustomer((String) guest);
-            return Response.SUCCESS;
-        }
-        return Response.FAILURE;
-    }
+//    public void setCustomer(String username) {
+//        Object guest = db.getUser(username);
+//    }
 
 
     @Override
     public Guest getCustomer() {
+
         return this.customer;
     }
 
-
-    @Override
-    public Response updateUser(){
-        return db.updateUserProfile(this);
-    }
-
-
-    @Override
-    public Response updateRoom(Room room) {
-        return db.updateRoom(room);
-    }
-
-    public Response update() {
-
-        return db.updateUserProfile(this);
-    }
 
 
 }
