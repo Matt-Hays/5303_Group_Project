@@ -10,13 +10,11 @@ import java.util.UUID;
 
 public class HotelModels {
     private static ReservationCatalog reservationCatalog;
-    private static RoomCatalog roomCatalog;
     private static UserCatalog userCatalog;
     private static SessionCatalog sessionCatalog;
 
     public HotelModels() {
         this.reservationCatalog = ReservationCatalog.getReservationCatalog();
-        this.roomCatalog = RoomCatalog.getRoomCatalog();
         this.userCatalog = UserCatalog.getUserCatalog();
         this.sessionCatalog = SessionCatalog.getSessionCatalog();
     }
