@@ -144,6 +144,8 @@ public class PrimaryController implements ApplicationController{
             // Pass in the type of user returned from our validate user method to allow the view to properly
             // configure the Home Panel based on user type.
             getGuiHandler().setHomePanel(getSessionDAO().validateSession(sessionId));
+            // Return the user to the Home Page.
+            getGuiHandler().changeScreen("home");
         }
     }
 
@@ -169,6 +171,8 @@ public class PrimaryController implements ApplicationController{
             // Pass in the type of user returned from our validate user method to allow the view to properly
             // configure the Home Panel based on user type.
             getGuiHandler().setHomePanel(getSessionDAO().validateSession(sessionId));
+            // Return the user to the Home Page.
+            getGuiHandler().changeScreen("home");
         }
     }
 
@@ -178,6 +182,7 @@ public class PrimaryController implements ApplicationController{
         getUserDAO().changePassword(username, oldPassword, newPassword);
         // Return the user to the Home Page with appropriate buttons.
         getGuiHandler().setHomePanel(getSessionDAO().validateSession(getGuiHandler().getSessionCtx()));
+        getGuiHandler().changeScreen("home");
     }
 
     @Override
