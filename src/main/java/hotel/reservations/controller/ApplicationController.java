@@ -43,7 +43,8 @@ public interface ApplicationController {
 
     // Use Case 11
     public void registerUser(String username, char[] password, String firstName, String lastName, String address,
-                             String city, String state, String zipCode) throws NoSuchAlgorithmException, InvalidKeySpecException;
+                             String city, String state, String zipCode) throws NoSuchAlgorithmException,
+            InvalidKeySpecException;
 
     // Use Case 12
     public void getInvoice(Reservation reservation);
