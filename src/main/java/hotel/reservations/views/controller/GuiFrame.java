@@ -1,9 +1,11 @@
 package hotel.reservations.views.controller;
 
 import hotel.reservations.controller.ApplicationController;
+import hotel.reservations.views.admin.AdminPanel;
 import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
 import hotel.reservations.views.register.RegisterPanel;
+import hotel.reservations.views.reservation.ReservationPanel;
 import hotel.reservations.views.search.SearchPanel;
 
 import javax.swing.*;
@@ -71,27 +73,32 @@ public class GuiFrame extends JFrame implements GuiHandler{
     }
 
     @Override
-    public void getLoginPanel() {
-
+    public HomePanel getHomePanel() {
+        return (HomePanel) cardPanel.getComponent(0);
     }
 
     @Override
-    public void getReservationPanel() {
-
+    public LoginPanel getLoginPanel() {
+        return (LoginPanel) cardPanel.getComponent(1);
     }
 
     @Override
-    public void getAdminPanel() {
-
+    public ReservationPanel getReservationPanel() {
+        return null;
     }
 
     @Override
-    public void getRegisterPanel() {
-
+    public AdminPanel getAdminPanel() {
+        return null;
     }
 
     @Override
-    public void getSearchPanel() {
+    public RegisterPanel getRegisterPanel() {
+        return (RegisterPanel) cardPanel.getComponent(2);
+    }
 
+    @Override
+    public SearchPanel getSearchPanel() {
+        return (SearchPanel) cardPanel.getComponent(3);
     }
 }

@@ -1,6 +1,12 @@
 package hotel.reservations.views.controller;
 
 import hotel.reservations.controller.ApplicationController;
+import hotel.reservations.views.admin.AdminPanel;
+import hotel.reservations.views.home.HomePanel;
+import hotel.reservations.views.login.LoginPanel;
+import hotel.reservations.views.register.RegisterPanel;
+import hotel.reservations.views.reservation.ReservationPanel;
+import hotel.reservations.views.search.SearchPanel;
 
 import java.util.UUID;
 
@@ -14,13 +20,15 @@ public interface GuiHandler {
 
     public void setHomePanel(String userType);
 
-    public void getLoginPanel();
+    public HomePanel getHomePanel();
 
-    public void getReservationPanel();
+    public LoginPanel getLoginPanel();
 
-    public void getAdminPanel();
+    public ReservationPanel getReservationPanel();
 
-    public void getRegisterPanel();
+    public AdminPanel getAdminPanel();
 
-    public void getSearchPanel();
+    public RegisterPanel getRegisterPanel();
+
+    public SearchPanel getSearchPanel();
 }
