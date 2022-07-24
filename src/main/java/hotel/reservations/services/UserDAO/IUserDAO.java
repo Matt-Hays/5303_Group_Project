@@ -5,6 +5,8 @@ import hotel.reservations.models.user.Guest;
 import hotel.reservations.models.user.User;
 import hotel.reservations.services.Response;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -15,7 +17,7 @@ public interface IUserDAO<T> {
 
     public Response createDefaultUser(Account accountType, String username, String firstName, String lastName);
 
-    public boolean authenticateUser(String username, String password);
+    public User logIn(String username, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException;
 
     public Object getUserById(UUID userId);
 

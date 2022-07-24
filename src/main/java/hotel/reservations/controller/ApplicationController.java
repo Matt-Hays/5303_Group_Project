@@ -2,7 +2,7 @@ package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
-import hotel.reservations.models.user.IUser;
+import hotel.reservations.models.user.User;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface ApplicationController {
     // Use Case 01
-    public void createReservation(IUser guest, Room room, LocalDate arrival, LocalDate departure);
+    public void createReservation(User guest, Room room, LocalDate arrival, LocalDate departure);
 
     // Use Case 02
     public void cancelReservation(Reservation reservation);
@@ -39,7 +39,7 @@ public interface ApplicationController {
     public void modifyRoom(Room modifiedRoom);
 
     // Use Case 10
-    public void logIn(String username, char[] password);
+    public void logIn(String username, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException;
 
     // Use Case 11
     public void registerUser(String username, char[] password, String firstName, String lastName, String address,
@@ -53,13 +53,13 @@ public interface ApplicationController {
     public void viewStatus(List<Room> roomReport);
 
     // Use Case 14
-    public void resetPassword(IUser user, char[] oldPassword, char[] newPassword);
+    public void resetPassword(User user, char[] oldPassword, char[] newPassword);
 
     // Use Case 15
-    public void modifyUser(IUser modifiedUser);
+    public void modifyUser(User modifiedUser);
 
     // Use Case 16
-    public void createClerk(IUser newClerk);
+    public void createClerk(User newClerk);
 
     // Use Case 17
     public void payInvoice(Reservation reservation);

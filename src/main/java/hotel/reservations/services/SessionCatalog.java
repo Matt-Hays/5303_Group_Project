@@ -2,6 +2,7 @@ package hotel.reservations.services;
 
 
 import hotel.reservations.models.session.Session;
+import hotel.reservations.models.user.User;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,7 +23,7 @@ public class SessionCatalog {
         return sessionCatalog;
     }
 
-    public static UUID createSession(Object user){
+    public static UUID createSession(User user){
         Session newSession = new Session(user);
         addSession(newSession);
         return newSession.getId();

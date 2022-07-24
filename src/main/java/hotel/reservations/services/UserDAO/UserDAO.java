@@ -39,9 +39,13 @@ public class UserDAO implements IUserDAO <User> {
         return db.updateUserProfile(user);
     }
 
-    public boolean authenticateUser(String username, String password){
-
-        return false;
+    public User logIn(String username, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String hashedPw = db.getPassword(username);
+        if(HotelAuth.validatePassword(String.valueOf(password), hashedPw)){
+            User user = db.getUser(username);
+            return user;
+        }
+        return null;
     }
 
     public Object getUserById(UUID userId) {
