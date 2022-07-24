@@ -1,16 +1,17 @@
 package hotel.reservations.services.reservationDAO;
 
-import hotel.reservations.services.invoiceDAO.IInvoiceDAO;
 import hotel.reservations.models.reservation.Invoice;
+import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.persistence.Database;
-import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.services.reservationDAO.IReservationDAO;
+import hotel.reservations.services.invoiceDAO.IInvoiceDAO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class reservationDAO implements IReservationDAO, IInvoiceDAO {
+public class ReservationDAO implements IReservationDAO<Reservation>, IInvoiceDAO<Invoice> {
     private static reservationDAO dao = null;
     private Database db = null;
 
@@ -41,19 +42,24 @@ public class reservationDAO implements IReservationDAO, IInvoiceDAO {
     }
 
     @Override
+    public ArrayList<Reservation> getAllGuestReservations(UUID userId) {
+        return db.getReservationByGuestId(userId);
+    }
+
+    @Override
     public void updateReservation(Reservation reservation){
         db.updateReservation(reservation);
     }
 
     @Override
-    public void deleteReservation() {
-        db.deleteReservation(this);
+    public void deleteReservation(Reservation reservation) {
+        db.deleteReservation(reservation);
     }
 
     @Override
-    public void cancelReservation() {
-        status = ReservationStatus.CANCELLED;
-        db.updateReservation(this);
+    public void cancelReservation(Reservation reservation) {
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        db.updateReservation(reservation);
         // TODO: calculate 80% if need be....
     }
 
@@ -61,7 +67,7 @@ public class reservationDAO implements IReservationDAO, IInvoiceDAO {
     public Invoice generateInvoice(double roomRate, long stayLength) {
         Invoice invoice = new Invoice();
         invoice.setSubtotal(roomRate, stayLength);
-        this.invoiceId = invoice.getInvoiceId();
+        UUID invoiceId = invoice.getInvoiceId();
 
         db.insertInvoice(invoice);
         return invoice;

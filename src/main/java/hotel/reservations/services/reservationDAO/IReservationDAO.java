@@ -1,7 +1,6 @@
 package hotel.reservations.services.reservationDAO;
 
-import hotel.reservations.persistence.Database;
-import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.reservation.Invoice;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,4 +23,10 @@ public interface IReservationDAO {
     public ArrayList<Reservation> getAllGuestReservations(UUID userId);
 
     public void updateReservation(Reservation reservation);
+
+    void deleteReservation(Reservation reservation);
+
+    void cancelReservation(hotel.reservations.models.reservation.Reservation reservation);
+
+    Invoice generateInvoice(double roomRate, long stayLength);
 }
