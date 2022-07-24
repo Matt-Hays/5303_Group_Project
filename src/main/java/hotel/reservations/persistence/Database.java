@@ -24,8 +24,6 @@ public class Database implements IDatabase {
 	private Connection conn = null;
 	private Logger logger;
 
-	private static Database db = null;
-
 	/**
 	 * primary constructor
 	 */
@@ -39,7 +37,7 @@ public class Database implements IDatabase {
 	 */
 	public Database(String dbName) {
 		this.dbName = dbName;
-		db.connect();
+		connect();
 	}
 
 	private void connect() {
@@ -49,27 +47,27 @@ public class Database implements IDatabase {
 		try {
 			String url = "jdbc:sqlite:" + dbName;
 			// create a connection to the database
-			db.conn = DriverManager.getConnection(url);
+			conn = DriverManager.getConnection(url);
 
 			if (!exists) {
-				db.logger.info("DB " + dbName + " does not exist.");
+				logger.info("DB " + dbName + " does not exist.");
 				dbInit();
 			} else {
-				db.logger.info("DB " + dbName + " exists.");
+				logger.info("DB " + dbName + " exists.");
 			}
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 	}
 
 	public boolean close() {
 		try {
-			if (db.conn != null) {
-				db.logger.info("Closing the database.");
-				db.conn.close();
+			if (conn != null) {
+				logger.info("Closing the database.");
+				conn.close();
 			}
 		} catch (SQLException ex) {
-			db.logger.severe(ex.getMessage());
+			logger.severe(ex.getMessage());
 			return false;
 		}
 
@@ -82,7 +80,7 @@ public class Database implements IDatabase {
 	 */
 	public boolean ready() {
 		try {
-			return !db.conn.isClosed() && !db.conn.isReadOnly();
+			return !conn.isClosed() && !conn.isReadOnly();
 		} catch (SQLException e) {
 			return false;
 		}
@@ -90,7 +88,7 @@ public class Database implements IDatabase {
 
 	private Response dbInit() {
 
-		db.logger.info("Initializing the Database.");
+		logger.info("Initializing the Database.");
 		return createDatabase();
 	}
 
@@ -103,11 +101,11 @@ public class Database implements IDatabase {
 		ResultSet rs = null;
 
 		try {
-			Statement statement = db.conn.createStatement();
+			Statement statement = conn.createStatement();
 			rs = statement.executeQuery(sqlStatement);
 		} catch (SQLException e) {
 			// this may be expected
-//			db.logger.info(e.getMessage());
+//			logger.info(e.getMessage());
 			return null;
 		}
 
@@ -122,7 +120,7 @@ public class Database implements IDatabase {
 	public User getUser(String username) {
 		// Build the query
 		try {
-			PreparedStatement ps = db.conn.prepareStatement(
+			PreparedStatement ps = conn.prepareStatement(
 					"SELECT * FROM `user` WHERE `username`=?;"
 			);
 			ps.setString(1, username.toLowerCase());
@@ -150,7 +148,7 @@ public class Database implements IDatabase {
 			}
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return null;
@@ -161,7 +159,7 @@ public class Database implements IDatabase {
 
 		try {
 			// Query to pull all room information from db
-			PreparedStatement ps = db.conn.prepareStatement("SELECT * FROM `user`");
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `user`");
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
@@ -190,7 +188,7 @@ public class Database implements IDatabase {
 			} while (rs.next());
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return allUsers;
@@ -199,7 +197,7 @@ public class Database implements IDatabase {
 	public User getUser(UUID userId) {
 		// Build the query
 		try {
-			PreparedStatement ps = db.conn.prepareStatement(
+			PreparedStatement ps = conn.prepareStatement(
 					"SELECT * FROM `user` WHERE `id`=?;"
 			);
 			ps.setString(1, userId.toString());
@@ -226,7 +224,7 @@ public class Database implements IDatabase {
 			}
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return null;
@@ -240,7 +238,7 @@ public class Database implements IDatabase {
 	public Room getRoom(int roomId) {
 		// Build the query
 		try {
-			PreparedStatement ps = db.conn.prepareStatement(
+			PreparedStatement ps = conn.prepareStatement(
 					"SELECT `bedType`, `numBeds`, `nightlyRate`, `smoking`, `occupied` FROM `room` WHERE `id`=?;"
 			);
 			ps.setInt(1, roomId);
@@ -260,7 +258,7 @@ public class Database implements IDatabase {
 
 			return new Room(roomId, bedType, numBeds, smoking, occupied, nightlyRate);
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return null;
@@ -268,7 +266,7 @@ public class Database implements IDatabase {
 
 	public Response updateRoom (Room room) {
 		try {
-			PreparedStatement ps = this.conn.prepareStatement("UPDATE `room` " +
+			PreparedStatement ps = conn.prepareStatement("UPDATE `room` " +
 					"SET `bedType`=?, `numBeds`=?, `smoking`=?, `occupied`=?, `nightlyRate` =? " +
 					"WHERE id = ?");
 			ps.setString(1, room.getBedType().name());
@@ -283,7 +281,7 @@ public class Database implements IDatabase {
 				return Response.SUCCESS;
 			};
 		} catch (SQLException e) {
-			this.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 		return Response.FAILURE;
 	}
@@ -296,7 +294,7 @@ public class Database implements IDatabase {
 	public Reservation getReservation(UUID reservationId) {
 		// Build the query
 		try {
-			PreparedStatement ps = db.conn.prepareStatement(
+			PreparedStatement ps = conn.prepareStatement(
 					"SELECT * FROM `reservation` WHERE `id`=?;"
 			);
 			ps.setString(1, reservationId.toString());
@@ -319,7 +317,7 @@ public class Database implements IDatabase {
 			return new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status);
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return null;
@@ -329,7 +327,7 @@ public class Database implements IDatabase {
 		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
 		// Build the query
 		try {
-			PreparedStatement ps = db.conn.prepareStatement(
+			PreparedStatement ps = conn.prepareStatement(
 					"SELECT * FROM `reservation` WHERE `customerId`=?;"
 			);
 			ps.setString(1, customerId.toString());
@@ -357,7 +355,7 @@ public class Database implements IDatabase {
 			return reservations;
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return reservations;
@@ -367,7 +365,7 @@ public class Database implements IDatabase {
 
 	public Response insertReservation(Reservation r) {
 		try {
-			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `reservation` " +
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO `reservation` " +
 							"(`id`, `customerId`, `invoiceId`, `roomId`, `createdAt`, `arrival`, `departure`, `status`) " +
 							"VALUES (?,?,?,?,?,?,?,?)");
 			ps.setString(1, r.getReservationId().toString());
@@ -387,7 +385,7 @@ public class Database implements IDatabase {
 			return Response.SUCCESS;
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		// failure
@@ -396,7 +394,7 @@ public class Database implements IDatabase {
 
 	public Response insertInvoice(Invoice i) {
 		try {
-			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `invoice` " +
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO `invoice` " +
 					"(`id`, `taxRate`, `fees`, `subTotal`, `isPaid`) " +
 					"VALUES (?,?,?,?,?);");
 			ps.setString(1, i.getInvoiceId().toString());
@@ -411,7 +409,7 @@ public class Database implements IDatabase {
 			return Response.SUCCESS;
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 		// failure
 		return Response.FAILURE;
@@ -420,7 +418,7 @@ public class Database implements IDatabase {
 	public Invoice getInvoice(UUID invoiceId) {
 		// Build the query
 		try {
-			PreparedStatement ps = db.conn.prepareStatement(
+			PreparedStatement ps = conn.prepareStatement(
 					"SELECT * FROM `invoice` WHERE `id`=?;"
 			);
 			ps.setString(1, invoiceId.toString());
@@ -440,7 +438,7 @@ public class Database implements IDatabase {
 			return new Invoice(invoiceId, taxRate, fees, subTotal, isPaid);
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return null;
@@ -448,7 +446,7 @@ public class Database implements IDatabase {
 
 	public Response updateInvoice(Invoice i) {
 		try {
-			PreparedStatement ps = db.conn.prepareStatement("UPDATE `invoice` " +
+			PreparedStatement ps = conn.prepareStatement("UPDATE `invoice` " +
 					"SET `taxRate`=?, `fees`=?, `subTotal`=?, `isPaid`=? " +
 					"WHERE `id`=?;");
 			ps.setDouble(1, i.getTaxRate());
@@ -463,7 +461,7 @@ public class Database implements IDatabase {
 			}
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 		// failure
 		return Response.FAILURE;
@@ -471,7 +469,7 @@ public class Database implements IDatabase {
 
 	public Response updateReservation(Reservation r) {
 		try {
-			PreparedStatement ps = db.conn.prepareStatement("UPDATE `reservation` " +
+			PreparedStatement ps = conn.prepareStatement("UPDATE `reservation` " +
 					"SET `customerId`=?, `invoiceId`=?, `roomId`=?, `createdAt`=?, `arrival`=?, `departure`=?, `status`=? " +
 					"WHERE `id`=?;");
 			ps.setString(1, r.getCustomerId().toString());
@@ -489,7 +487,7 @@ public class Database implements IDatabase {
 			};
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 		// failure
 		return Response.FAILURE;
@@ -503,7 +501,7 @@ public class Database implements IDatabase {
 	public Response deleteReservation(Reservation r) {
 		try {
 			// invoices for the reservation
-			PreparedStatement ps = db.conn.prepareStatement("DELETE FROM `invoice` " +
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM `invoice` " +
 					"WHERE `id`=?;");
 
 			ps.setString(1, r.getInvoiceId().toString());
@@ -512,7 +510,7 @@ public class Database implements IDatabase {
 			ps.executeQuery();
 
 			// remove the reservation
-			ps = db.conn.prepareStatement("DELETE FROM `reservation` " +
+			ps = conn.prepareStatement("DELETE FROM `reservation` " +
 					"WHERE `id`=?;");
 
 			ps.setString(1, r.getReservationId().toString());
@@ -525,7 +523,7 @@ public class Database implements IDatabase {
 			}
 			return Response.SUCCESS;
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return Response.FAILURE;
@@ -541,7 +539,7 @@ public class Database implements IDatabase {
 
 		try {
 			// attempts to find reservations that overlap with requested arrival and departure dates
-			PreparedStatement ps = db.conn.prepareStatement("SELECT * FROM `reservation` WHERE " +
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `reservation` WHERE " +
 					"(date(?) >= date(arrival) AND date(?) <  date(departure)) OR " +
 					"(date(?) >  date(arrival) AND date(?) <= date(departure)) OR " +
 					"(date(?) <= date(arrival) AND date(?) >= date(departure));");
@@ -572,7 +570,7 @@ public class Database implements IDatabase {
 			} while (rs.next());
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return reservations;
@@ -586,7 +584,7 @@ public class Database implements IDatabase {
 	public String getPassword(String username) {
 		// Build the query
 		try {
-			PreparedStatement ps = db.conn.prepareStatement("SELECT `password` FROM `user` WHERE `username`=?;");
+			PreparedStatement ps = conn.prepareStatement("SELECT `password` FROM `user` WHERE `username`=?;");
 			ps.setString(1, username.toLowerCase());
 
 			// Execute the query
@@ -599,7 +597,7 @@ public class Database implements IDatabase {
 			return rs.getString("password");
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return null;
@@ -607,7 +605,7 @@ public class Database implements IDatabase {
 
 	public Response insertUser(User user, String hashed_password) {
 		try {
-			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO `user`" +
 					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
 					"values (?,?,?,?,?,?,?)");
 
@@ -626,7 +624,7 @@ public class Database implements IDatabase {
 			}
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return Response.FAILURE;
@@ -645,7 +643,7 @@ public class Database implements IDatabase {
 	public Response insertUser(Account type, String username, String hashed_password,
 							   String fName, String lName, boolean active) {
 		try {
-			PreparedStatement ps = db.conn.prepareStatement("INSERT INTO `user`" +
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO `user`" +
 					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
 					"values (?,?,?,?,?,?,?)");
 			ps.setString(1, String.valueOf(UUID.randomUUID()));
@@ -661,7 +659,7 @@ public class Database implements IDatabase {
 				return Response.SUCCESS;
 			};
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return Response.FAILURE;
@@ -675,7 +673,7 @@ public class Database implements IDatabase {
 	public Response updateUserProfile(User user){
 
 		try {
-			PreparedStatement ps = this.conn.prepareStatement("UPDATE `user` " +
+			PreparedStatement ps = conn.prepareStatement("UPDATE `user` " +
 					"SET `username`=?, `firstName`=?, `lastName`=?, `active`=? " +
 					"WHERE `id` =?");
 
@@ -690,7 +688,7 @@ public class Database implements IDatabase {
 				return Response.SUCCESS;
 			};
 		} catch (SQLException e) {
-			this.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return Response.FAILURE;
@@ -707,14 +705,14 @@ public class Database implements IDatabase {
 		String newPasswordHash = HotelAuth.generatePasswordHash(newPassword);
 			PreparedStatement ps = null;
 			try {
-				ps = db.conn.prepareStatement("UPDATE `user` SET `password` = ? WHERE `username`=?;");
+				ps = conn.prepareStatement("UPDATE `user` SET `password` = ? WHERE `username`=?;");
 				ps.setString(1, newPasswordHash);
 				ps.setString(2, username.toLowerCase());
 				if (ps.executeUpdate() == 1) {
 					return Response.SUCCESS;
 				}
 			} catch (SQLException e) {
-				db.logger.severe(e.getMessage());
+				logger.severe(e.getMessage());
 			}
 
 		return Response.FAILURE;
@@ -733,7 +731,7 @@ public class Database implements IDatabase {
 			ClassLoader classLoader = getClass().getClassLoader();
 			InputStream resource = classLoader.getResourceAsStream(sqlFile);
 			if (resource == null) {
-				db.logger.severe("Unable to locate resource: " + sqlFile);
+				logger.severe("Unable to locate resource: " + sqlFile);
 				return Response.FAILURE;
 			}
 
@@ -742,7 +740,7 @@ public class Database implements IDatabase {
 				query = readFromInputStream(resource);
 				resource.close();
 			} catch (IOException e) {
-				db.logger.severe("Unable to read from resource: " + sqlFile);
+				logger.severe("Unable to read from resource: " + sqlFile);
 				return Response.FAILURE;
 			}
 
@@ -791,7 +789,7 @@ public ArrayList<Room> getAllRooms() {
 
 		try {
 			// Query to pull all room information from db
-			PreparedStatement ps = db.conn.prepareStatement("SELECT * FROM `room`");
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `room`");
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
@@ -810,7 +808,7 @@ public ArrayList<Room> getAllRooms() {
 			} while (rs.next());
 
 		} catch (SQLException e) {
-			db.logger.severe(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 
 		return allRooms;
