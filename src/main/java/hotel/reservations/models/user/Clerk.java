@@ -15,7 +15,6 @@ public class Clerk implements User {
     private String lastName;
     private boolean active = true;
     private Guest customer = null;
-    Database db;
 
     public Clerk(UUID userId, String username, String firstName, String lastName) {
         this.userId = userId;
@@ -25,29 +24,6 @@ public class Clerk implements User {
         this.lastName = lastName;
     }
 
-
-    /**
-     * Attempts to lookup a guest in the db based on username
-     * @param username
-     * @return Guest instance on success, null on fail
-     */
-    public Guest getUser(String username) {
-        Object obj = db.getUser(username);
-        if (obj instanceof Guest) {
-            return (Guest)obj;
-        } else {
-            return null;
-        }
-    }
-
-    public Response setCustomer(String username) {
-        Guest guest = getUser(username);
-        if (guest != null) {
-            setCustomer(guest);
-            return Response.SUCCESS;
-        }
-        return Response.FAILURE;
-    }
 
     public UUID getUserId(){
         return this.userId;
@@ -89,12 +65,8 @@ public class Clerk implements User {
         this.active = active;
     }
 
-    public Response setCustomer(Guest guest) {
-        if (guest != null) {
+    public void setCustomer(Guest guest) {
             this.setCustomer(guest);
-            return Response.SUCCESS;
-        }
-        return Response.FAILURE;
     }
 
     @Override
@@ -102,12 +74,6 @@ public class Clerk implements User {
         return this.customer;
     }
 
-    public Response updateUser(){
-        return db.updateUserProfile(this);
-    }
 
-    public Response updateRoom (Room room) {
 
-        return db.updateRoom(room);
-    }
 }

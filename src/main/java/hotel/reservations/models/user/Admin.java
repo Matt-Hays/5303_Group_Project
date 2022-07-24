@@ -1,12 +1,6 @@
 package hotel.reservations.models.user;
 
-import hotel.reservations.models.room.Room;
-import hotel.reservations.persistence.Database;
-import hotel.reservations.services.authentication.HotelAuth;
-import hotel.reservations.services.Response;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
 
 public class Admin implements User {
@@ -18,14 +12,12 @@ public class Admin implements User {
     private String lastName;
     private boolean active = true;
     private Guest customer = null;
-    Database db;
 
     public Admin(UUID userId, String username, String firstName, String lastName) {
         this.userId = userId;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
-        db = Database.Database();
     }
 
 
@@ -79,25 +71,9 @@ public class Admin implements User {
         this.active = active;
     }
 
-    public Response setCustomer(Guest guest) {
-        if (guest != null) {
-            this.setCustomer(guest);
-            return Response.SUCCESS;
-        }
-        return Response.FAILURE;
-    }
-
     @Override
     public Guest getCustomer() {
         return this.customer;
     }
 
-    public Response updateUser(){
-        return db.updateUserProfile(this);
-    }
-
-    public Response updateRoom (Room room) {
-
-        return db.updateRoom(room);
-    }
 }

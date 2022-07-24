@@ -10,10 +10,13 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class UserDAO implements IUserDAO {
+public class UserDAO implements IUserDAO <User> {
 
     private Database db = null;
-    private UserDAO() { db = Database.Database(); }
+    User customer = null;
+    private UserDAO(Database db) {
+        this.db = Database.Database();
+    }
 
     /**
      * updates a user's password
@@ -31,6 +34,11 @@ public class UserDAO implements IUserDAO {
         return Response.FAILURE;
     }
 
+
+    public Response updateUser(User user) {
+        return db.updateUserProfile(user);
+    }
+
     public boolean authenticateUser(String username, String password){
 
         return false;
@@ -46,21 +54,12 @@ public class UserDAO implements IUserDAO {
         return db.getUser(username);
     }
 
-    @Override
-    public Response setCustomer(Guest guest) {
-        if (guest != null) {
-            guest.setCustomer(guest);
-            return Response.SUCCESS;
-        }
-        return Response.FAILURE;
-    }
-
 
     public Response updateUser(){
         return db.updateUserProfile(this);
     }
 
-    public Response createUser(Account accountType, String username, String firstName, String lastName) {
+    public Response createDefaultUser(Account accountType, String username, String firstName, String lastName) {
         String hashed_password;
 
         try {
@@ -88,7 +87,7 @@ public class UserDAO implements IUserDAO {
         db.insertUser(type, username, hashed_password, fName, lName, active);
     }
 
-    public ArrayList<Object> getAllUsers() {
+    public ArrayList<User> getAllUsers() {
         return db.getAllUsers();
     }
 
