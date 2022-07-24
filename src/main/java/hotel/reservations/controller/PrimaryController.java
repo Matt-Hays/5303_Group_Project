@@ -38,6 +38,7 @@ public class PrimaryController implements ApplicationController{
         // Invoice is created in DAO flow.
         Reservation reservation = getReservationDAO().createReservation(guest, room, arrival, departure);
         // Return user to the Reservation Page displaying their new Reservation.
+        getGuiHandler().setHomePanel("Admin");
     }
 
     @Override
