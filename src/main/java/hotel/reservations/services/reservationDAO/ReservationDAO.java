@@ -6,14 +6,14 @@ import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.Database;
-import hotel.reservations.services.InvoiceDAO.IInvoiceDAO;
+import hotel.reservations.services.invoiceDAO.IInvoiceDAO;
 import hotel.reservations.services.Response;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class ReservationDAO implements IReservationDAO<Reservation>, IInvoiceDAO<Invoice> {
+public class ReservationDAO implements IReservationDAO, IInvoiceDAO {
     private static ReservationDAO dao = null;
     private Database db = null;
 

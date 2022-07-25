@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public interface IReservationDAO<R> {
+public interface IReservationDAO {
     /*
      * Returns a list of reservations that overlap with the requested arrival and departure dates
      * @param arrival arrival date
