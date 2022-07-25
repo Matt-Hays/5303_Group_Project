@@ -2,13 +2,15 @@ package hotel.reservations.services.reservationDAO;
 
 import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.room.Room;
+import hotel.reservations.models.user.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public interface IReservationDAO {
-     /*
+public interface IReservationDAO<R> {
+    /*
      * Returns a list of reservations that overlap with the requested arrival and departure dates
      * @param arrival arrival date
      * @param departure departure date
@@ -29,5 +31,7 @@ public interface IReservationDAO {
 
     void cancelReservation(hotel.reservations.models.reservation.Reservation reservation);
 
-    Invoice generateInvoice(double roomRate, long stayLength);
+    public Invoice generateInvoice(double roomRate, long stayLength);
+
+    public Reservation createReservation(User guest, Room room, LocalDate start, LocalDate end);
 }
