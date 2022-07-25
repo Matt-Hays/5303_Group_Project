@@ -13,6 +13,12 @@ public interface User {
     public void setFirstName(String firstName);
     public String getLastName();
     public void setLastName(String lastName);
+    public String getStreet();
+    public void setStreet(String street);
+    public void setState(String state);
+    public String getState();
+    public void setZipCode(String zipCode);
+    public String getZipCode();
     public boolean getActive();
     public void setActive(boolean active);
     void setCustomer(Guest guest);

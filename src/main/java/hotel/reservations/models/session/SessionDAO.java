@@ -1,6 +1,6 @@
 package hotel.reservations.models.session;
 
-import hotel.reservations.models.user.IUserDAO;
+import hotel.reservations.models.user.User;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,19 +15,34 @@ public class SessionDAO implements ISessionDAO{
     }
 
     @Override
-    public void createSession(IUserDAO user) {
-       sessions.add(new Session(user));
+    public UUID createSession(User user) {
+        Session newSession = new Session(user);
+       sessions.add(newSession);
+       return newSession.getId();
     }
 
     @Override
-    public boolean validateSession(UUID sessionId) {
+    public String validateSession(UUID sessionId) {
         Iterator<Session> itr = sessions.iterator();
         while(itr.hasNext()){
-            if(itr.next().getId().equals(sessionId)){
-                return true;
+            Session temp = itr.next();
+            if(temp.getId().equals(sessionId)){
+                return temp.getUser().getClass().getSimpleName();
             }
         }
-        return false;
+        return null;
+    }
+
+    @Override
+    public User getSessionUser(UUID sessionId) {
+        Iterator<Session> itr = sessions.iterator();
+        while(itr.hasNext()){
+            Session temp = itr.next();
+            if(temp.getId().equals(sessionId)){
+                return temp.getUser();
+            }
+        }
+        return null;
     }
 
     @Override

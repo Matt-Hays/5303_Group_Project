@@ -10,7 +10,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public interface IUserDAO<T> {
+public interface IUserDAO {
     public Response changePassword(String username, char[] currentPassword, char[] newPassword);
 
     public Response updateUser(UUID userId, String newUsername, String firstName, String lastName, String street,

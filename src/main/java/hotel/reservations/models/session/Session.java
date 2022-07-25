@@ -1,6 +1,8 @@
 package hotel.reservations.models.session;
 
 
+import hotel.reservations.models.user.User;
+
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,10 +10,10 @@ import java.util.UUID;
 
 public class Session {
     private UUID id;
-    private Object user;
+    private User user;
     private Timestamp expiry;
 
-    public Session(Object loggedInUser) {
+    public Session(User loggedInUser) {
         this.id = UUID.randomUUID();
         this.user = loggedInUser;
         this.expiry = generateExpiry();
@@ -34,11 +36,11 @@ public class Session {
         this.id = id;
     }
 
-    public Object getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(Object user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
