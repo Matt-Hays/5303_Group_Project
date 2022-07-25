@@ -1,8 +1,8 @@
 package hotel.reservations.models.reservation;
 
-import hotel.reservations.services.reservationDAO.reservationDAO;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.Guest;
+import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.Database;
 
 import java.time.LocalDate;
@@ -19,7 +19,6 @@ public class Reservation {
     private LocalDate departure;
     private ReservationStatus status = ReservationStatus.AWAITING;
 
-    Database db = null;
 
     /**
      * Used when a reservation doesn't exist
@@ -30,20 +29,15 @@ public class Reservation {
      * @param departure
      * @param status
      */
-    public Reservation(Guest guest, Room room, LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
+    public Reservation(User guest, Room room, LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
         // randomly generate a reservationID
         this.reservationID = UUID.randomUUID();
-        this.customerId = guest.userId;
+        this.customerId = guest.getUserId();
         this.roomNumber = room.getRoomId();
         this.createdAt = createdAt;
         this.arrival = arrival;
         this.departure = departure;
         this.status = status;
-        db = Database.Database();
-
-        reservationDAO rDAO = new reservationDAO();
-        reservationDAO.generateInvoice(room.getNightlyRate(), lengthOfStay());
-        db.insertReservation(this);
     }
 
     /**
@@ -65,8 +59,6 @@ public class Reservation {
         this.arrival = arrival;
         this.departure = departure;
         this.status = status;
-
-        db = Database.Database();
     }
 
     public int getRoomNumber() {
@@ -166,5 +158,9 @@ public class Reservation {
 
     public UUID getInvoiceId() {
         return invoiceId;
+    }
+
+    public void setInvoiceId(UUID invoiceId) {
+        this.invoiceId = invoiceId;
     }
 }
