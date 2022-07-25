@@ -185,9 +185,7 @@ public class PrimaryController implements ApplicationController{
         User user = null;
         try {
             user = getUserDAO().createUser(username, password, firstName, lastName, address, state, zipCode);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
         }
 
@@ -232,7 +230,7 @@ public class PrimaryController implements ApplicationController{
     public void createClerk(String username, String firstName, String lastName, String address, String state,
                             String zipCode) {
         // Restrict route to only Admin
-        if(getSessionDAO().validateSession(getGuiHandler().getSessionCtx()).equals("Admin")){
+        if(getSessionDAO().validateSession(getGuiHandler().getSessionCtx()).equals(Account.ADMIN)){
             getUserDAO().createDefaultUser(Account.CLERK, username, firstName, lastName, address, state, zipCode);
             // Flash a success message to the Admin and clear the textFields on the page.
         }

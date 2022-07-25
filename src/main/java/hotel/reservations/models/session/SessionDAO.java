@@ -1,5 +1,6 @@
 package hotel.reservations.models.session;
 
+import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
 
 import java.util.ArrayList;
@@ -22,12 +23,12 @@ public class SessionDAO implements ISessionDAO{
     }
 
     @Override
-    public String validateSession(UUID sessionId) {
+    public Account validateSession(UUID sessionId) {
         Iterator<Session> itr = sessions.iterator();
         while(itr.hasNext()){
             Session temp = itr.next();
             if(temp.getId().equals(sessionId)){
-                return temp.getUser().getClass().getSimpleName();
+                return temp.getUser().getAccountType();
             }
         }
         return null;

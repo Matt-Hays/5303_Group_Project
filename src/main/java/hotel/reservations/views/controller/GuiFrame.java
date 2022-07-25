@@ -1,6 +1,7 @@
 package hotel.reservations.views.controller;
 
 import hotel.reservations.controller.ApplicationController;
+import hotel.reservations.models.user.Account;
 import hotel.reservations.views.admin.AdminPanel;
 import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
@@ -68,7 +69,7 @@ public class GuiFrame extends JFrame implements GuiHandler{
     }
 
     @Override
-    public void setHomePanel(String userType) {
+    public void setHomePanel(Account userType) {
 
     }
 
