@@ -9,19 +9,19 @@ public class Guest implements User {
     private String username;
     private String firstName;
     private String lastName;
-    private String address1;
-    private String address2;
-    private String city;
-    private String state;
-    private String zip;
+    private String street, state, zipCode;
     private boolean active = true;
     private Guest customer = null;
 
-    public Guest(UUID userId, String username, String firstName, String lastName) {
+    public Guest(UUID userId, String username, String firstName, String lastName, String street, String state,
+                 String zipCode) {
         this.userId = userId;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.street=street;
+        this.state=state;
+        this.zipCode=zipCode;
         setCustomer(this);
     }
 
@@ -85,34 +85,16 @@ public class Guest implements User {
     }
 
 
-    public String getAddress1() {
-        return this.address1;
-    }
 
 
-    public void setAddress1(String address1) {
-        this.address1 = address1;
-    }
 
 
-    public String getAddress2() {
-        return this.address2;
-    }
 
 
-    public void setAddress2(String address2) {
-        this.address2 = address2;
-    }
 
 
-    public String getCity() {
-        return this.city;
-    }
 
 
-    public void setCity(String city) {
-        this.city = city;
-    }
 
 
     public String getState() {
@@ -125,13 +107,13 @@ public class Guest implements User {
     }
 
 
-    public String getZip() {
-        return this.zip;
+    public String getZipCode() {
+        return this.zipCode;
     }
 
 
-    public void setZip(String zip) {
-        this.zip = zip;
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
 
@@ -150,12 +132,6 @@ public class Guest implements User {
     public void setCustomer(Guest guest) {
             this.customer = guest;
     }
-
-
-//    public void setCustomer(String username) {
-//        Object guest = db.getUser(username);
-//    }
-
 
     @Override
     public Guest getCustomer() {
