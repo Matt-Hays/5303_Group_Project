@@ -6,6 +6,8 @@ import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.reservationDAO.IReservationDAO;
 import hotel.reservations.services.invoiceDAO.IInvoiceDAO;
+import hotel.reservations.models.room.Room;
+import hotel.reservations.services.Response;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -47,6 +49,9 @@ public class ReservationDAO implements IReservationDAO<Reservation>, IInvoiceDAO
     }
 
     @Override
+    public Reservation createReservation(LocalDate arrival, LocalDate departure, Room room);
+
+    @Override
     public void updateReservation(Reservation reservation){
         db.updateReservation(reservation);
     }
@@ -71,6 +76,26 @@ public class ReservationDAO implements IReservationDAO<Reservation>, IInvoiceDAO
 
         db.insertInvoice(invoice);
         return invoice;
+    }
+
+    @Override
+    public Invoice getInvoice(UUID invoiceId) {
+        return null;
+    }
+
+    @Override
+    public Invoice createInvoice() {
+        return null;
+    }
+
+    @Override
+    public Response updateInvoice(Invoice invoice) {
+        return null;
+    }
+
+    @Override
+    public Response deleteInvoice(Invoice invoice) {
+        return null;
     }
 
 }

@@ -1,29 +1,23 @@
 package hotel.reservations.services.invoiceDAO;
 
 import hotel.reservations.models.reservation.Invoice;
+import hotel.reservations.services.Response;
+
+import java.util.UUID;
 
 public interface IInvoiceDAO {
 
     // getInvoice
-    public Invoice getInvoice(UUID invoiceId) {
-        return Invoice;
-    }
+    public Invoice getInvoice(UUID invoiceId);
 
     // createInvoice
-    public Invoice createInvoice(){
-        invoice = new Invoice();
-        return invoice;
-    }
+    public Invoice createInvoice();
 
     // updateInvoice
-    public Invoice updateInvoice(Invoice invoice){
-        return invoice;
-    }
+    public Response updateInvoice(Invoice invoice);
 
     // deleteInvoice
-    public deleteInvoice(Invoice invoice){
-        return invoice;
-    }
+    public Response deleteInvoice(Invoice invoice);
 }
 
 

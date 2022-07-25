@@ -1,6 +1,7 @@
 package hotel.reservations.services.reservationDAO;
 
 import hotel.reservations.models.reservation.Invoice;
+import hotel.reservations.models.reservation.Reservation;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
