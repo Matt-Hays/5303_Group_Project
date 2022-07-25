@@ -23,9 +23,9 @@ public interface IDatabase {
     public String getPassword(String username);
     public Response insertUser(User user, String hashed_password);
     public Response insertUser(Account type, String username, String hashed_password,
-                               String fName, String lName, boolean active);
+                               String fName, String lName, String street, String state, String zipCode);
     public Response updateUserProfile(User user);
-    public Response updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException;
+    public Response updatePassword(String username, String newPasswordHash);
 
     // room methods
     public Room getRoom(int roomId);

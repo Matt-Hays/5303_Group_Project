@@ -16,6 +16,8 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.logging.FileHandler;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class Database implements IDatabase {
@@ -37,6 +39,15 @@ public class Database implements IDatabase {
 	 */
 	public Database(String dbName) {
 		this.dbName = dbName;
+		logger = Logger.getLogger(Database.class.getName());
+		// log to file rather than console
+		try {
+			FileHandler handler = new FileHandler("hr2s.log");
+			logger.addHandler(handler);
+			LogManager.getLogManager().reset();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		connect();
 	}
 
@@ -132,20 +143,31 @@ public class Database implements IDatabase {
 				return null;
 			}
 
-			UUID userId = UUID.fromString(rs.getString("id"));
-			String firstName = rs.getString("firstName");
-			String lastName = rs.getString("lastName");
-			boolean active = rs.getBoolean("active");
-			Account accountType = Account.valueOf(rs.getString("type"));
+			return getUser(rs);
 
-			switch (accountType) {
-				case CLERK:
-					return new Clerk(userId, username.toLowerCase(), firstName, lastName);
-				case ADMIN:
-					return new Admin(userId, username.toLowerCase(), firstName, lastName);
-				case GUEST:
-					return new Guest(userId, username.toLowerCase(), firstName, lastName);
+		} catch (SQLException e) {
+			logger.severe(e.getMessage());
+		}
+
+		return null;
+	}
+
+	public User getUser(UUID userId) {
+		// Build the query
+		try {
+			PreparedStatement ps = conn.prepareStatement(
+					"SELECT * FROM `user` WHERE `id`=?;"
+			);
+			ps.setString(1, userId.toString());
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				logger.info("Empty set for userId: " + userId);
+				return null;
 			}
+
+			return getUser(rs);
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -166,26 +188,9 @@ public class Database implements IDatabase {
 				return allUsers;
 			}
 
-			do {
-				UUID userId = UUID.fromString(rs.getString("id"));
-				String username = rs.getString("username");
-				String firstName = rs.getString("firstName");
-				String lastName = rs.getString("lastName");
-				boolean active = rs.getBoolean("active");
-				Account accountType = Account.valueOf(rs.getString("type"));
-
-				switch (accountType) {
-					case CLERK:
-						allUsers.add(new Clerk(userId, username.toLowerCase(), firstName, lastName));
-						break;
-					case ADMIN:
-						allUsers.add(new Admin(userId, username.toLowerCase(), firstName, lastName));
-						break;
-					case GUEST:
-						allUsers.add(new Guest(userId, username.toLowerCase(), firstName, lastName));
-				}
-
-			} while (rs.next());
+			while (rs.next()) {
+				allUsers.add(getUser(rs));
+			}
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -194,33 +199,25 @@ public class Database implements IDatabase {
 		return allUsers;
 	}
 
-	public User getUser(UUID userId) {
-		// Build the query
+	private User getUser(ResultSet rs) {
 		try {
-			PreparedStatement ps = conn.prepareStatement(
-					"SELECT * FROM `user` WHERE `id`=?;"
-			);
-			ps.setString(1, userId.toString());
-
-			// Execute the query
-			ResultSet rs = ps.executeQuery();
-			if (!validate(rs)) {
-				logger.info("Empty set for userId: " + userId);
-				return null;
-			}
+			UUID userId = UUID.fromString(rs.getString("id"));
 			String username = rs.getString("username");
 			String firstName = rs.getString("firstName");
 			String lastName = rs.getString("lastName");
 			boolean active = rs.getBoolean("active");
+			String street = rs.getString("street");
+			String state = rs.getString("state");
+			String zip = rs.getString("zip");
 			Account accountType = Account.valueOf(rs.getString("type"));
 
 			switch (accountType) {
 				case CLERK:
-					return new Clerk(userId, username.toLowerCase(), firstName, lastName);
+					return new Clerk(userId, username.toLowerCase(), firstName, lastName, street, state, zip);
 				case ADMIN:
-					return new Admin(userId, username.toLowerCase(), firstName, lastName);
+					return new Admin(userId, username.toLowerCase(), firstName, lastName, street, state, zip);
 				case GUEST:
-					return new Guest(userId, username.toLowerCase(), firstName, lastName);
+					return new Guest(userId, username.toLowerCase(), firstName, lastName, street, state, zip);
 			}
 
 		} catch (SQLException e) {
@@ -339,8 +336,7 @@ public class Database implements IDatabase {
 				return reservations;
 			}
 
-			do {
-
+			while (rs.next()) {
 				UUID reservationId = UUID.fromString(rs.getString("id"));
 				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
 				int roomId = rs.getInt("roomId");
@@ -350,7 +346,7 @@ public class Database implements IDatabase {
 				ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
 
 				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
-			} while (rs.next());
+			}
 
 			return reservations;
 
@@ -558,7 +554,7 @@ public class Database implements IDatabase {
 				return reservations;
 			}
 
-			do {
+			while (rs.next()) {
 				UUID reservationId = UUID.fromString(rs.getString("id"));
 				UUID customerId = UUID.fromString(rs.getString("customerId"));
 				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
@@ -567,7 +563,7 @@ public class Database implements IDatabase {
 				ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
 
 				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
-			} while (rs.next());
+			}
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -637,22 +633,27 @@ public class Database implements IDatabase {
 	 * @param hashed_password the prehashed/salted password
 	 * @param fName first name
 	 * @param lName lastname
-	 * @param active is the account active
+	 * @param street street
+	 * @param state state
+	 * @param zipCode zip
 	 * @return
 	 */
 	public Response insertUser(Account type, String username, String hashed_password,
-							   String fName, String lName, boolean active) {
+							   String fName, String lName, String street, String state, String zipCode) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO `user`" +
-					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
-					"values (?,?,?,?,?,?,?)");
+					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `street`, `state`, `zip`, `active`) " +
+					"values (?,?,?,?,?,?,?,?,?,?)");
 			ps.setString(1, String.valueOf(UUID.randomUUID()));
 			ps.setString(2, type.name());
 			ps.setString(3, username.toLowerCase());
 			ps.setString(4, hashed_password);
 			ps.setString(5, fName);
 			ps.setString(6, lName);
-			ps.setBoolean(7, active);
+			ps.setString(7, street);
+			ps.setString(8, state);
+			ps.setString(9, zipCode);
+			ps.setBoolean(10, true);
 
 			// Execute the query
 			if (ps.executeUpdate() == 1) {
@@ -683,6 +684,33 @@ public class Database implements IDatabase {
 			ps.setBoolean(4, user.getActive());
 			ps.setString(5, user.getUserId().toString());
 
+
+			// Execute the query
+			if (ps.executeUpdate() > 0) {
+				return Response.SUCCESS;
+			};
+		} catch (SQLException e) {
+			logger.severe(e.getMessage());
+		}
+
+		return Response.FAILURE;
+	}
+
+	public Response updateUserProfile(UUID userId, String username, String firstName, String lastName, String street, String state, String zipCode, Boolean active) {
+		try {
+			PreparedStatement ps = conn.prepareStatement("UPDATE `user` " +
+					"SET `username`=?, `firstName`=?, `lastName`=?, `street`=?, `state`=?, `zipCode`=?, `active`=? " +
+					"WHERE `id` =?");
+
+			ps.setString(1, username.toLowerCase());
+			ps.setString(2, firstName);
+			ps.setString(3, lastName);
+			ps.setString(4, street);
+			ps.setString(5, state);
+			ps.setString(6, zipCode);
+			ps.setBoolean(7, active);
+			ps.setString(8, String.valueOf(userId));
+
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
 				return Response.SUCCESS;
@@ -697,23 +725,22 @@ public class Database implements IDatabase {
 	/**
 	 * updates the password for a user in the database
 	 * @param username the username to match on
-	 * @param existingPassword to validate the user
-	 * @param newPassword to update in the database
+	 * @param newPasswordHash to validate the user
 	 * @return
 	 */
-	public Response updatePassword(String username, String existingPassword, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		String newPasswordHash = HotelAuth.generatePasswordHash(newPassword);
-			PreparedStatement ps = null;
-			try {
-				ps = conn.prepareStatement("UPDATE `user` SET `password` = ? WHERE `username`=?;");
-				ps.setString(1, newPasswordHash);
-				ps.setString(2, username.toLowerCase());
-				if (ps.executeUpdate() == 1) {
-					return Response.SUCCESS;
-				}
-			} catch (SQLException e) {
-				logger.severe(e.getMessage());
+	public Response updatePassword(String username, String newPasswordHash) {
+
+		PreparedStatement ps = null;
+		try {
+			ps = conn.prepareStatement("UPDATE `user` SET `password` = ? WHERE `username`=?;");
+			ps.setString(1, newPasswordHash);
+			ps.setString(2, username.toLowerCase());
+			if (ps.executeUpdate() == 1) {
+				return Response.SUCCESS;
 			}
+		} catch (SQLException e) {
+			logger.severe(e.getMessage());
+		}
 
 		return Response.FAILURE;
 	}
@@ -796,7 +823,7 @@ public ArrayList<Room> getAllRooms() {
 				return allRooms;
 			}
 
-			do {
+			while (rs.next()) {
 				int roomId = rs.getInt("id");
 				boolean smoking = rs.getBoolean("smoking");
 				int numBeds = rs.getInt("numBeds");
@@ -805,7 +832,7 @@ public ArrayList<Room> getAllRooms() {
 				double nightly_rate = rs.getDouble("nightlyRate");
 
 				allRooms.add(new Room(roomId, bedType, numBeds, smoking, occupied, nightly_rate));
-			} while (rs.next());
+			}
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
