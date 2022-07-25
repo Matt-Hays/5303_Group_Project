@@ -57,6 +57,7 @@ public class HotelModels {
         userCatalog.createNewGuest(Account.CLERK, username, hashed_password, fName, lName, true);
     }
 
+    /* Commenting out and moving these to the Reservation DAO Interface
     public ArrayList<Reservation> getAllGuestReservations(UUID userId){
         return reservationCatalog.findReservations(userId);
     }
@@ -72,4 +73,5 @@ public class HotelModels {
     public void logout(UUID sessionId){
         sessionCatalog.deleteSession(sessionId);
     }
+     */
 }

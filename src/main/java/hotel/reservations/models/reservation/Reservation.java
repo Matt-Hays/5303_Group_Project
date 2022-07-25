@@ -1,5 +1,6 @@
 package hotel.reservations.models.reservation;
 
+import hotel.reservations.services.reservationDAO.reservationDAO;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.Guest;
 import hotel.reservations.persistence.Database;
@@ -40,7 +41,8 @@ public class Reservation {
         this.status = status;
         db = Database.Database();
 
-        generateInvoice(room.getNightlyRate(), lengthOfStay());
+        reservationDAO rDAO = new reservationDAO();
+        reservationDAO.generateInvoice(room.getNightlyRate(), lengthOfStay());
         db.insertReservation(this);
     }
 
@@ -156,24 +158,6 @@ public class Reservation {
 
     public void setStatus(ReservationStatus status) {
         this.status = status;
-    }
-
-    public void deleteReservation() {
-        db.deleteReservation(this);
-    }
-    public void cancelReservation() {
-        status = ReservationStatus.CANCELLED;
-        db.updateReservation(this);
-        // TODO: calculate 80% if need be....
-    }
-
-    Invoice generateInvoice(double roomRate, long stayLength) {
-        Invoice invoice = new Invoice();
-        invoice.setSubtotal(roomRate, stayLength);
-        this.invoiceId = invoice.getInvoiceId();
-
-        db.insertInvoice(invoice);
-        return invoice;
     }
 
     public ReservationStatus getStatus() {
