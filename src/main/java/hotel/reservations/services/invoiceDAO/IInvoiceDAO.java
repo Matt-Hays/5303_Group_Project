@@ -10,14 +10,15 @@ public interface IInvoiceDAO {
     // getInvoice
     public Invoice getInvoice(UUID invoiceId);
 
+
     // createInvoice
     public Invoice createInvoice();
+
 
     // updateInvoice
     public Response updateInvoice(Invoice invoice);
 
+
     // deleteInvoice
     public Response deleteInvoice(Invoice invoice);
 }
-
-

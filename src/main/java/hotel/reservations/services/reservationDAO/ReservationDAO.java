@@ -3,17 +3,17 @@ package hotel.reservations.services.reservationDAO;
 import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.reservation.ReservationStatus;
-import hotel.reservations.persistence.Database;
-import hotel.reservations.services.reservationDAO.IReservationDAO;
-import hotel.reservations.services.invoiceDAO.IInvoiceDAO;
 import hotel.reservations.models.room.Room;
+import hotel.reservations.models.user.User;
+import hotel.reservations.persistence.Database;
+import hotel.reservations.services.invoiceDAO.IInvoiceDAO;
 import hotel.reservations.services.Response;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class ReservationDAO implements IReservationDAO<Reservation>, IInvoiceDAO<Invoice> {
+public class ReservationDAO implements IReservationDAO, IInvoiceDAO {
     private static ReservationDAO dao = null;
     private Database db = null;
 
@@ -21,7 +21,7 @@ public class ReservationDAO implements IReservationDAO<Reservation>, IInvoiceDAO
         this.db = db;
     }
 
-     /**
+    /**
      * Returns a list of reservations that overlap with the requested arrival and departure dates
      * @param arrival arrival date
      * @param departure departure date
@@ -47,9 +47,6 @@ public class ReservationDAO implements IReservationDAO<Reservation>, IInvoiceDAO
     public ArrayList<Reservation> getAllGuestReservations(UUID userId) {
         return db.getReservationByGuestId(userId);
     }
-
-    @Override
-    public Reservation createReservation(LocalDate arrival, LocalDate departure, Room room);
 
     @Override
     public void updateReservation(Reservation reservation){
@@ -85,7 +82,7 @@ public class ReservationDAO implements IReservationDAO<Reservation>, IInvoiceDAO
 
     @Override
     public Invoice createInvoice() {
-        return null;
+        return new Invoice();
     }
 
     @Override
@@ -98,4 +95,25 @@ public class ReservationDAO implements IReservationDAO<Reservation>, IInvoiceDAO
         return null;
     }
 
+    @Override
+    public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
+        Reservation reservation = new Reservation(guest, room, LocalDate.now(), arrival, departure, ReservationStatus.AWAITING);
+
+        Invoice invoice = createInvoice();
+        invoice.setSubtotal(room.getNightlyRate(), reservation.lengthOfStay());
+        // TODO: fees?
+
+        Response response = db.insertInvoice(invoice);
+        if (Response.FAILURE == response) {
+            return null;
+        }
+        reservation.setInvoiceId(invoice.getInvoiceId());
+
+        response = db.insertReservation(reservation);
+        if (Response.FAILURE == response) {
+            return null;
+        }
+
+        return reservation;
+    }
 }

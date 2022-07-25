@@ -13,17 +13,49 @@ public class Clerk implements User {
     private String username;
     private String firstName;
     private String lastName;
+    private String street, state, zipCode;
     private boolean active = true;
     private Guest customer = null;
 
-    public Clerk(UUID userId, String username, String firstName, String lastName) {
+    public Clerk(UUID userId, String username, String firstName, String lastName, String street, String state,
+                 String zipCode) {
         this.userId = userId;
         this.accountType = Account.CLERK;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.street=street;
+        this.state=state;
+        this.zipCode=zipCode;
     }
 
+    public String getAddress() {
+        return street;
+    }
+
+    public void setAddress(String street) {
+        this.street = street;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
 
     public UUID getUserId(){
         return this.userId;

@@ -9,15 +9,19 @@ public class Admin implements User {
     public final Account accountType = Account.ADMIN;
     private String username;
     private String firstName;
-    private String lastName;
+    private String lastName, street, state, zipCode;
     private boolean active = true;
     private Guest customer = null;
 
-    public Admin(UUID userId, String username, String firstName, String lastName) {
+    public Admin(UUID userId, String username, String firstName, String lastName, String street, String state,
+                 String zipCode) {
         this.userId = userId;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.street=street;
+        this.state=state;
+        this.zipCode=zipCode;
     }
 
 
@@ -69,6 +73,11 @@ public class Admin implements User {
     @Override
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public void setCustomer(Guest guest) {
+
     }
 
     @Override
