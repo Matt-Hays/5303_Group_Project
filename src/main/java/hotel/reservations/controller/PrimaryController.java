@@ -7,6 +7,10 @@ import hotel.reservations.models.session.SessionDAO;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.Database;
+import hotel.reservations.services.reservationDAO.IReservationDAO;
+import hotel.reservations.services.reservationDAO.ReservationDAO;
+import hotel.reservations.services.roomDAO.IRoomDAO;
+import hotel.reservations.services.roomDAO.RoomDAO;
 import hotel.reservations.services.UserDAO.IUserDAO;
 import hotel.reservations.services.UserDAO.UserDAO;
 import hotel.reservations.views.controller.GuiHandler;
@@ -21,16 +25,16 @@ public class PrimaryController implements ApplicationController{
     private GuiHandler guiHandler;
     private ISessionDAO sessionDAO;
     private IUserDAO userDAO;
-//    private IReservationDAO reservationDAO;
-//    private IRoomDAO roomDAO;
+    private IReservationDAO reservationDAO;
+    private IRoomDAO roomDAO;
 
 
     public PrimaryController(Database db){
         this.guiHandler = null;
         this.sessionDAO = new SessionDAO();
         this.userDAO = new UserDAO(db);
-//        this.reservationDAO = new ResvationDAO(db);
-//        this.roomDAO = new RoomDAO(db);
+        this.reservationDAO = new ReservationDAO(db);
+        this.roomDAO = new RoomDAO(db);
     }
 
     @Override
@@ -40,7 +44,7 @@ public class PrimaryController implements ApplicationController{
 
     @Override
     public void createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
-
+        reservationDAO.createReservation(guest, room, arrival, departure);
     }
 
     @Override
@@ -179,12 +183,12 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
-    public void registerUser(String username, char[] password, String firstName, String lastName, String address,
+    public void registerUser(String username, char[] password, String firstName, String lastName, String street,
                              String state, String zipCode) {
         // Register a new user. Return the new user object.
         User user = null;
         try {
-            user = getUserDAO().createUser(username, password, firstName, lastName, address, state, zipCode);
+            user = getUserDAO().createUser(Account.GUEST, username, password, firstName, lastName, street, state, zipCode);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         } catch (InvalidKeySpecException e) {
@@ -219,21 +223,21 @@ public class PrimaryController implements ApplicationController{
     }
 
     @Override
-    public void modifyUser(String newUsername, String firstName, String lastName, String address, String state,
+    public void modifyUser(String newUsername, String firstName, String lastName, String street, String state,
                            String zipCode, boolean active) {
         // Modify the user
         UUID userSessionId = getGuiHandler().getSessionCtx();
         UUID sessionUserId = getSessionDAO().getSessionUser(userSessionId).getUserId();
-        getUserDAO().updateUser(sessionUserId, newUsername, firstName, lastName, address, state, zipCode, active);
+        getUserDAO().updateUser(sessionUserId, newUsername, firstName, lastName, street, state, zipCode, active);
         // Return the user to their Profile Page with updated values
     }
 
     @Override
-    public void createClerk(String username, String firstName, String lastName, String address, String state,
+    public void createClerk(String username, String firstName, String lastName, String street, String state,
                             String zipCode) {
         // Restrict route to only Admin
         if(getSessionDAO().validateSession(getGuiHandler().getSessionCtx()).equals("Admin")){
-            getUserDAO().createDefaultUser(Account.CLERK, username, firstName, lastName, address, state, zipCode);
+            getUserDAO().createDefaultUser(Account.CLERK, username, firstName, lastName, street, state, zipCode);
             // Flash a success message to the Admin and clear the textFields on the page.
         }
         return;
