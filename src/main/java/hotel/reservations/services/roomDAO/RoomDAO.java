@@ -1,10 +1,9 @@
-package hotel.reservations.services.RoomDAO;
+package hotel.reservations.services.roomDAO;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.Response;
-import hotel.reservations.services.RoomCatalog;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -53,33 +52,3 @@ public class RoomDAO implements IRoomDAO {
         return db.updateRoom(room);
     }
 }
-
-/*    public Room getRoom(int roomId) {
-        // Build the query
-        try {
-            PreparedStatement ps = db.conn.prepareStatement(
-                    "SELECT `bedType`, `numBeds`, `smoking`, `occupied`, 'nightly_rate' FROM `room` WHERE `id`=?;"
-            );
-            ps.setInt(1, roomId);
-
-            // Execute the query
-            ResultSet rs = ps.executeQuery();
-            if (!validate(rs)) {
-                logger.info("Empty set for room: " + roomId);
-                return null;
-            }
-
-            Bed bedType = Bed.valueOf(rs.getString("bedType"));
-            int numBeds = rs.getInt("numBeds");
-            Boolean smoking = rs.getBoolean("smoking");
-            Boolean occupied = rs.getBoolean("occupied");
-            double nightly_rate = rs.getDouble("nightly_rate");
-
-            return new Room(roomId, bedType, numBeds, smoking, occupied, nightly_rate);
-
-        } catch (SQLException e) {
-            db.logger.severe(e.getMessage());
-        }
-
-        return null;
-    }*/

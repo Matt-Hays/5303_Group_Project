@@ -1,5 +1,5 @@
 
-package hotel.reservations.services.RoomDAO;
+package hotel.reservations.services.roomDAO;
 
 import hotel.reservations.models.room.Room;
 import hotel.reservations.services.Response;
