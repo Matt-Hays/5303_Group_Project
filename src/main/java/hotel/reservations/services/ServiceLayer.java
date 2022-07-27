@@ -126,7 +126,7 @@ public class ServiceLayer implements Services {
     }
 
     /**
-     * USe Case 09 - Modify Room
+     * Use Case 09 - Modify Room
      * @param modifiedRoom The modified Room from the GUI.
      * @return The modified Room from the persistence layer.
      */
@@ -149,7 +149,7 @@ public class ServiceLayer implements Services {
     }
 
     /**
-     * USe Case 11 - Register User
+     * Use Case 11 - Register User
      * @param newUser The new User from the GUI.
      * @return A valid Session or null if creation failure occurs.
      */
