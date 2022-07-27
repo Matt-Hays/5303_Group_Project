@@ -1,3 +1,13 @@
+/**
+ * The Services Layer interface.
+ * Implemented by ServiceLayer.java.
+ * Provides manipulation of data access objects to accomplish application requirements.
+ *
+ * @author Matthew Hays
+ * @version 1.0
+ *     - Initial draft 7/27/22 Matthew Hays
+ */
+
 package hotel.reservations.services;
 
 import hotel.reservations.models.reservation.Invoice;
@@ -7,13 +17,7 @@ import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.Clerk;
 import hotel.reservations.models.user.Guest;
 import hotel.reservations.models.user.User;
-import hotel.reservations.views.controller.GuiHandler;
-
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 public interface Services {
     // Use Case 01
