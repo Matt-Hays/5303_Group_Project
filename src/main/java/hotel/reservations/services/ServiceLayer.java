@@ -1,5 +1,5 @@
 /**
- * The concrete implementation of the Services interface.
+ * The concrete implementation of the Services.java interface.
  * Provides manipulation of data access objects to accomplish application requirements.
  *
  * @author Matthew Hays
@@ -201,6 +201,7 @@ public class ServiceLayer implements Services {
      */
     @Override
     public User modifyUser(Session session, User modifiedUser) {
+        // Ensure the user that is being modified belongs to the authenticated user.
         if(userDAO.getUser(modifiedUser).getUserId().equals(session.getUser().getUserId()))
             return userDAO.updateUser(modifiedUser);
         return null;

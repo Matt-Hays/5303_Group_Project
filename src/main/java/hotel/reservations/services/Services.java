@@ -1,6 +1,5 @@
 /**
- * The Services Layer interface.
- * Implemented by ServiceLayer.java.
+ * The Services Layer interface implemented by ServiceLayer.java.
  * Provides manipulation of data access objects to accomplish application requirements.
  *
  * @author Matthew Hays
