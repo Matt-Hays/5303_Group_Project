@@ -6,7 +6,13 @@ import hotel.reservations.services.roomDAO.IRoomDAO;
 import java.util.Set;
 import java.util.UUID;
 
-public class RoomService implements Service<Room, UUID> {
+/**
+ * Provides service into the Room.
+ * @author matthewhays
+ * @version 1.0
+ *     - Initial draft 7/29/22 Matthew Hays
+ */
+public class RoomService implements Service<Room, UUID>, SearchService<Room> {
     private final IRoomDAO roomDAO;
 
     public RoomService(IRoomDAO roomDAO) {
@@ -36,5 +42,10 @@ public class RoomService implements Service<Room, UUID> {
     @Override
     public void delete(Room object) {
 
+    }
+
+    @Override
+    public Room search(Room object) {
+        return null;
     }
 }
