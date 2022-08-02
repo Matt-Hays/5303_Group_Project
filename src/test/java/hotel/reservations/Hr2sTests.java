@@ -23,8 +23,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(OrderAnnotation.class)
 class Hr2sTests {
@@ -167,5 +166,29 @@ class Hr2sTests {
         assertTrue(found);
     }
 
-    
+    @Test
+    @Order(8)
+    void modifyProfile() {
+        User user1 = db.getUser("clerk1");
+        User user2 = db.getUser("clerk1");
+
+        ud.updateUser(user2.getUserId(), "newClerk", "Clerky", "McClerk", "123 Main St", "CA", "12345", true);
+        assertNotSame(user1.getUsername(), user2.getUsername());
+    }
+
+    @Test
+    @Order(9)
+    void resetPassword() {
+
+        ud.createUser(Account.GUEST, "guest1", "password", "John", "Smith", "123 Main", "VA", "123456");
+        User user1 = db.getUser("guest1");
+        String str = "password123";
+        String strOld = "password";
+        ud.changePassword("guest1", strOld.toCharArray(),str.toCharArray());
+
+        assertNotNull(ud.logIn("user1", str.toCharArray()));
+    }
+
+
+
 }
