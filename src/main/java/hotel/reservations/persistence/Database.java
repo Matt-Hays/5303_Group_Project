@@ -617,39 +617,6 @@ public class Database implements IDatabase {
 	}
 
 	/**
-	 * Inserts a user into the db
-	 * @param user
-	 * @param hashed_password
-	 * @return Response - Success or Fail
-	 */
-	public Response insertUser(User user, String hashed_password) {
-		try {
-			PreparedStatement ps = conn.prepareStatement("INSERT INTO `user`" +
-					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
-					"values (?,?,?,?,?,?,?)");
-
-			ps.setString(1, user.getUserId().toString());
-			ps.setString(2, user.getAccountType().name());
-			ps.setString(3, user.getUsername().toLowerCase());
-			ps.setString(5, user.getFirstName());
-			ps.setString(6, user.getLastName());
-			ps.setBoolean(7, user.getActive());
-
-			ps.setString(4, hashed_password);
-
-			// Execute the query
-			if (ps.executeUpdate() > 0) {
-				return Response.SUCCESS;
-			}
-
-		} catch (SQLException e) {
-			logger.severe(e.getMessage());
-		}
-
-		return Response.FAILURE;
-	}
-
-	/**
 	 * inserts a user into the database
 	 * @param username the username
 	 * @param hashed_password the prehashed/salted password
@@ -660,13 +627,13 @@ public class Database implements IDatabase {
 	 * @param zipCode zip
 	 * @return
 	 */
-	public Response insertUser(Account type, String username, String hashed_password,
-							   String fName, String lName, String street, String state, String zipCode) {
+	public Response insertUser(UUID userId, Account type, String username, String hashed_password,
+							   String fName, String lName, String street, String state, String zipCode, Boolean active) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO `user`" +
 					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `street`, `state`, `zip`, `active`) " +
 					"values (?,?,?,?,?,?,?,?,?,?)");
-			ps.setString(1, String.valueOf(UUID.randomUUID()));
+			ps.setString(1, String.valueOf(userId));
 			ps.setString(2, type.name());
 			ps.setString(3, username.toLowerCase());
 			ps.setString(4, hashed_password);
@@ -675,7 +642,7 @@ public class Database implements IDatabase {
 			ps.setString(7, street);
 			ps.setString(8, state);
 			ps.setString(9, zipCode);
-			ps.setBoolean(10, true);
+			ps.setBoolean(10, active);
 
 			// Execute the query
 			if (ps.executeUpdate() == 1) {

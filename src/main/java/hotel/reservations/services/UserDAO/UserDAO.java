@@ -146,21 +146,7 @@ public class UserDAO implements IUserDAO {
             return Response.FAILURE;
         }
 
-        if (accountType == Account.CLERK) {
-            Clerk clerk = new Clerk(UUID.randomUUID(), username.toLowerCase(), firstName, lastName, street, state,
-                    zipCode, true);
-            return db.insertUser(clerk, hashed_password);
-        } else if (accountType == Account.ADMIN) {
-            Admin admin = new Admin(UUID.randomUUID(), username.toLowerCase(), firstName, lastName, street, state,
-                    zipCode, true);
-            return db.insertUser(admin, hashed_password);
-        } else if (accountType == Account.GUEST) {
-            Guest guest = new Guest(UUID.randomUUID(), username.toLowerCase(), firstName, lastName, street, state,
-                    zipCode, true);
-            return db.insertUser(guest, hashed_password);
-        }
-
-        return Response.FAILURE;
+        return db.insertUser(UUID.randomUUID(), accountType, username, hashed_password, firstName, lastName, street, state, zipCode, true);
     }
 
     /**
@@ -181,9 +167,8 @@ public class UserDAO implements IUserDAO {
     public User createUser(Account accountType, String username, char[] password, String fName, String lName, String street,
                            String state, String zipCode) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-        Response response =  db.insertUser(accountType, username, HotelAuth.generatePasswordHash(String.valueOf(password)), fName, lName, street,
-                state,
-                zipCode);
+        Response response =  db.insertUser(UUID.randomUUID(), accountType, username, HotelAuth.generatePasswordHash(String.valueOf(password)),
+            fName, lName, street, state, zipCode, true);
 
         if (response == Response.FAILURE) {
             return null;
