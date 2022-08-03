@@ -14,4 +14,5 @@ public interface IRoomDAO {
     public ArrayList<hotel.reservations.models.room.Room> getAllRooms();
     public Response updateRoom(hotel.reservations.models.room.Room room);
     public Response createRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
+    public Response deleteRoom(int roomId);
 }

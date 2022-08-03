@@ -137,6 +137,12 @@ public class RoomDAO implements IRoomDAO {
             room.getSmoking(), room.getOccupied(), room.getNightlyRate());
     }
 
-    // TODO: Remove rooms
-
+    /**
+     * Delete a room from the db
+     * @param roomId
+     * @return Response - Success or Fail
+     */
+    public Response deleteRoom(int roomId) {
+        return db.deleteRoom(roomId);
+    }
 }
