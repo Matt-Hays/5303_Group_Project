@@ -27,14 +27,14 @@ public class Database implements IDatabase {
 	private Logger logger;
 
 	/**
-	 * primary constructor
+	 * Default constructor
 	 */
 	public Database() {
 		this("hr2s.sqlite");
 	}
 
 	/**
-	 * test constructor for a test database that allows changing the db name
+	 * Constructor that allows for spcificaton of database name
 	 * @param dbName
 	 */
 	public Database(String dbName) {
@@ -51,6 +51,9 @@ public class Database implements IDatabase {
 		connect();
 	}
 
+	/**
+	 * Connect to the database if it exists
+	 */
 	private void connect() {
 		File dbFile = new File(dbName);
 		boolean exists = dbFile.exists();
@@ -71,6 +74,10 @@ public class Database implements IDatabase {
 		}
 	}
 
+	/**
+	 * close the database
+	 * @return success or failure
+	 */
 	public boolean close() {
 		try {
 			if (conn != null) {
@@ -97,6 +104,10 @@ public class Database implements IDatabase {
 		}
 	}
 
+	/**
+	 * Initialize the database
+	 * @return Response - Success or Fail
+	 */
 	private Response dbInit() {
 
 		logger.info("Initializing the Database.");
@@ -152,6 +163,11 @@ public class Database implements IDatabase {
 		return null;
 	}
 
+	/**
+	 * Retrieves a specific user based on userId
+	 * @param userId the user id
+	 * @return a user
+	 */
 	public User getUser(UUID userId) {
 		// Build the query
 		try {
@@ -176,6 +192,10 @@ public class Database implements IDatabase {
 		return null;
 	}
 
+	/**
+	 * Retrieves all user entries
+	 * @return a list of users
+	 */
 	public ArrayList<User> getAllUsers() {
 		ArrayList<User> allUsers = new ArrayList<User>();
 
@@ -199,6 +219,11 @@ public class Database implements IDatabase {
 		return allUsers;
 	}
 
+	/**
+	 * Converts a resultsset from a user query into a user object
+	 * @param rs the resultset
+	 * @return a user object
+	 */
 	private User getUser(ResultSet rs) {
 		try {
 			UUID userId = UUID.fromString(rs.getString("id"));
@@ -261,6 +286,11 @@ public class Database implements IDatabase {
 		return null;
 	}
 
+	/**
+	 * Updates a room
+	 * @param room a room
+	 * @return Response - Success or Fail
+	 */
 	public Response updateRoom (Room room) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("UPDATE `room` " +
@@ -320,6 +350,11 @@ public class Database implements IDatabase {
 		return null;
 	}
 
+	/**
+	 * Query reservation by guest ID
+	 * @param customerID the id of the guest
+	 * @return list of reservations
+	 */
 	public ArrayList<Reservation> getReservationByGuestId(UUID customerId) {
 		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
 		// Build the query
@@ -357,8 +392,11 @@ public class Database implements IDatabase {
 		return reservations;
 	}
 
-
-
+	/**
+	 * Inserts a new reservation into the Database
+	 * @param r
+	 * @return Response - Success or Fail
+	 */
 	public Response insertReservation(Reservation r) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO `reservation` " +
@@ -388,6 +426,11 @@ public class Database implements IDatabase {
 		return Response.FAILURE;
 	}
 
+	/**
+	 * Inserts a new invoice into the database
+	 * @param i an invoice
+	 * @return Response - Success or Fail
+	 */
 	public Response insertInvoice(Invoice i) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO `invoice` " +
@@ -411,6 +454,11 @@ public class Database implements IDatabase {
 		return Response.FAILURE;
 	}
 
+	/**
+	 * Retrieves an invoice from the database
+	 * @param invoiceID the ID of an invoice
+	 * @return an invoice
+	 */
 	public Invoice getInvoice(UUID invoiceId) {
 		// Build the query
 		try {
@@ -440,6 +488,11 @@ public class Database implements IDatabase {
 		return null;
 	}
 
+	/**
+	 * Update an invoice
+	 * @param i an invoice
+	 * @return Response - Success or Fail
+	 */
 	public Response updateInvoice(Invoice i) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("UPDATE `invoice` " +
@@ -463,6 +516,10 @@ public class Database implements IDatabase {
 		return Response.FAILURE;
 	}
 
+	/**
+	 * Updates a reservation
+	 * @param r a reservation object
+	 */
 	public Response updateReservation(Reservation r) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("UPDATE `reservation` " +
@@ -599,6 +656,12 @@ public class Database implements IDatabase {
 		return null;
 	}
 
+	/**
+	 * Inserts a user into the db
+	 * @param user
+	 * @param hashed_password
+	 * @return Response - Success or Fail
+	 */
 	public Response insertUser(User user, String hashed_password) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO `user`" +
@@ -698,6 +761,18 @@ public class Database implements IDatabase {
 		return Response.FAILURE;
 	}
 
+	/**
+	 * Updates a user
+	 * @param userId
+	 * @param username
+	 * @param firstName
+	 * @param lastName
+	 * @param street
+	 * @param state
+	 * @param zipCode
+	 * @param active
+	 * @return
+	 */
 	public Response updateUserProfile(UUID userId, String username, String firstName, String lastName, String street, String state, String zipCode, Boolean active) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("UPDATE `user` " +
@@ -813,7 +888,10 @@ public class Database implements IDatabase {
 		return resultStringBuilder.toString();
 	}
 
-public ArrayList<Room> getAllRooms() {
+	/**
+	 * Returns a list of rooms
+	 */
+	public ArrayList<Room> getAllRooms() {
 		ArrayList<Room> allRooms = new ArrayList<Room>();
 
 		try {
