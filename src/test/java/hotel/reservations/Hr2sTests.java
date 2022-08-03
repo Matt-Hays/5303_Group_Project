@@ -3,6 +3,7 @@ package hotel.reservations;
 import hotel.reservations.controller.ApplicationController;
 import hotel.reservations.controller.PrimaryController;
 import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.*;
 import hotel.reservations.persistence.Database;
@@ -123,7 +124,9 @@ class Hr2sTests {
     @Test
     @Order(6)
     void getAvailableRooms() {
-        ArrayList<Room> rooms = roomDAO.filterRooms(LocalDate.parse("2022-01-01"), LocalDate.parse("2022-12-01"));
+        LocalDate arrival = LocalDate.parse("2022-01-01");
+        LocalDate departure = LocalDate.parse("2022-12-01");
+        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure, Bed.KING, 1, false);
         assertTrue(rooms.size() > 0);
     }
 
@@ -135,7 +138,7 @@ class Hr2sTests {
         LocalDate departure = LocalDate.parse("2022-09-15");
 
         // find available rooms
-        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure);
+        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure, Bed.QUEEN, 2, false);
         if (rooms.size() == 0) {
             Assertions.fail("No rooms found");
             return;

@@ -195,7 +195,7 @@ public class Database implements IDatabase {
 	 */
 	public ResultSet getAllUsers() {
 		try {
-			// Query to pull all room information from db
+			// Query to pull all user information from db
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `user`");
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
@@ -217,7 +217,7 @@ public class Database implements IDatabase {
 	 * @param roomId the room number
 	 * @return a Room instance or null
 	 */
-	public Room getRoom(int roomId) {
+	public ResultSet getRoom(int roomId) {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
@@ -231,14 +231,9 @@ public class Database implements IDatabase {
 				logger.info("Empty set for room: " + roomId);
 				return null;
 			}
+			
+			return rs;
 
-			Bed bedType = Bed.valueOf(rs.getString("bedType"));
-			int numBeds = rs.getInt("numBeds");
-			Boolean smoking = rs.getBoolean("smoking");
-			Boolean occupied = rs.getBoolean("occupied");
-			double nightlyRate = rs.getDouble("nightlyRate");
-
-			return new Room(roomId, bedType, numBeds, smoking, occupied, nightlyRate);
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
 		}
@@ -251,17 +246,17 @@ public class Database implements IDatabase {
 	 * @param room a room
 	 * @return Response - Success or Fail
 	 */
-	public Response updateRoom (Room room) {
+	public Response updateRoom (int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("UPDATE `room` " +
 					"SET `bedType`=?, `numBeds`=?, `smoking`=?, `occupied`=?, `nightlyRate` =? " +
 					"WHERE id = ?");
-			ps.setString(1, room.getBedType().name());
-			ps.setInt(2, room.getNumBeds());
-			ps.setBoolean(3, room.getSmoking());
-			ps.setBoolean(4, room.getOccupied());
-			ps.setDouble(5, room.getNightlyRate());
-			ps.setInt(6, room.getRoomId());
+			ps.setString(1, bedType.name());
+			ps.setInt(2, numBeds);
+			ps.setBoolean(3, smoking);
+			ps.setBoolean(4, occupied);
+			ps.setDouble(5, nightly_rate);
+			ps.setInt(6, roomId);
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
@@ -414,6 +409,57 @@ public class Database implements IDatabase {
 		return Response.FAILURE;
 	}
 
+	/**
+	 * Insert a new room in the database
+	 * @param roomId
+	 * @param bedType
+	 * @param numBeds
+	 * @param smoking
+	 * @param occupied
+	 * @param nightly_rate
+	 * @return Response - Success or Fail
+	 */
+	public Response insertRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate) {
+		try {
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO `room` " +
+					"(`id`, `bedType`, `numBeds`, `smoking`, `occupied`, `nightlyRate`) " +
+					"VALUES (?,?,?,?,?,?);");
+
+			ps.setInt(1, roomId);
+			ps.setString(2, bedType.name());
+			ps.setInt(3, numBeds);
+			ps.setBoolean(4, smoking);
+			ps.setBoolean(5, occupied);
+			ps.setDouble(6, nightly_rate);
+
+
+			// Execute the query
+			ps.executeUpdate();
+			return Response.SUCCESS;
+
+		} catch (SQLException e) {
+			logger.severe(e.getMessage());
+		}
+		// failure
+		return Response.FAILURE;
+	}
+
+	public Response deleteRoom(int roomId) {
+		try {
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM `room` WHERE `id`=?");
+
+			ps.setInt(1, roomId);
+
+			// Execute the query
+			ps.executeUpdate();
+			return Response.SUCCESS;
+
+		} catch (SQLException e) {
+			logger.severe(e.getMessage());
+		}
+		// failure
+		return Response.FAILURE;
+	}
 	/**
 	 * Retrieves an invoice from the database
 	 * @param invoiceId the ID of an invoice
@@ -816,10 +862,10 @@ public class Database implements IDatabase {
 	}
 
 	/**
-	 * Returns a list of rooms
+	 * Gets all rooms form the database
+	 * @return Resultset or NULL on error
 	 */
-	public ArrayList<Room> getAllRooms() {
-		ArrayList<Room> allRooms = new ArrayList<Room>();
+	public ResultSet getAllRooms() {
 
 		try {
 			// Query to pull all room information from db
@@ -827,25 +873,48 @@ public class Database implements IDatabase {
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
-				return allRooms;
+				return null;
 			}
 
-			while (rs.next()) {
-				int roomId = rs.getInt("id");
-				boolean smoking = rs.getBoolean("smoking");
-				int numBeds = rs.getInt("numBeds");
-				Bed bedType = Bed.valueOf(rs.getString("bedType"));
-				boolean occupied = rs.getBoolean("occupied");
-				double nightly_rate = rs.getDouble("nightlyRate");
-
-				allRooms.add(new Room(roomId, bedType, numBeds, smoking, occupied, nightly_rate));
-			}
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
 		}
 
-		return allRooms;
+		return null;
 	}
 
+	/**
+	 * Find rooms matching criteria
+	 * @param bedType
+	 * @param numBeds
+	 * @param smoking
+	 * @return Resultset or NULL if error
+	 */
+	public ResultSet getFilteredRooms(Bed bedType, int numBeds, boolean smoking) {
+
+		try {
+			// Query to pull all room information from db
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `room` " +
+				"WHERE `bedType`=? AND `numBeds`=? AND `smoking`=?");
+
+				ps.setString(1, bedType.name());
+			ps.setInt(2, numBeds);
+			ps.setBoolean(3, smoking);
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				return null;
+			}
+
+			return rs;
+
+		} catch (SQLException e) {
+			logger.severe(e.getMessage());
+		}
+
+		return null;
+	}
 }

@@ -2,7 +2,7 @@ package hotel.reservations.persistence;
 
 import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
-import hotel.reservations.models.room.Room;
+import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.services.Response;
 
@@ -20,16 +20,18 @@ public interface IDatabase {
     public ResultSet getAllUsers();
     public String getPassword(String username);
     public Response insertUser(UUID userId, Account type, String username, String hashed_password,
-                               String fName, String lName, String street, String state, String zipCode, Boolean active);
+        String fName, String lName, String street, String state, String zipCode, Boolean active);
     public Response updateUserProfile(UUID userId, String newUsername, String firstName, String lastName,
-									  String street, String state, String zipCode, boolean active);
+        String street, String state, String zipCode, boolean active);
 
     public Response updatePassword(String username, String newPasswordHash);
 
     // room methods
-    public Room getRoom(int roomId);
-    public ArrayList<Room> getAllRooms();
-    public Response updateRoom (Room room);
+    public ResultSet getRoom(int roomId);
+    public ResultSet getAllRooms();
+    public Response updateRoom (int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
+    public Response insertRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
+    public Response deleteRoom(int roomId);
 
     // reservation methods
     public Reservation getReservation(UUID reservationId);
