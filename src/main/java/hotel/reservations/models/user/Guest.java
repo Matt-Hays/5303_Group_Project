@@ -14,7 +14,7 @@ public class Guest implements User {
     private Guest customer = null;
 
     public Guest(UUID userId, String username, String firstName, String lastName, String street, String state,
-                 String zipCode) {
+                 String zipCode, Boolean active) {
         this.userId = userId;
         this.username = username;
         this.firstName = firstName;
@@ -22,6 +22,7 @@ public class Guest implements User {
         this.street=street;
         this.state=state;
         this.zipCode=zipCode;
+        this.active = active;
         setCustomer(this);
     }
 

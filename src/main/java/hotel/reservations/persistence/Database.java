@@ -6,12 +6,9 @@ import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.*;
-import hotel.reservations.services.authentication.HotelAuth;
 import hotel.reservations.services.Response;
 
 import java.io.*;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,9 +39,9 @@ public class Database implements IDatabase {
 		logger = Logger.getLogger(Database.class.getName());
 		// log to file rather than console
 		try {
+			LogManager.getLogManager().reset();
 			FileHandler handler = new FileHandler("hr2s.log");
 			logger.addHandler(handler);
-			LogManager.getLogManager().reset();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -135,11 +132,11 @@ public class Database implements IDatabase {
 	}
 
 	/**
-	 * queries the db for a user and returns a User instance if found
+	 * queries the db for a user
 	 * @param username the username to lookup
-	 * @return a User instance
+	 * @return a ResultSet from the query
 	 */
-	public User getUser(String username) {
+	public ResultSet getUser(String username) {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
@@ -154,7 +151,7 @@ public class Database implements IDatabase {
 				return null;
 			}
 
-			return getUser(rs);
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -166,9 +163,9 @@ public class Database implements IDatabase {
 	/**
 	 * Retrieves a specific user based on userId
 	 * @param userId the user id
-	 * @return a user
+	 * @return a resultset from the query
 	 */
-	public User getUser(UUID userId) {
+	public ResultSet getUser(UUID userId) {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
@@ -183,7 +180,7 @@ public class Database implements IDatabase {
 				return null;
 			}
 
-			return getUser(rs);
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -196,54 +193,17 @@ public class Database implements IDatabase {
 	 * Retrieves all user entries
 	 * @return a list of users
 	 */
-	public ArrayList<User> getAllUsers() {
-		ArrayList<User> allUsers = new ArrayList<User>();
-
+	public ResultSet getAllUsers() {
 		try {
 			// Query to pull all room information from db
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `user`");
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
-				return allUsers;
+				return null;
 			}
 
-			while (rs.next()) {
-				allUsers.add(getUser(rs));
-			}
-
-		} catch (SQLException e) {
-			logger.severe(e.getMessage());
-		}
-
-		return allUsers;
-	}
-
-	/**
-	 * Converts a resultsset from a user query into a user object
-	 * @param rs the resultset
-	 * @return a user object
-	 */
-	private User getUser(ResultSet rs) {
-		try {
-			UUID userId = UUID.fromString(rs.getString("id"));
-			String username = rs.getString("username");
-			String firstName = rs.getString("firstName");
-			String lastName = rs.getString("lastName");
-			String street = rs.getString("street");
-			String state = rs.getString("state");
-			String zip = rs.getString("zip");
-			boolean active = rs.getBoolean("active");
-			Account accountType = Account.valueOf(rs.getString("type"));
-
-			switch (accountType) {
-				case CLERK:
-					return new Clerk(userId, username.toLowerCase(), firstName, lastName, street, state, zip);
-				case ADMIN:
-					return new Admin(userId, username.toLowerCase(), firstName, lastName, street, state, zip);
-				case GUEST:
-					return new Guest(userId, username.toLowerCase(), firstName, lastName, street, state, zip);
-			}
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -352,7 +312,7 @@ public class Database implements IDatabase {
 
 	/**
 	 * Query reservation by guest ID
-	 * @param customerID the id of the guest
+	 * @param customerId the id of the guest
 	 * @return list of reservations
 	 */
 	public ArrayList<Reservation> getReservationByGuestId(UUID customerId) {
@@ -456,7 +416,7 @@ public class Database implements IDatabase {
 
 	/**
 	 * Retrieves an invoice from the database
-	 * @param invoiceID the ID of an invoice
+	 * @param invoiceId the ID of an invoice
 	 * @return an invoice
 	 */
 	public Invoice getInvoice(UUID invoiceId) {

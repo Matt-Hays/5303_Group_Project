@@ -1,9 +1,5 @@
 package hotel.reservations.models.user;
 
-import hotel.reservations.models.room.Room;
-import hotel.reservations.persistence.Database;
-import hotel.reservations.services.Response;
-
 import java.util.UUID;
 
 public class Clerk implements User {
@@ -18,7 +14,7 @@ public class Clerk implements User {
     private Guest customer = null;
 
     public Clerk(UUID userId, String username, String firstName, String lastName, String street, String state,
-                 String zipCode) {
+                 String zipCode, boolean active) {
         this.userId = userId;
         this.accountType = Account.CLERK;
         this.username = username;
@@ -27,6 +23,7 @@ public class Clerk implements User {
         this.street=street;
         this.state=state;
         this.zipCode=zipCode;
+        this.active = active;
     }
 
     public String getAddress() {

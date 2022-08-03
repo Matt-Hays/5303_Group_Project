@@ -86,7 +86,7 @@ class Hr2sTests {
     @Test
     @Order(2)
     void getAdminUser() {
-        User user = db.getUser("admin");
+        User user = ud.getUserByUsername("admin");
         assertTrue(null != user);
         if (null != user) {
             assertTrue(user.getAccountType() == Account.ADMIN);
@@ -108,7 +108,7 @@ class Hr2sTests {
     @Test
     @Order(4)
     void createClerk() {
-        User user = db.getUser("admin");
+        User user = ud.getUserByUsername("admin");
         assertTrue(user.getAccountType() == Account.ADMIN);
         assertTrue(null != ud.createDefaultUser(Account.CLERK, "clerk1", "Clerky", "McClerk", "1234 Clerk Street", "ClerkState", "24680"));
     }
@@ -116,7 +116,7 @@ class Hr2sTests {
     @Test
     @Order(5)
     void getClerkUser() {
-        User user = db.getUser("clerk1");
+        User user = ud.getUserByUsername("clerk1");
         assertTrue(user instanceof Clerk);
     }
 
@@ -149,7 +149,7 @@ class Hr2sTests {
         applicationController.logIn("uc01_guest", password.toCharArray());
 
         // I don't have access to the private sessionDAO to be able to validate login
-        User user = db.getUser("uc01_guest");
+        User user = ud.getUserByUsername("uc01_guest");
 
         // create a reservation
         applicationController.createReservation(user, rooms.get(0), arrival, departure);
