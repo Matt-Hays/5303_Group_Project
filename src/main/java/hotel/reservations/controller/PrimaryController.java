@@ -34,7 +34,7 @@ public class PrimaryController implements ApplicationController{
         this.sessionDAO = new SessionDAO();
         this.userDAO = new UserDAO(db);
         this.reservationDAO = new ReservationDAO(db);
-        this.roomDAO = new RoomDAO(db);
+        this.roomDAO = new RoomDAO(db, reservationDAO);
     }
 
     @Override
