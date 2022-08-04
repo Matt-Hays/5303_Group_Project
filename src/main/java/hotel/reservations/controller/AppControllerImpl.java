@@ -1,6 +1,7 @@
 package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.persistence.DatabaseImpl;
@@ -8,7 +9,9 @@ import hotel.reservations.persistence.dao.SessionDao;
 import hotel.reservations.persistence.dao.impls.SessionDaoImpl;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
+import hotel.reservations.services.SearchService;
 import hotel.reservations.services.UserService;
+import hotel.reservations.services.impls.SearchServiceImpl;
 import hotel.reservations.services.impls.UserServiceImpl;
 import hotel.reservations.persistence.dao.ReservationDao;
 import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
@@ -30,6 +33,7 @@ public class AppControllerImpl implements AppController{
     private RoomDao roomDAO;
 
     private final UserService userService;
+    private final SearchService searchService;
 
 
     public AppControllerImpl(DatabaseImpl db){
@@ -44,6 +48,7 @@ public class AppControllerImpl implements AppController{
          */
 
         this.userService = new UserServiceImpl(this.userDAO, this.sessionDAO);
+        this.searchService  = new SearchServiceImpl(this.roomDAO);
     }
 
     /**                       *
@@ -93,6 +98,11 @@ public class AppControllerImpl implements AppController{
      * ----------------------------- *
      *    Room Service Endpoints     *
      *                               */
+
+    @Override
+    public List<Room> searchRooms(LocalDate arrival, LocalDate departure, int numberOfBeds, Bed typeOfBeds, boolean smoking){
+        return searchService.searchRooms(arrival, departure, numberOfBeds, typeOfBeds, smoking);
+    }
 
 //    @Override
 //    public void addViewsHandler(GuiHandler guiHandler){

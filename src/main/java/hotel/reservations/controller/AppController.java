@@ -1,6 +1,7 @@
 package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.User;
@@ -39,6 +40,8 @@ public interface AppController {
      * ----------------------------- *
      *    Room Service Endpoints     *
      *                               */
+
+    public List<Room> searchRooms(LocalDate arrival, LocalDate departure, int numberOfBeds, Bed typeOfBeds, boolean smoking);
 
     /**
      * Not yet organized...
