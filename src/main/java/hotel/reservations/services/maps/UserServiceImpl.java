@@ -1,10 +1,10 @@
 package hotel.reservations.services.maps;
 
-import hotel.reservations.models.session.ISessionDAO;
+import hotel.reservations.persistence.dao.session.ISessionDAO;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
-import hotel.reservations.persistence.daos.UserDAO.IUserDAO;
+import hotel.reservations.persistence.dao.user.IUserDAO;
 import hotel.reservations.services.UserService;
 
 import java.security.NoSuchAlgorithmException;

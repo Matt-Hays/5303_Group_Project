@@ -1,11 +1,11 @@
-package hotel.reservations.persistence.daos.roomDAO;
+package hotel.reservations.persistence.dao.room;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.Response;
 import hotel.reservations.models.room.Bed;
-import hotel.reservations.persistence.daos.reservationDAO.IReservationDAO;
+import hotel.reservations.persistence.dao.reservation.IReservationDAO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

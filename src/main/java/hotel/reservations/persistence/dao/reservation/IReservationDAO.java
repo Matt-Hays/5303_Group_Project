@@ -1,4 +1,4 @@
-package hotel.reservations.persistence.daos.reservationDAO;
+package hotel.reservations.persistence.dao.reservation;
 
 import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;

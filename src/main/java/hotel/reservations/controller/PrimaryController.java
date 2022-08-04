@@ -2,19 +2,19 @@ package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
-import hotel.reservations.models.session.ISessionDAO;
-import hotel.reservations.models.session.SessionDAO;
+import hotel.reservations.persistence.dao.session.ISessionDAO;
+import hotel.reservations.persistence.dao.session.SessionDAO;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.UserService;
 import hotel.reservations.services.maps.UserServiceImpl;
-import hotel.reservations.persistence.daos.reservationDAO.IReservationDAO;
-import hotel.reservations.persistence.daos.reservationDAO.ReservationDAO;
-import hotel.reservations.persistence.daos.roomDAO.IRoomDAO;
-import hotel.reservations.persistence.daos.roomDAO.RoomDAO;
-import hotel.reservations.persistence.daos.UserDAO.IUserDAO;
-import hotel.reservations.persistence.daos.UserDAO.UserDAO;
+import hotel.reservations.persistence.dao.reservation.IReservationDAO;
+import hotel.reservations.persistence.dao.reservation.ReservationDAO;
+import hotel.reservations.persistence.dao.room.IRoomDAO;
+import hotel.reservations.persistence.dao.room.RoomDAO;
+import hotel.reservations.persistence.dao.user.IUserDAO;
+import hotel.reservations.persistence.dao.user.UserDAO;
 import hotel.reservations.views.controller.GuiHandler;
 
 import java.time.LocalDate;

@@ -1,5 +1,6 @@
-package hotel.reservations.models.session;
+package hotel.reservations.persistence.dao.session;
 
+import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.User;
 
 import java.util.ArrayList;

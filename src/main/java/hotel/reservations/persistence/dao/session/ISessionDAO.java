@@ -1,4 +1,4 @@
-package hotel.reservations.models.session;
+package hotel.reservations.persistence.dao.session;
 
 
 import hotel.reservations.models.user.User;
