@@ -4,11 +4,10 @@ import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.*;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.user.Account;
-import hotel.reservations.services.Response;
+import hotel.reservations.persistence.dao.impls.Response;
 
 import java.sql.ResultSet;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public interface IDatabase {

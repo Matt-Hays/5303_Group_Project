@@ -2,48 +2,100 @@ package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
-import hotel.reservations.persistence.dao.session.ISessionDAO;
-import hotel.reservations.persistence.dao.session.SessionDAO;
+import hotel.reservations.persistence.dao.SessionDao;
+import hotel.reservations.persistence.dao.impls.SessionDaoImpl;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.UserService;
-import hotel.reservations.services.maps.UserServiceImpl;
-import hotel.reservations.persistence.dao.reservation.IReservationDAO;
-import hotel.reservations.persistence.dao.reservation.ReservationDAO;
-import hotel.reservations.persistence.dao.room.IRoomDAO;
-import hotel.reservations.persistence.dao.room.RoomDAO;
-import hotel.reservations.persistence.dao.user.IUserDAO;
-import hotel.reservations.persistence.dao.user.UserDAO;
+import hotel.reservations.services.impls.UserServiceImpl;
+import hotel.reservations.persistence.dao.ReservationDao;
+import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
+import hotel.reservations.persistence.dao.RoomDao;
+import hotel.reservations.persistence.dao.impls.RoomDaoImpl;
+import hotel.reservations.persistence.dao.UserDao;
+import hotel.reservations.persistence.dao.impls.UserDaoImpl;
 import hotel.reservations.views.controller.GuiHandler;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public class PrimaryController implements ApplicationController{
+public class AppControllerImpl implements AppController{
     private GuiHandler guiHandler;
-    private ISessionDAO sessionDAO;
-    private IUserDAO userDAO;
-    private IReservationDAO reservationDAO;
-    private IRoomDAO roomDAO;
+    private SessionDao sessionDAO;
+    private UserDao userDAO;
+    private ReservationDao reservationDAO;
+    private RoomDao roomDAO;
 
     private final UserService userService;
 
 
-    public PrimaryController(Database db){
+    public AppControllerImpl(Database db){
         this.guiHandler = null;
-        this.sessionDAO = new SessionDAO();
-        this.userDAO = new UserDAO(db);
-        this.reservationDAO = new ReservationDAO(db);
-        this.roomDAO = new RoomDAO(db, reservationDAO);
+        this.sessionDAO = new SessionDaoImpl();
+        this.userDAO = new UserDaoImpl(db);
+        this.reservationDAO = new ReservationDaoImpl(db);
+        this.roomDAO = new RoomDaoImpl(db, reservationDAO);
+
+        /**
+         * Services
+         */
+
         this.userService = new UserServiceImpl(this.userDAO, this.sessionDAO);
     }
 
+    /**                       *
+     * User Service Endpoints *
+     *                        */
+
     @Override
-    public void addViewsHandler(GuiHandler guiHandler){
-        this.guiHandler = guiHandler;
+    public UUID registerUser(String username, char[] password, String firstName, String lastName, String street,
+                             String state, String zipCode) {
+        return userService.createUser(Account.GUEST, username, password, firstName, lastName, street, state, zipCode);
     }
+
+    @Override
+    public UUID logIn(String username, char[] password) {
+        return userService.login(username, password);
+    }
+
+    @Override
+    public void logOut(UUID id){
+        userService.logout(id);
+    }
+
+    @Override
+    public void resetPassword(String username, char[] oldPassword, char[] newPassword) {
+        userService.updatePassword(username, oldPassword, newPassword);
+    }
+
+    @Override
+    public User modifyUser(UUID sessionId, String newUsername, String firstName, String lastName, String street, String state,
+                           String zipCode, boolean active) {
+        /**
+         * This call needs to return a User. Currently, returns a Response.
+         */
+        userService.updateUser(sessionId, newUsername, firstName, lastName, street, state, zipCode, active);
+        return null;
+    }
+
+    @Override
+    public void createClerk(String username, String firstName, String lastName, String street, String state,
+                            String zipCode) {
+        userService.createClerk(username, firstName, lastName, street, state, zipCode);
+    }
+
+    /**                              *
+     * End of User Service Endpoints *
+     * ----------------------------- *
+     *    Room Service Endpoints     *
+     *                               */
+
+//    @Override
+//    public void addViewsHandler(GuiHandler guiHandler){
+//        this.guiHandler = guiHandler;
+//    }
 
     @Override
     public void createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
@@ -113,10 +165,10 @@ public class PrimaryController implements ApplicationController{
     @Override
     public void viewReport(UUID sessionId) {
         // Validate User is logged-in & Validate User is an Admin.
-        if(getSessionDAO().validateSession(sessionId).equals("Admin")){
-            // Generate the List.
-            // Update the Report Page with details.
-        };
+//        if(getSessionDAO().validateSession(sessionId).equals("Admin")){
+//            // Generate the List.
+//            // Update the Report Page with details.
+//        };
     }
 
 //    @Override
@@ -128,6 +180,11 @@ public class PrimaryController implements ApplicationController{
     @Override
     public void payInvoice(Reservation reservation) {
 
+    }
+
+    @Override
+    public void addViewsHandler(GuiHandler guiHandler) {
+        this.guiHandler = guiHandler;
     }
 
     /**
@@ -164,54 +221,18 @@ public class PrimaryController implements ApplicationController{
         // status 2nd.
     }
 
-    /**
-     * USER ROUTES BEGIN
-     */
-    @Override
-    public UUID logIn(String username, char[] password) {
-        return userService.login(username, password);
-    }
 
-    @Override
-    public UUID registerUser(String username, char[] password, String firstName, String lastName, String street,
-                             String state, String zipCode) {
-        return userService.createUser(Account.GUEST, username, password, firstName, lastName, street, state, zipCode);
-    }
+
+
 
     @Override
     public void getInvoice(Reservation reservation) {
 
     }
 
-    @Override
-    public void resetPassword(String username, char[] oldPassword, char[] newPassword) {
-        // Reset the user's password in the database.
-        getUserDAO().changePassword(username, oldPassword, newPassword);
-        // Return the user to the Home Page with appropriate buttons.
-        getGuiHandler().setHomePanel(getSessionDAO().validateSession(getGuiHandler().getSessionCtx()));
-        getGuiHandler().changeScreen("home");
-    }
 
-    @Override
-    public void modifyUser(String newUsername, String firstName, String lastName, String street, String state,
-                           String zipCode, boolean active) {
-        // Modify the user
-        UUID userSessionId = getGuiHandler().getSessionCtx();
-        UUID sessionUserId = getSessionDAO().getSessionUser(userSessionId).getUserId();
-        getUserDAO().updateUser(sessionUserId, newUsername, firstName, lastName, street, state, zipCode, active);
-        // Return the user to their Profile Page with updated values
-    }
 
-    @Override
-    public void createClerk(String username, String firstName, String lastName, String street, String state,
-                            String zipCode) {
-        // Restrict route to only Admin
-        if(getSessionDAO().validateSession(getGuiHandler().getSessionCtx()).equals("Admin")){
-            getUserDAO().createDefaultUser(Account.CLERK, username, firstName, lastName, street, state, zipCode);
-            // Flash a success message to the Admin and clear the textFields on the page.
-        }
-        return;
-    }
+
 
     /**
      * APP CONTROLLER PRIVATE ACCESS METHODS
@@ -224,19 +245,19 @@ public class PrimaryController implements ApplicationController{
         this.guiHandler = guiHandler;
     }
 
-    private ISessionDAO getSessionDAO() {
+    private SessionDao getSessionDAO() {
         return sessionDAO;
     }
 
-    private void setSessionDAO(ISessionDAO sessionDAO) {
+    private void setSessionDAO(SessionDao sessionDAO) {
         this.sessionDAO = sessionDAO;
     }
 
-    private IUserDAO getUserDAO() {
+    private UserDao getUserDAO() {
         return userDAO;
     }
 
-    private void setUserDAO(IUserDAO userDAO) {
+    private void setUserDAO(UserDao userDAO) {
         this.userDAO = userDAO;
     }
 //

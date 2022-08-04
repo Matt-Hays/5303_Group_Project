@@ -42,7 +42,7 @@ public class SearchPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // SEARCH ROOMS !!! IMPLEMENT !!!
-                getGuiHandler().getApplicationController();
+                getGuiHandler().getAppController();
             }
         });
     }

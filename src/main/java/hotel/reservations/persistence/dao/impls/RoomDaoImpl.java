@@ -1,23 +1,23 @@
-package hotel.reservations.persistence.dao.room;
+package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.persistence.Database;
-import hotel.reservations.services.Response;
+import hotel.reservations.persistence.dao.RoomDao;
 import hotel.reservations.models.room.Bed;
-import hotel.reservations.persistence.dao.reservation.IReservationDAO;
+import hotel.reservations.persistence.dao.ReservationDao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class RoomDAO implements IRoomDAO {
+public class RoomDaoImpl implements RoomDao {
 
     private Database db = null;
-    private IReservationDAO rd = null;
+    private ReservationDao rd = null;
 
-    public RoomDAO(Database database, IReservationDAO reservationDAO) {
+    public RoomDaoImpl(Database database, ReservationDao reservationDAO) {
         db = database;
         rd = reservationDAO;
     }

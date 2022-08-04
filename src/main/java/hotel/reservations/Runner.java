@@ -1,7 +1,7 @@
 package hotel.reservations;
 
-import hotel.reservations.controller.ApplicationController;
-import hotel.reservations.controller.PrimaryController;
+import hotel.reservations.controller.AppController;
+import hotel.reservations.controller.AppControllerImpl;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.views.controller.GuiFrame;
 import hotel.reservations.views.controller.GuiHandler;
@@ -18,7 +18,7 @@ public class Runner {
             @Override
             public void run() {
                 // Application Layer Controller
-                ApplicationController applicationController = new PrimaryController(db);
+                AppController applicationController = new AppControllerImpl(db);
                 // Views Layer Controller
                 GuiHandler guiHandler = new GuiFrame(applicationController);
                 // Associate Views with the ApplicationController

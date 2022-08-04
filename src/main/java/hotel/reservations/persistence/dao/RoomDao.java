@@ -1,14 +1,14 @@
 
-package hotel.reservations.persistence.dao.room;
+package hotel.reservations.persistence.dao;
 
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.room.Bed;
-import hotel.reservations.services.Response;
+import hotel.reservations.persistence.dao.impls.Response;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public interface IRoomDAO {
+public interface RoomDao {
     public ArrayList<Room> filterRooms(LocalDate arrival, LocalDate departure, Bed bedType, int numBeds, boolean smoking);
     public hotel.reservations.models.room.Room getRoom(String roomId);
     public ArrayList<hotel.reservations.models.room.Room> getAllRooms();

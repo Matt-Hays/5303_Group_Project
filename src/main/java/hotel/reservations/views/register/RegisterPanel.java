@@ -19,6 +19,8 @@ public class RegisterPanel extends ThemedPanel {
     private RoundedTextField usernameField, firstNameField, lastNameField, addressField, stateField, zipCodeField;
     private RoundedPasswordField passwordField;
     private RoundedButton btnBack, btnRegister;
+    private GridBagConstraints gbc = new GridBagConstraints();
+    private boolean hasPreviousMessage;
 
 
     public RegisterPanel(GuiHandler guiHandler){
@@ -41,6 +43,8 @@ public class RegisterPanel extends ThemedPanel {
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
+
                 String username = getUsernameField();
                 char[] password = getPasswordField();
                 String firstName = getFirstNameField();
@@ -48,10 +52,18 @@ public class RegisterPanel extends ThemedPanel {
                 String address = getAddressField();
                 String state = getStateField();
                 String zipCode = getZipCodeField();
+
                 UUID sessionId = getGuiHandler()
-                        .getApplicationController()
+                        .getAppController()
                         .registerUser(username, password, firstName, lastName, address, state, zipCode);
-                System.out.println(sessionId);
+
+                if(sessionId == null) {
+                    displayErrorMessage();
+                    return;
+                };
+
+                getGuiHandler().getHomePanel().displayNewUserMessage();
+                getGuiHandler().changeScreen("home");
             }
         });
 
@@ -63,8 +75,23 @@ public class RegisterPanel extends ThemedPanel {
         });
     }
 
+    private void displayErrorMessage(){
+        gbc.gridy++;
+        gbc.insets = new Insets(24,0,0,0);
+        add(new JLabel("<html><p style='color:red'>Registration attempt failed. Please try again.</p></html>"), gbc);
+        this.hasPreviousMessage = true;
+        revalidate();
+        repaint();
+    }
+
+    private void clearMessage(){
+        remove(getComponentCount() - 1);
+        this.hasPreviousMessage = false;
+        revalidate();
+        repaint();
+    }
+
     private void fillLayout(){
-        GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;

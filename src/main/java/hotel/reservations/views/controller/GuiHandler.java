@@ -1,6 +1,6 @@
 package hotel.reservations.views.controller;
 
-import hotel.reservations.controller.ApplicationController;
+import hotel.reservations.controller.AppController;
 import hotel.reservations.views.admin.AdminPanel;
 import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface GuiHandler {
     public void changeScreen(String screenName);
 
-    public ApplicationController getApplicationController();
+    public AppController getAppController();
 
     public void setSessionCtx(UUID sessionCtx);
     public UUID getSessionCtx();

@@ -1,37 +1,38 @@
-package hotel.reservations.persistence.dao.session;
+package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.User;
+import hotel.reservations.persistence.dao.SessionDao;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-public class SessionDAO implements ISessionDAO{
+public class SessionDaoImpl implements SessionDao {
     private List<Session> sessions;
 
-    public SessionDAO(){
+    public SessionDaoImpl(){
         sessions = new ArrayList<Session>();
     }
 
     @Override
     public UUID createSession(User user) {
+        if(user == null) return null;
         Session newSession = new Session(user);
-       sessions.add(newSession);
-       return newSession.getId();
+        sessions.add(newSession);
+        return newSession.getId();
     }
 
     @Override
-    public String validateSession(UUID sessionId) {
+    public boolean validateSession(UUID sessionId) {
         Iterator<Session> itr = sessions.iterator();
         while(itr.hasNext()){
-            Session temp = itr.next();
-            if(temp.getId().equals(sessionId)){
-                return temp.getUser().getClass().getSimpleName();
+            if(itr.next().equals(sessionId)){
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class SessionDAO implements ISessionDAO{
     }
 
     @Override
-    public void destroySession(UUID sessionId) {
+    public void destroySessionById(UUID sessionId) {
         Iterator<Session> itr = sessions.iterator();
         while(itr.hasNext()){
             if(itr.next().getId().equals(sessionId)){

@@ -1,6 +1,6 @@
 package hotel.reservations.views.controller;
 
-import hotel.reservations.controller.ApplicationController;
+import hotel.reservations.controller.AppController;
 import hotel.reservations.views.admin.AdminPanel;
 import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
@@ -13,13 +13,13 @@ import java.awt.*;
 import java.util.UUID;
 
 public class GuiFrame extends JFrame implements GuiHandler{
-    private ApplicationController applicationController;
+    private AppController appController;
     private JPanel cardPanel;
     private CardLayout cardLayout;
     private UUID sessionCtx;
 
-    public GuiFrame(ApplicationController applicationController) {
-        setApplicationController(applicationController);
+    public GuiFrame(AppController appController) {
+        setApplicationController(appController);
 
         setSize(850, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,8 +43,8 @@ public class GuiFrame extends JFrame implements GuiHandler{
         setVisible(true);
     }
 
-    private void setApplicationController(ApplicationController applicationController){
-        this.applicationController = applicationController;
+    private void setApplicationController(AppController appController){
+        this.appController = appController;
     }
 
     @Override
@@ -53,8 +53,8 @@ public class GuiFrame extends JFrame implements GuiHandler{
     }
 
     @Override
-    public ApplicationController getApplicationController() {
-        return applicationController;
+    public AppController getAppController() {
+        return appController;
     }
 
     @Override

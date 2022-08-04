@@ -8,11 +8,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Dimension2D;
 
 public class HomePanel extends ThemedPanel {
     private GuiHandler guiHandler;
     private JLabel pageHeader;
     private RoundedButton btnLogin, btnRegister, btnSearch;
+    private GridBagConstraints gbc = new GridBagConstraints();
+    private boolean hasPreviousMessage;
 
     /**
      * View Constructor - Define the view
@@ -36,6 +39,7 @@ public class HomePanel extends ThemedPanel {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
                 getGuiHandler().changeScreen("login");
             }
         });
@@ -43,6 +47,7 @@ public class HomePanel extends ThemedPanel {
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
                 getGuiHandler().changeScreen("register");
             }
         });
@@ -50,18 +55,92 @@ public class HomePanel extends ThemedPanel {
         btnSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
                 getGuiHandler().changeScreen("search");
             }
         });
     }
 
+    public void displayNewUserMessage(){
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridy++;
+        gbc.insets = new Insets(24, 0, 0, 0);
+        add(new JLabel("<html><p style='color:green'>Welcome to the hotel!</p></html>"), gbc);
+        revalidate();
+        repaint();
+    }
+
+    public void loggedInDisplay(){
+        remove(btnLogin);
+        btnLogin.setText("Logout");
+        btnLogin.setPreferredSize(new Dimension(btnLogin.getWidth() + 12, btnLogin.getHeight()));
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        // Remove previous action listeners.
+        for(ActionListener al : btnLogin.getActionListeners()){
+            btnLogin.removeActionListener(al);
+        }
+        add(btnLogin, gbc, 2);
+        btnLogin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
+                getGuiHandler().getAppController().logOut(getGuiHandler().getSessionCtx());
+                displayMessage("Logged out successfully!");
+                loggedOutDisplay();
+            }
+        });
+
+        revalidate();
+        repaint();
+    }
+
+    public void loggedOutDisplay(){
+        remove(btnLogin);
+        btnLogin.setText("Login");
+        btnLogin.setPreferredSize(new Dimension(btnLogin.getWidth() - 12, btnLogin.getHeight()));
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        // Remove previous action listeners.
+        for(ActionListener al : btnLogin.getActionListeners()){
+            btnLogin.removeActionListener(al);
+        }
+
+        add(btnLogin, gbc, 2);
+
+        btnLogin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
+                getGuiHandler().changeScreen("login");
+            }
+        });
+
+        revalidate();
+        repaint();
+    }
+
+    private void displayMessage(String message){
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(76, 0, 0, 0);
+        add(new JLabel("<html><p style='color:green'>" + message + "</p></html>"), gbc);
+        this.hasPreviousMessage = true;
+        revalidate();
+        repaint();
+    }
+
+    private void clearMessage(){
+        remove(getComponentCount() - 1);
+        this.hasPreviousMessage = false;
+        revalidate();
+        repaint();
+    }
+
     private void fillLayout(){
-        GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(0, 0, 128, 0);
         add(pageHeader, gbc);
-        gbc.gridy++;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 0, 0, 0);
         add(btnLogin, gbc);

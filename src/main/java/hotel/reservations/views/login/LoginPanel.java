@@ -20,6 +20,8 @@ public class LoginPanel extends ThemedPanel {
     private RoundedTextField usernameField;
     private RoundedPasswordField passwordField;
     private RoundedButton btnBack, btnLogin;
+    private GridBagConstraints gbc = new GridBagConstraints();
+    private boolean hasPreviousErrorMessage;
 
     public LoginPanel(GuiHandler guiHandler){
         setGuiHandler(guiHandler);
@@ -36,21 +38,42 @@ public class LoginPanel extends ThemedPanel {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UUID sessionId = getGuiHandler().getApplicationController().logIn(getUsernameField(), getPasswordField());
-                System.out.println(sessionId);
+                if (hasPreviousErrorMessage) clearErrorMessage();
+                UUID sessionId = getGuiHandler().getAppController().logIn(getUsernameField(), getPasswordField());
+                if(sessionId == null) displayErrorMessage();
+                else {
+                    getGuiHandler().getHomePanel().loggedInDisplay();
+                    getGuiHandler().changeScreen("home");
+                }
             }
         });
 
         btnBack.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(hasPreviousErrorMessage) clearErrorMessage();
                 getGuiHandler().changeScreen("home");
             }
         });
     }
 
+    private void displayErrorMessage(){
+        gbc.gridy++;
+        gbc.insets = new Insets(24,0,0,0);
+        add(new JLabel("<html><p style='color:red'>Login attempt failed. Please try again.</p></html>"), gbc);
+        this.hasPreviousErrorMessage = true;
+        revalidate();
+        repaint();
+    }
+
+    private void clearErrorMessage(){
+        remove(getComponentCount() - 1);
+        this.hasPreviousErrorMessage = false;
+        revalidate();
+        repaint();
+    }
+
     private void fillLayout(){
-        GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gbc.gridy = 0;
         gbc.gridwidth = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;

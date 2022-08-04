@@ -1,15 +1,15 @@
 package hotel.reservations;
 
 import hotel.reservations.controller.ApplicationController;
-import hotel.reservations.controller.PrimaryController;
+import hotel.reservations.controller.AppControllerImpl;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.*;
 import hotel.reservations.persistence.Database;
-import hotel.reservations.persistence.dao.reservation.ReservationDAO;
-import hotel.reservations.persistence.dao.room.RoomDAO;
-import hotel.reservations.persistence.dao.user.UserDAO;
+import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
+import hotel.reservations.persistence.dao.impls.RoomDaoImpl;
+import hotel.reservations.persistence.dao.impls.UserDaoImpl;
 import hotel.reservations.views.controller.GuiFrame;
 import hotel.reservations.views.controller.GuiHandler;
 import org.junit.jupiter.api.*;
@@ -28,9 +28,9 @@ class Hr2sTests {
     private static final String dbName = "hr2s_test.sqlite";
     private static Database db = null;
     private static ApplicationController applicationController = null;
-    private static UserDAO ud = null;
-    private static ReservationDAO reservationDAO = null;
-    private static RoomDAO roomDAO = null;
+    private static UserDaoImpl ud = null;
+    private static ReservationDaoImpl reservationDAO = null;
+    private static RoomDaoImpl roomDAO = null;
 
     /**
      * Ensures database is created and in a clean state before each test
@@ -46,14 +46,14 @@ class Hr2sTests {
         // create the test db
         db = new Database(dbName);
 
-        applicationController = new PrimaryController(db);
+        applicationController = new AppControllerImpl(db);
         GuiHandler guiHandler = new GuiFrame(applicationController);
         // Associate Views with the ApplicationController
         applicationController.addViewsHandler(guiHandler);
 
-        ud = new UserDAO(db);
-        reservationDAO = new ReservationDAO(db);
-        roomDAO = new RoomDAO(db, reservationDAO);
+        ud = new UserDaoImpl(db);
+        reservationDAO = new ReservationDaoImpl(db);
+        roomDAO = new RoomDaoImpl(db, reservationDAO);
     }
 
     /**

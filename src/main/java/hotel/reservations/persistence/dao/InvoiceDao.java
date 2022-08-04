@@ -1,11 +1,11 @@
-package hotel.reservations.persistence.dao.invoice;
+package hotel.reservations.persistence.dao;
 
 import hotel.reservations.models.reservation.Invoice;
-import hotel.reservations.services.Response;
+import hotel.reservations.persistence.dao.impls.Response;
 
 import java.util.UUID;
 
-public interface IInvoiceDAO {
+public interface InvoiceDao {
 
     // getInvoice
     public Invoice getInvoice(UUID invoiceId);

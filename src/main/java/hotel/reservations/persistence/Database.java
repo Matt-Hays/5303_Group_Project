@@ -4,7 +4,7 @@ import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.user.*;
-import hotel.reservations.services.Response;
+import hotel.reservations.persistence.dao.impls.Response;
 
 import java.io.*;
 import java.sql.*;

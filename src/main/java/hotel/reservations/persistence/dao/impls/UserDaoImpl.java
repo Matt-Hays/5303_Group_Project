@@ -1,8 +1,8 @@
-package hotel.reservations.persistence.dao.user;
+package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.user.*;
 import hotel.reservations.persistence.Database;
-import hotel.reservations.services.Response;
+import hotel.reservations.persistence.dao.UserDao;
 import hotel.reservations.services.authentication.HotelAuth;
 
 import java.security.NoSuchAlgorithmException;
@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.sql.ResultSet;
 
-public class UserDAO implements IUserDAO {
+public class UserDaoImpl implements UserDao {
 
     private Database db;
 
     User customer;
 
-    public UserDAO(Database db) {
+    public UserDaoImpl(Database db) {
         this.db = db;
     }
 
@@ -65,11 +65,16 @@ public class UserDAO implements IUserDAO {
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeySpecException
      */
-    public User logIn(String username, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public User logIn(String username, char[] password) {
+        if(username == null || username.isEmpty() || password.length == 0) return null;
         String hashedPw = db.getPassword(username);
-        if(HotelAuth.validatePassword(String.valueOf(password), hashedPw)){
-            ResultSet rs = db.getUser(username);
-            return createUser(rs);
+        try {
+            if(HotelAuth.validatePassword(String.valueOf(password), hashedPw)){
+                ResultSet rs = db.getUser(username);
+                return createUser(rs);
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
         }
         return null;
     }

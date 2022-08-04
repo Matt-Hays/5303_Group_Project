@@ -1,7 +1,5 @@
 package hotel.reservations.models.user;
 
-import hotel.reservations.services.Response;
-
 import java.util.UUID;
 
 public interface User {

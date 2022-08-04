@@ -1,4 +1,4 @@
-package hotel.reservations.persistence.dao.reservation;
+package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
@@ -6,8 +6,8 @@ import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.Database;
-import hotel.reservations.persistence.dao.invoice.IInvoiceDAO;
-import hotel.reservations.services.Response;
+import hotel.reservations.persistence.dao.InvoiceDao;
+import hotel.reservations.persistence.dao.ReservationDao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,10 +15,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class ReservationDAO implements IReservationDAO, IInvoiceDAO {
+public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
     private Database db = null;
 
-    public ReservationDAO(Database db) {
+    public ReservationDaoImpl(Database db) {
         this.db = db;
     }
 

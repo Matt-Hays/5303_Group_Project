@@ -1,15 +1,15 @@
-package hotel.reservations.persistence.dao.user;
+package hotel.reservations.persistence.dao;
 
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
-import hotel.reservations.services.Response;
+import hotel.reservations.persistence.dao.impls.Response;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public interface IUserDAO {
+public interface UserDao {
     public Response changePassword(String username, char[] currentPassword, char[] newPassword);
 
     public Response updateUser(UUID userId, String newUsername, String firstName, String lastName, String street,
