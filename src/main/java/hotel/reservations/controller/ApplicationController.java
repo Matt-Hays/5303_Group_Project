@@ -40,12 +40,11 @@ public interface ApplicationController {
     public void modifyRoom(Room modifiedRoom);
 
     // Use Case 10
-    public void logIn(String username, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException;
+    public UUID logIn(String username, char[] password);
 
     // Use Case 11
-    public void registerUser(String username, char[] password, String firstName, String lastName, String address,
-                             String state, String zipCode) throws NoSuchAlgorithmException,
-            InvalidKeySpecException;
+    public UUID registerUser(String username, char[] password, String firstName, String lastName, String address,
+                             String state, String zipCode);
 
     // Use Case 12
     public void getInvoice(Reservation reservation);

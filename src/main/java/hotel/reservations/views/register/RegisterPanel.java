@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.UUID;
 
 public class RegisterPanel extends ThemedPanel {
     private GuiHandler guiHandler;
@@ -47,15 +48,10 @@ public class RegisterPanel extends ThemedPanel {
                 String address = getAddressField();
                 String state = getStateField();
                 String zipCode = getZipCodeField();
-                try {
-                    getGuiHandler()
-                            .getApplicationController()
-                            .registerUser(username, password, firstName, lastName, address, state, zipCode);
-                } catch (NoSuchAlgorithmException ex) {
-                    throw new RuntimeException(ex);
-                } catch (InvalidKeySpecException ex) {
-                    throw new RuntimeException(ex);
-                }
+                UUID sessionId = getGuiHandler()
+                        .getApplicationController()
+                        .registerUser(username, password, firstName, lastName, address, state, zipCode);
+                System.out.println(sessionId);
             }
         });
 

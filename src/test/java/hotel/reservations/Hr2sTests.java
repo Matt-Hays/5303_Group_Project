@@ -7,12 +7,9 @@ import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.*;
 import hotel.reservations.persistence.Database;
-import hotel.reservations.services.*;
-import hotel.reservations.services.reservationDAO.ReservationDAO;
-import hotel.reservations.services.roomDAO.RoomDAO;
-import hotel.reservations.services.UserDAO.UserDAO;
-import hotel.reservations.services.reservationDAO.ReservationDAO;
-import hotel.reservations.services.authentication.HotelAuth;
+import hotel.reservations.persistence.daos.reservationDAO.ReservationDAO;
+import hotel.reservations.persistence.daos.roomDAO.RoomDAO;
+import hotel.reservations.persistence.daos.UserDAO.UserDAO;
 import hotel.reservations.views.controller.GuiFrame;
 import hotel.reservations.views.controller.GuiHandler;
 import org.junit.jupiter.api.*;
@@ -24,7 +21,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -88,6 +84,7 @@ class Hr2sTests {
     @Order(2)
     void getAdminUser() {
         User user = ud.getUserByUsername("admin");
+        System.out.println(user);
         assertTrue(null != user);
         if (null != user) {
             assertTrue(user.getAccountType() == Account.ADMIN);

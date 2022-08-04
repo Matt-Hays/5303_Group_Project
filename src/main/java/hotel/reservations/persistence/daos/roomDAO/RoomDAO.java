@@ -1,11 +1,11 @@
-package hotel.reservations.services.roomDAO;
+package hotel.reservations.persistence.daos.roomDAO;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.Response;
 import hotel.reservations.models.room.Bed;
-import hotel.reservations.services.reservationDAO.IReservationDAO;
+import hotel.reservations.persistence.daos.reservationDAO.IReservationDAO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class RoomDAO implements IRoomDAO {
 
         ArrayList<Room> all_rooms = getFilteredRooms(bedType, numBeds, smoking);
         ArrayList<Reservation> occupiedRooms = rd.findReservations(arrival, departure);
-        ArrayList<Room> filteredRooms = new ArrayList<Room>();
+        ArrayList<Room> filteredRooms = new ArrayList<>();
 
         boolean found;
         for (int i = 0; i < all_rooms.size(); i++) {

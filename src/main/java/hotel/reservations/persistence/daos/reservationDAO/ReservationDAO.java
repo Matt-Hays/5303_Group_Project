@@ -1,4 +1,4 @@
-package hotel.reservations.services.reservationDAO;
+package hotel.reservations.persistence.daos.reservationDAO;
 
 import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
@@ -6,7 +6,7 @@ import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.Database;
-import hotel.reservations.services.invoiceDAO.IInvoiceDAO;
+import hotel.reservations.persistence.daos.invoiceDAO.IInvoiceDAO;
 import hotel.reservations.services.Response;
 
 import java.sql.ResultSet;

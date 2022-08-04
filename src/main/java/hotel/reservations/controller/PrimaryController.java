@@ -7,16 +7,16 @@ import hotel.reservations.models.session.SessionDAO;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.Database;
-import hotel.reservations.services.reservationDAO.IReservationDAO;
-import hotel.reservations.services.reservationDAO.ReservationDAO;
-import hotel.reservations.services.roomDAO.IRoomDAO;
-import hotel.reservations.services.roomDAO.RoomDAO;
-import hotel.reservations.services.UserDAO.IUserDAO;
-import hotel.reservations.services.UserDAO.UserDAO;
+import hotel.reservations.services.UserService;
+import hotel.reservations.services.maps.UserServiceImpl;
+import hotel.reservations.persistence.daos.reservationDAO.IReservationDAO;
+import hotel.reservations.persistence.daos.reservationDAO.ReservationDAO;
+import hotel.reservations.persistence.daos.roomDAO.IRoomDAO;
+import hotel.reservations.persistence.daos.roomDAO.RoomDAO;
+import hotel.reservations.persistence.daos.UserDAO.IUserDAO;
+import hotel.reservations.persistence.daos.UserDAO.UserDAO;
 import hotel.reservations.views.controller.GuiHandler;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +28,8 @@ public class PrimaryController implements ApplicationController{
     private IReservationDAO reservationDAO;
     private IRoomDAO roomDAO;
 
+    private final UserService userService;
+
 
     public PrimaryController(Database db){
         this.guiHandler = null;
@@ -35,6 +37,7 @@ public class PrimaryController implements ApplicationController{
         this.userDAO = new UserDAO(db);
         this.reservationDAO = new ReservationDAO(db);
         this.roomDAO = new RoomDAO(db, reservationDAO);
+        this.userService = new UserServiceImpl(this.userDAO, this.sessionDAO);
     }
 
     @Override
@@ -165,47 +168,14 @@ public class PrimaryController implements ApplicationController{
      * USER ROUTES BEGIN
      */
     @Override
-    public void logIn(String username, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        // Login the user - retrieve the User object.
-        User user = getUserDAO().logIn(username, password);
-
-        if(user != null){
-            // Create a session attaching the user object. Return a UUID sessionId.
-            UUID sessionId = getSessionDAO().createSession(user);
-            // Add the sessionId to the GUI context.
-            getGuiHandler().setSessionCtx(sessionId);
-            // Pass in the type of user returned from our validate user method to allow the view to properly
-            // configure the Home Panel based on user type.
-            getGuiHandler().setHomePanel(getSessionDAO().validateSession(sessionId));
-            // Return the user to the Home Page.
-            getGuiHandler().changeScreen("home");
-        }
+    public UUID logIn(String username, char[] password) {
+        return userService.login(username, password);
     }
 
     @Override
-    public void registerUser(String username, char[] password, String firstName, String lastName, String street,
+    public UUID registerUser(String username, char[] password, String firstName, String lastName, String street,
                              String state, String zipCode) {
-        // Register a new user. Return the new user object.
-        User user = null;
-        try {
-            user = getUserDAO().createUser(Account.GUEST, username, password, firstName, lastName, street, state, zipCode);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        }
-
-        if(user != null){
-            // Create a session attaching the user object. Return a UUID sessionId.
-            UUID sessionId = getSessionDAO().createSession(user);
-            // The user is now logged in. Notify the gui of the change.
-            getGuiHandler().setSessionCtx(sessionId);
-            // Pass in the type of user returned from our validate user method to allow the view to properly
-            // configure the Home Panel based on user type.
-            getGuiHandler().setHomePanel(getSessionDAO().validateSession(sessionId));
-            // Return the user to the Home Page.
-            getGuiHandler().changeScreen("home");
-        }
+        return userService.createUser(Account.GUEST, username, password, firstName, lastName, street, state, zipCode);
     }
 
     @Override

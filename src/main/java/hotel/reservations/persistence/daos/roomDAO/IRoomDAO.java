@@ -1,5 +1,5 @@
 
-package hotel.reservations.services.roomDAO;
+package hotel.reservations.persistence.daos.roomDAO;
 
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.room.Bed;

@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.UUID;
 
 public class LoginPanel extends ThemedPanel {
     private GuiHandler guiHandler;
@@ -35,13 +36,8 @@ public class LoginPanel extends ThemedPanel {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    getGuiHandler().getApplicationController().logIn(getUsernameField(), getPasswordField());
-                } catch (NoSuchAlgorithmException ex) {
-                    throw new RuntimeException(ex);
-                } catch (InvalidKeySpecException ex) {
-                    throw new RuntimeException(ex);
-                }
+                UUID sessionId = getGuiHandler().getApplicationController().logIn(getUsernameField(), getPasswordField());
+                System.out.println(sessionId);
             }
         });
 
