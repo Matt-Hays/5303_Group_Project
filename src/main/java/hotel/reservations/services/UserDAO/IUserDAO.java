@@ -1,7 +1,6 @@
 package hotel.reservations.services.UserDAO;
 
 import hotel.reservations.models.user.Account;
-import hotel.reservations.models.user.Guest;
 import hotel.reservations.models.user.User;
 import hotel.reservations.services.Response;
 

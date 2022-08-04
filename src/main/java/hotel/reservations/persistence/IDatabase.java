@@ -1,14 +1,12 @@
 package hotel.reservations.persistence;
 
 import hotel.reservations.models.reservation.Invoice;
-import hotel.reservations.models.reservation.Reservation;
-import hotel.reservations.models.room.Room;
+import hotel.reservations.models.reservation.*;
+import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.user.Account;
-import hotel.reservations.models.user.User;
 import hotel.reservations.services.Response;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -17,28 +15,33 @@ public interface IDatabase {
 
     // User methods
     public boolean ready();
-    public User getUser(String username);
-    public ArrayList<User> getAllUsers();
-    public User getUser(UUID userId);
+    public ResultSet getUser(String username);
+    public ResultSet getUser(UUID userId);
+    public ResultSet getAllUsers();
     public String getPassword(String username);
-    public Response insertUser(User user, String hashed_password);
-    public Response insertUser(Account type, String username, String hashed_password,
-                               String fName, String lName, String street, String state, String zipCode);
-    // public Response updateUserProfile(User user);
+    public Response insertUser(UUID userId, Account type, String username, String hashed_password,
+        String fName, String lName, String street, String state, String zipCode, Boolean active);
+    public Response updateUserProfile(UUID userId, String newUsername, String firstName, String lastName,
+        String street, String state, String zipCode, boolean active);
+
     public Response updatePassword(String username, String newPasswordHash);
 
     // room methods
-    public Room getRoom(int roomId);
-    public ArrayList<Room> getAllRooms();
-    public Response updateRoom (Room room);
+    public ResultSet getRoom(int roomId);
+    public ResultSet getAllRooms();
+    public Response updateRoom (int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
+    public Response insertRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
+    public Response deleteRoom(int roomId);
 
     // reservation methods
-    public Reservation getReservation(UUID reservationId);
-    public ArrayList<Reservation> getReservationByGuestId(UUID customerId);
-    public Response insertReservation(Reservation r);
-    public Response updateReservation(Reservation r);
-    public Response deleteReservation(Reservation r);
-    public ArrayList<Reservation> getOverlappingReservations(LocalDate arrival, LocalDate departure);
+    public ResultSet getReservationByReservationId(UUID reservationId);
+    public ResultSet getReservationByGuestId(UUID customerId);
+    public Response insertReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
+			LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status);
+    public Response updateReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
+    LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status);
+    public Response deleteReservation(UUID reservationId, UUID invoiceId);
+    public ResultSet getOverlappingReservations(LocalDate arrival, LocalDate departure);
 
     // invoice methods
     public Response insertInvoice(Invoice i);

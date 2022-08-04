@@ -3,6 +3,7 @@ package hotel.reservations;
 import hotel.reservations.controller.ApplicationController;
 import hotel.reservations.controller.PrimaryController;
 import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.*;
 import hotel.reservations.persistence.Database;
@@ -56,7 +57,7 @@ class Hr2sTests {
 
         ud = new UserDAO(db);
         reservationDAO = new ReservationDAO(db);
-        roomDAO = new RoomDAO(db);
+        roomDAO = new RoomDAO(db, reservationDAO);
     }
 
     /**
@@ -86,7 +87,7 @@ class Hr2sTests {
     @Test
     @Order(2)
     void getAdminUser() {
-        User user = db.getUser("admin");
+        User user = ud.getUserByUsername("admin");
         assertTrue(null != user);
         if (null != user) {
             assertTrue(user.getAccountType() == Account.ADMIN);
@@ -108,7 +109,7 @@ class Hr2sTests {
     @Test
     @Order(4)
     void createClerk() {
-        User user = db.getUser("admin");
+        User user = ud.getUserByUsername("admin");
         assertTrue(user.getAccountType() == Account.ADMIN);
         assertTrue(null != ud.createDefaultUser(Account.CLERK, "clerk1", "Clerky", "McClerk", "1234 Clerk Street", "ClerkState", "24680"));
     }
@@ -116,14 +117,16 @@ class Hr2sTests {
     @Test
     @Order(5)
     void getClerkUser() {
-        User user = db.getUser("clerk1");
+        User user = ud.getUserByUsername("clerk1");
         assertTrue(user instanceof Clerk);
     }
 
     @Test
     @Order(6)
     void getAvailableRooms() {
-        ArrayList<Room> rooms = roomDAO.filterRooms(LocalDate.parse("2022-01-01"), LocalDate.parse("2022-12-01"));
+        LocalDate arrival = LocalDate.parse("2022-01-01");
+        LocalDate departure = LocalDate.parse("2022-12-01");
+        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure, Bed.KING, 1, false);
         assertTrue(rooms.size() > 0);
     }
 
@@ -135,7 +138,7 @@ class Hr2sTests {
         LocalDate departure = LocalDate.parse("2022-09-15");
 
         // find available rooms
-        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure);
+        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure, Bed.QUEEN, 2, false);
         if (rooms.size() == 0) {
             Assertions.fail("No rooms found");
             return;
@@ -149,7 +152,7 @@ class Hr2sTests {
         applicationController.logIn("uc01_guest", password.toCharArray());
 
         // I don't have access to the private sessionDAO to be able to validate login
-        User user = db.getUser("uc01_guest");
+        User user = ud.getUserByUsername("uc01_guest");
 
         // create a reservation
         applicationController.createReservation(user, rooms.get(0), arrival, departure);

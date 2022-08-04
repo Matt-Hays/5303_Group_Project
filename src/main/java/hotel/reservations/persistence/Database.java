@@ -1,20 +1,14 @@
 package hotel.reservations.persistence;
 
 import hotel.reservations.models.reservation.Invoice;
-import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
-import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.*;
-import hotel.reservations.services.authentication.HotelAuth;
 import hotel.reservations.services.Response;
 
 import java.io.*;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.FileHandler;
 import java.util.logging.LogManager;
@@ -27,14 +21,14 @@ public class Database implements IDatabase {
 	private Logger logger;
 
 	/**
-	 * primary constructor
+	 * Default constructor
 	 */
 	public Database() {
 		this("hr2s.sqlite");
 	}
 
 	/**
-	 * test constructor for a test database that allows changing the db name
+	 * Constructor that allows for spcificaton of database name
 	 * @param dbName
 	 */
 	public Database(String dbName) {
@@ -42,15 +36,18 @@ public class Database implements IDatabase {
 		logger = Logger.getLogger(Database.class.getName());
 		// log to file rather than console
 		try {
+			LogManager.getLogManager().reset();
 			FileHandler handler = new FileHandler("hr2s.log");
 			logger.addHandler(handler);
-			LogManager.getLogManager().reset();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		connect();
 	}
 
+	/**
+	 * Connect to the database if it exists
+	 */
 	private void connect() {
 		File dbFile = new File(dbName);
 		boolean exists = dbFile.exists();
@@ -71,6 +68,10 @@ public class Database implements IDatabase {
 		}
 	}
 
+	/**
+	 * close the database
+	 * @return success or failure
+	 */
 	public boolean close() {
 		try {
 			if (conn != null) {
@@ -97,6 +98,10 @@ public class Database implements IDatabase {
 		}
 	}
 
+	/**
+	 * Initialize the database
+	 * @return Response - Success or Fail
+	 */
 	private Response dbInit() {
 
 		logger.info("Initializing the Database.");
@@ -124,11 +129,11 @@ public class Database implements IDatabase {
 	}
 
 	/**
-	 * queries the db for a user and returns a User instance if found
+	 * queries the db for a user
 	 * @param username the username to lookup
-	 * @return a User instance
+	 * @return a ResultSet from the query
 	 */
-	public User getUser(String username) {
+	public ResultSet getUser(String username) {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
@@ -143,7 +148,7 @@ public class Database implements IDatabase {
 				return null;
 			}
 
-			return getUser(rs);
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -152,7 +157,12 @@ public class Database implements IDatabase {
 		return null;
 	}
 
-	public User getUser(UUID userId) {
+	/**
+	 * Retrieves a specific user based on userId
+	 * @param userId the user id
+	 * @return a resultset from the query
+	 */
+	public ResultSet getUser(UUID userId) {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
@@ -167,7 +177,7 @@ public class Database implements IDatabase {
 				return null;
 			}
 
-			return getUser(rs);
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -176,49 +186,21 @@ public class Database implements IDatabase {
 		return null;
 	}
 
-	public ArrayList<User> getAllUsers() {
-		ArrayList<User> allUsers = new ArrayList<User>();
-
+	/**
+	 * Retrieves all user entries
+	 * @return a list of users
+	 */
+	public ResultSet getAllUsers() {
 		try {
-			// Query to pull all room information from db
+			// Query to pull all user information from db
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `user`");
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
-				return allUsers;
+				return null;
 			}
 
-			while (rs.next()) {
-				allUsers.add(getUser(rs));
-			}
-
-		} catch (SQLException e) {
-			logger.severe(e.getMessage());
-		}
-
-		return allUsers;
-	}
-
-	private User getUser(ResultSet rs) {
-		try {
-			UUID userId = UUID.fromString(rs.getString("id"));
-			String username = rs.getString("username");
-			String firstName = rs.getString("firstName");
-			String lastName = rs.getString("lastName");
-			String street = rs.getString("street");
-			String state = rs.getString("state");
-			String zip = rs.getString("zip");
-			boolean active = rs.getBoolean("active");
-			Account accountType = Account.valueOf(rs.getString("type"));
-
-			switch (accountType) {
-				case CLERK:
-					return new Clerk(userId, username.toLowerCase(), firstName, lastName, street, state, zip);
-				case ADMIN:
-					return new Admin(userId, username.toLowerCase(), firstName, lastName, street, state, zip);
-				case GUEST:
-					return new Guest(userId, username.toLowerCase(), firstName, lastName, street, state, zip);
-			}
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -232,7 +214,7 @@ public class Database implements IDatabase {
 	 * @param roomId the room number
 	 * @return a Room instance or null
 	 */
-	public Room getRoom(int roomId) {
+	public ResultSet getRoom(int roomId) {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
@@ -246,14 +228,9 @@ public class Database implements IDatabase {
 				logger.info("Empty set for room: " + roomId);
 				return null;
 			}
+			
+			return rs;
 
-			Bed bedType = Bed.valueOf(rs.getString("bedType"));
-			int numBeds = rs.getInt("numBeds");
-			Boolean smoking = rs.getBoolean("smoking");
-			Boolean occupied = rs.getBoolean("occupied");
-			double nightlyRate = rs.getDouble("nightlyRate");
-
-			return new Room(roomId, bedType, numBeds, smoking, occupied, nightlyRate);
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
 		}
@@ -261,17 +238,22 @@ public class Database implements IDatabase {
 		return null;
 	}
 
-	public Response updateRoom (Room room) {
+	/**
+	 * Updates a room
+	 * @param room a room
+	 * @return Response - Success or Fail
+	 */
+	public Response updateRoom (int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("UPDATE `room` " +
 					"SET `bedType`=?, `numBeds`=?, `smoking`=?, `occupied`=?, `nightlyRate` =? " +
 					"WHERE id = ?");
-			ps.setString(1, room.getBedType().name());
-			ps.setInt(2, room.getNumBeds());
-			ps.setBoolean(3, room.getSmoking());
-			ps.setBoolean(4, room.getOccupied());
-			ps.setDouble(5, room.getNightlyRate());
-			ps.setInt(6, room.getRoomId());
+			ps.setString(1, bedType.name());
+			ps.setInt(2, numBeds);
+			ps.setBoolean(3, smoking);
+			ps.setBoolean(4, occupied);
+			ps.setDouble(5, nightly_rate);
+			ps.setInt(6, roomId);
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
@@ -288,7 +270,7 @@ public class Database implements IDatabase {
 	 * @param reservationId the reservation to look up
 	 * @return a Reservation instance or null
 	 */
-	public Reservation getReservation(UUID reservationId) {
+	public ResultSet getReservationByReservationId(UUID reservationId) {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
@@ -303,15 +285,7 @@ public class Database implements IDatabase {
 				return null;
 			}
 
-			UUID customerId = UUID.fromString(rs.getString("customerId"));
-			UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
-			int roomId = rs.getInt("roomId");
-			LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
-			LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
-			LocalDate departure = LocalDate.parse(rs.getString("departure"));
-			ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
-
-			return new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status);
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -320,8 +294,12 @@ public class Database implements IDatabase {
 		return null;
 	}
 
-	public ArrayList<Reservation> getReservationByGuestId(UUID customerId) {
-		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+	/**
+	 * Query reservation by guest ID
+	 * @param customerId the id of the guest
+	 * @return list of reservations
+	 */
+	public ResultSet getReservationByGuestId(UUID customerId) {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
@@ -333,45 +311,37 @@ public class Database implements IDatabase {
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
 				// an empty set could be normal
-				return reservations;
+				return null;
 			}
 
-			while (rs.next()) {
-				UUID reservationId = UUID.fromString(rs.getString("id"));
-				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
-				int roomId = rs.getInt("roomId");
-				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
-				LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
-				LocalDate departure = LocalDate.parse(rs.getString("departure"));
-				ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
-
-				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
-			}
-
-			return reservations;
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
 		}
 
-		return reservations;
+		return null;
 	}
 
-
-
-	public Response insertReservation(Reservation r) {
+	/**
+	 * Inserts a new reservation into the Database
+	 * @param r
+	 * @return Response - Success or Fail
+	 */
+	public Response insertReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
+			LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO `reservation` " +
 							"(`id`, `customerId`, `invoiceId`, `roomId`, `createdAt`, `arrival`, `departure`, `status`) " +
 							"VALUES (?,?,?,?,?,?,?,?)");
-			ps.setString(1, r.getReservationId().toString());
-			ps.setString(2, r.getCustomerId().toString());
-			ps.setString(3, r.getInvoiceId().toString());
-			ps.setInt(4, r.getRoomNumber());
-			ps.setString(5, r.getCreatedAt().toString());
-			ps.setString(6, r.getArrival().toString());
-			ps.setString(7, r.getDeparture().toString());
-			ps.setString(8, r.getStatus().name());
+			ps.setString(1, reservationId.toString());
+			ps.setString(2, customerId.toString());
+			ps.setString(3, invoiceId.toString());
+			ps.setInt(4, roomId);
+			ps.setString(5, createdAt.toString());
+			ps.setString(6, arrival.toString());
+			ps.setString(7, departure.toString());
+			ps.setString(8, status.name());
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
@@ -388,6 +358,11 @@ public class Database implements IDatabase {
 		return Response.FAILURE;
 	}
 
+	/**
+	 * Inserts a new invoice into the database
+	 * @param i an invoice
+	 * @return Response - Success or Fail
+	 */
 	public Response insertInvoice(Invoice i) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO `invoice` " +
@@ -411,6 +386,62 @@ public class Database implements IDatabase {
 		return Response.FAILURE;
 	}
 
+	/**
+	 * Insert a new room in the database
+	 * @param roomId
+	 * @param bedType
+	 * @param numBeds
+	 * @param smoking
+	 * @param occupied
+	 * @param nightly_rate
+	 * @return Response - Success or Fail
+	 */
+	public Response insertRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate) {
+		try {
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO `room` " +
+					"(`id`, `bedType`, `numBeds`, `smoking`, `occupied`, `nightlyRate`) " +
+					"VALUES (?,?,?,?,?,?);");
+
+			ps.setInt(1, roomId);
+			ps.setString(2, bedType.name());
+			ps.setInt(3, numBeds);
+			ps.setBoolean(4, smoking);
+			ps.setBoolean(5, occupied);
+			ps.setDouble(6, nightly_rate);
+
+
+			// Execute the query
+			ps.executeUpdate();
+			return Response.SUCCESS;
+
+		} catch (SQLException e) {
+			logger.severe(e.getMessage());
+		}
+		// failure
+		return Response.FAILURE;
+	}
+
+	public Response deleteRoom(int roomId) {
+		try {
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM `room` WHERE `id`=?");
+
+			ps.setInt(1, roomId);
+
+			// Execute the query
+			ps.executeUpdate();
+			return Response.SUCCESS;
+
+		} catch (SQLException e) {
+			logger.severe(e.getMessage());
+		}
+		// failure
+		return Response.FAILURE;
+	}
+	/**
+	 * Retrieves an invoice from the database
+	 * @param invoiceId the ID of an invoice
+	 * @return an invoice
+	 */
 	public Invoice getInvoice(UUID invoiceId) {
 		// Build the query
 		try {
@@ -440,6 +471,11 @@ public class Database implements IDatabase {
 		return null;
 	}
 
+	/**
+	 * Update an invoice
+	 * @param i an invoice
+	 * @return Response - Success or Fail
+	 */
 	public Response updateInvoice(Invoice i) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("UPDATE `invoice` " +
@@ -463,19 +499,25 @@ public class Database implements IDatabase {
 		return Response.FAILURE;
 	}
 
-	public Response updateReservation(Reservation r) {
+	/**
+	 * Updates a reservation
+	 * @param r a reservation object
+	 */
+	public Response updateReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
+	LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("UPDATE `reservation` " +
 					"SET `customerId`=?, `invoiceId`=?, `roomId`=?, `createdAt`=?, `arrival`=?, `departure`=?, `status`=? " +
 					"WHERE `id`=?;");
-			ps.setString(1, r.getCustomerId().toString());
-			ps.setString(2, r.getInvoiceId().toString());
-			ps.setInt(3, r.getRoomNumber());
-			ps.setString(4, r.getCreatedAt().toString());
-			ps.setString(5, r.getArrival().toString());
-			ps.setString(6, r.getDeparture().toString());
-			ps.setString(7, r.getStatus().name());
-			ps.setString(8, r.getReservationId().toString());
+				ps.setString(1, customerId.toString());
+				ps.setString(2, invoiceId.toString());
+				ps.setInt(3, roomId);
+				ps.setString(4, createdAt.toString());
+				ps.setString(5, arrival.toString());
+				ps.setString(6, departure.toString());
+				ps.setString(7, status.name());
+				ps.setString(8, reservationId.toString());
+
 
 			// Execute the update
 			if (ps.executeUpdate() > 0) {
@@ -494,13 +536,13 @@ public class Database implements IDatabase {
 	 * @param r the reservation id
 	 * @return success or fail
 	 */
-	public Response deleteReservation(Reservation r) {
+	public Response deleteReservation(UUID reservationId, UUID invoiceId) {
 		try {
 			// invoices for the reservation
 			PreparedStatement ps = conn.prepareStatement("DELETE FROM `invoice` " +
 					"WHERE `id`=?;");
 
-			ps.setString(1, r.getInvoiceId().toString());
+			ps.setString(1, invoiceId.toString());
 
 			// Execute the query
 			ps.executeQuery();
@@ -509,7 +551,7 @@ public class Database implements IDatabase {
 			ps = conn.prepareStatement("DELETE FROM `reservation` " +
 					"WHERE `id`=?;");
 
-			ps.setString(1, r.getReservationId().toString());
+			ps.setString(1, reservationId.toString());
 
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
@@ -530,8 +572,7 @@ public class Database implements IDatabase {
 	 * @param departure end date
 	 * @return list of reservations
 	 */
-	public ArrayList<Reservation> getOverlappingReservations(LocalDate arrival, LocalDate departure) {
-		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+	public ResultSet getOverlappingReservations(LocalDate arrival, LocalDate departure) {
 
 		try {
 			// attempts to find reservations that overlap with requested arrival and departure dates
@@ -551,25 +592,16 @@ public class Database implements IDatabase {
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
 				// an empty set could be normal
-				return reservations;
+				return null;
 			}
 
-			while (rs.next()) {
-				UUID reservationId = UUID.fromString(rs.getString("id"));
-				UUID customerId = UUID.fromString(rs.getString("customerId"));
-				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
-				int roomId = rs.getInt("roomId");
-				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
-				ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
-
-				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
-			}
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
 		}
 
-		return reservations;
+		return null;
 	}
 
 	/**
@@ -599,33 +631,6 @@ public class Database implements IDatabase {
 		return null;
 	}
 
-	public Response insertUser(User user, String hashed_password) {
-		try {
-			PreparedStatement ps = conn.prepareStatement("INSERT INTO `user`" +
-					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `active`) " +
-					"values (?,?,?,?,?,?,?)");
-
-			ps.setString(1, user.getUserId().toString());
-			ps.setString(2, user.getAccountType().name());
-			ps.setString(3, user.getUsername().toLowerCase());
-			ps.setString(5, user.getFirstName());
-			ps.setString(6, user.getLastName());
-			ps.setBoolean(7, user.getActive());
-
-			ps.setString(4, hashed_password);
-
-			// Execute the query
-			if (ps.executeUpdate() > 0) {
-				return Response.SUCCESS;
-			}
-
-		} catch (SQLException e) {
-			logger.severe(e.getMessage());
-		}
-
-		return Response.FAILURE;
-	}
-
 	/**
 	 * inserts a user into the database
 	 * @param username the username
@@ -637,13 +642,13 @@ public class Database implements IDatabase {
 	 * @param zipCode zip
 	 * @return
 	 */
-	public Response insertUser(Account type, String username, String hashed_password,
-							   String fName, String lName, String street, String state, String zipCode) {
+	public Response insertUser(UUID userId, Account type, String username, String hashed_password,
+							   String fName, String lName, String street, String state, String zipCode, Boolean active) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO `user`" +
 					" (`id`, `type`, `username`, `password`, `firstName`, `lastName`, `street`, `state`, `zip`, `active`) " +
 					"values (?,?,?,?,?,?,?,?,?,?)");
-			ps.setString(1, String.valueOf(UUID.randomUUID()));
+			ps.setString(1, String.valueOf(userId));
 			ps.setString(2, type.name());
 			ps.setString(3, username.toLowerCase());
 			ps.setString(4, hashed_password);
@@ -652,7 +657,7 @@ public class Database implements IDatabase {
 			ps.setString(7, street);
 			ps.setString(8, state);
 			ps.setString(9, zipCode);
-			ps.setBoolean(10, true);
+			ps.setBoolean(10, active);
 
 			// Execute the query
 			if (ps.executeUpdate() == 1) {
@@ -698,6 +703,18 @@ public class Database implements IDatabase {
 		return Response.FAILURE;
 	}
 
+	/**
+	 * Updates a user
+	 * @param userId
+	 * @param username
+	 * @param firstName
+	 * @param lastName
+	 * @param street
+	 * @param state
+	 * @param zipCode
+	 * @param active
+	 * @return
+	 */
 	public Response updateUserProfile(UUID userId, String username, String firstName, String lastName, String street, String state, String zipCode, Boolean active) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("UPDATE `user` " +
@@ -813,8 +830,11 @@ public class Database implements IDatabase {
 		return resultStringBuilder.toString();
 	}
 
-public ArrayList<Room> getAllRooms() {
-		ArrayList<Room> allRooms = new ArrayList<Room>();
+	/**
+	 * Gets all rooms form the database
+	 * @return Resultset or NULL on error
+	 */
+	public ResultSet getAllRooms() {
 
 		try {
 			// Query to pull all room information from db
@@ -822,25 +842,48 @@ public ArrayList<Room> getAllRooms() {
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
-				return allRooms;
+				return null;
 			}
 
-			while (rs.next()) {
-				int roomId = rs.getInt("id");
-				boolean smoking = rs.getBoolean("smoking");
-				int numBeds = rs.getInt("numBeds");
-				Bed bedType = Bed.valueOf(rs.getString("bedType"));
-				boolean occupied = rs.getBoolean("occupied");
-				double nightly_rate = rs.getDouble("nightlyRate");
-
-				allRooms.add(new Room(roomId, bedType, numBeds, smoking, occupied, nightly_rate));
-			}
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
 		}
 
-		return allRooms;
+		return null;
 	}
 
+	/**
+	 * Find rooms matching criteria
+	 * @param bedType
+	 * @param numBeds
+	 * @param smoking
+	 * @return Resultset or NULL if error
+	 */
+	public ResultSet getFilteredRooms(Bed bedType, int numBeds, boolean smoking) {
+
+		try {
+			// Query to pull all room information from db
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM `room` " +
+				"WHERE `bedType`=? AND `numBeds`=? AND `smoking`=?");
+
+				ps.setString(1, bedType.name());
+			ps.setInt(2, numBeds);
+			ps.setBoolean(3, smoking);
+
+			// Execute the query
+			ResultSet rs = ps.executeQuery();
+			if (!validate(rs)) {
+				return null;
+			}
+
+			return rs;
+
+		} catch (SQLException e) {
+			logger.severe(e.getMessage());
+		}
+
+		return null;
+	}
 }

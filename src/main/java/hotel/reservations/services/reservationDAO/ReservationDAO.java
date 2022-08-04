@@ -9,12 +9,13 @@ import hotel.reservations.persistence.Database;
 import hotel.reservations.services.invoiceDAO.IInvoiceDAO;
 import hotel.reservations.services.Response;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
 public class ReservationDAO implements IReservationDAO, IInvoiceDAO {
-    private static ReservationDAO dao = null;
     private Database db = null;
 
     public ReservationDAO(Database db) {
@@ -30,38 +31,94 @@ public class ReservationDAO implements IReservationDAO, IInvoiceDAO {
 
     @Override
     public ArrayList<Reservation> findReservations(LocalDate arrival, LocalDate departure) {
-        return db.getOverlappingReservations(arrival, departure);
+        ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+
+        ResultSet rs = db.getOverlappingReservations(arrival, departure);
+        if (rs == null) {
+            return reservations;
+        }
+
+        try {
+            while(rs.next()) {
+                reservations.add(createReservation(rs));
+            }
+        } catch (SQLException e) {
+        }
+
+        return reservations;
+
     }
 
     @Override
     public ArrayList<Reservation> findReservations(UUID guestId) {
-        return db.getReservationByGuestId(guestId);
+        ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+
+        ResultSet rs = db.getReservationByGuestId(guestId);
+        if (rs == null) {
+            return reservations;
+        }
+
+        try {
+            while(rs.next()) {
+                reservations.add(createReservation(rs));
+            }
+        } catch (SQLException e) {
+        }
+
+        return reservations;
     }
 
     @Override
     public Reservation findReservation(UUID reservationId){
-        return db.getReservation(reservationId);
+        ResultSet rs =  db.getReservationByReservationId(reservationId);
+        return createReservation(rs);
+    }
+
+    /**
+     * create a reservation object from resultset
+     * @param rs
+     * @return reservation object or null on error
+     */
+    private Reservation createReservation(ResultSet rs) {
+        if (null == rs) {
+            return null;
+        }
+
+        try {
+            UUID reservationId = UUID.fromString(rs.getString("id"));
+            UUID customerId = UUID.fromString(rs.getString("customerId"));
+            UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
+            int roomId = rs.getInt("roomId");
+            LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
+            LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
+            LocalDate departure = LocalDate.parse(rs.getString("departure"));
+            ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
+
+            return new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status);
+        } catch (SQLException e) {
+        }
+
+        return null;
     }
 
     @Override
-    public ArrayList<Reservation> getAllGuestReservations(UUID userId) {
-        return db.getReservationByGuestId(userId);
+    public Response updateReservation(Reservation reservation){
+        return db.updateReservation(reservation.getReservationId(), reservation.getCustomerId(),
+            reservation.getInvoiceId(), reservation.getRoomNumber(), reservation.getCreatedAt(),
+            reservation.getArrival(), reservation.getDeparture(), reservation.getStatus());
     }
 
     @Override
-    public void updateReservation(Reservation reservation){
-        db.updateReservation(reservation);
+    public Response deleteReservation(Reservation reservation) {
+        return db.deleteReservation(reservation.getReservationId(), reservation.getInvoiceId());
     }
 
     @Override
-    public void deleteReservation(Reservation reservation) {
-        db.deleteReservation(reservation);
-    }
-
-    @Override
-    public void cancelReservation(Reservation reservation) {
+    public Response cancelReservation(Reservation reservation) {
         reservation.setStatus(ReservationStatus.CANCELLED);
-        db.updateReservation(reservation);
+        return db.updateReservation(reservation.getReservationId(), reservation.getCustomerId(),
+            reservation.getInvoiceId(), reservation.getRoomNumber(), reservation.getCreatedAt(),
+            reservation.getArrival(), reservation.getDeparture(), reservation.getStatus());
         // TODO: calculate 80% if need be....
     }
 
@@ -109,7 +166,9 @@ public class ReservationDAO implements IReservationDAO, IInvoiceDAO {
         }
         reservation.setInvoiceId(invoice.getInvoiceId());
 
-        response = db.insertReservation(reservation);
+        response = db.insertReservation(reservation.getReservationId(), reservation.getCustomerId(),
+            reservation.getInvoiceId(), reservation.getRoomNumber(), reservation.getCreatedAt(),
+            reservation.getArrival(), reservation.getDeparture(), reservation.getStatus());
         if (Response.FAILURE == response) {
             return null;
         }
