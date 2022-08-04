@@ -83,6 +83,11 @@ public class AppControllerImpl implements AppController{
         userService.createClerk(username, firstName, lastName, street, state, zipCode);
     }
 
+    @Override
+    public void resetGuestPassword(UUID sessionId, String username){
+        userService.resetGuestPassword(sessionId, username);
+    }
+
     /**                              *
      * End of User Service Endpoints *
      * ----------------------------- *

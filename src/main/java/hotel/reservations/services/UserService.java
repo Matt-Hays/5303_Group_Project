@@ -26,6 +26,7 @@ public interface UserService  {
                                String zipCode, boolean active);
 
     public void updatePassword(String username, char[] oldPassword, char[] newPassword);
+    public void resetGuestPassword(UUID sessionId, String username);
     // Delete a User
     public void deleteUser(User user);
     public void deleteUserById(UUID id);

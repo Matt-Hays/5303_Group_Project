@@ -24,7 +24,7 @@ public class UserPanel extends ThemedPanel {
     private RoundedTextField fNameText, lNameText, streetText, stateText, zipText;
     private RoundedPasswordField clerkOldPwField, clerkNewPwField;
     private JButton btnUpdate, btnBack, btnViewReservations;
-    private boolean hasPreviousMessage;
+    private boolean hasPreviousMessage, isClerkMode;
     private GridBagConstraints gbc = new GridBagConstraints();
 
     public UserPanel(Frame frame) {
@@ -59,7 +59,6 @@ public class UserPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
-
                 Session session = getFrame().getSession();
                 String username = session.getUser().getUsername();
                 String firstName = getfNameText();
@@ -88,6 +87,7 @@ public class UserPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
+                if(isClerkMode) clearClerkMode();
             }
         });
 
@@ -98,6 +98,7 @@ public class UserPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
+                if(isClerkMode) clearClerkMode();
                 getFrame().changeScreen("home");
             }
         });
@@ -136,29 +137,45 @@ public class UserPanel extends ThemedPanel {
      */
     public void populateAccount(User user){
         if(user.getAccountType() == Account.CLERK){
-            clerkOldPwField = new RoundedPasswordField(20);
-            clerkNewPwField = new RoundedPasswordField(20);
-            clerkOldPwLabel = new JLabel("<html><p style='color:white; font-size:16px'>Clerk Current Password</p></html>");
-            clerkNewPwLabel = new JLabel("<html><p style='color:white; font-size:16px'>Clerk New Password</p></html>");
-
-            gbc.insets = new Insets(0, 0, 0, 16);
-            gbc.gridx = 0;
-            gbc.gridy++;
-            add(clerkOldPwLabel, gbc);
-            gbc.insets = new Insets(0, 6, 0, 0);
-            gbc.gridx = 1;
-            add(clerkOldPwField, gbc);
-            gbc.gridy++;
-            gbc.gridx = 0;
-            add(clerkNewPwLabel, gbc);
-            gbc.gridx++;
-            add(clerkOldPwField, gbc);
+            if(!isClerkMode) prepareClerkDisplay();
         }
         fNameText.setText(user.getFirstName());
         lNameText.setText(user.getLastName());
         streetText.setText(user.getStreet());
         stateText.setText(user.getState());
         zipText.setText(user.getZipCode());
+        revalidate();
+        repaint();
+    }
+
+    private void prepareClerkDisplay(){
+        clerkOldPwField = new RoundedPasswordField(20);
+        clerkNewPwField = new RoundedPasswordField(20);
+        clerkOldPwLabel = new JLabel("<html><p style='color:white; font-size:16px'>Clerk Current Password</p></html>");
+        clerkNewPwLabel = new JLabel("<html><p style='color:white; font-size:16px'>Clerk New Password</p></html>");
+
+        gbc.insets = new Insets(0, 0, 0, 16);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        add(clerkOldPwLabel, gbc);
+        gbc.insets = new Insets(0, 6, 0, 0);
+        gbc.gridx = 1;
+        add(clerkOldPwField, gbc);
+        gbc.gridy++;
+        gbc.gridx = 0;
+        add(clerkNewPwLabel, gbc);
+        gbc.gridx++;
+        add(clerkNewPwField, gbc);
+        isClerkMode = true;
+    }
+
+    private void clearClerkMode(){
+        remove(clerkOldPwField);
+        remove(clerkNewPwField);
+        remove(clerkOldPwLabel);
+        remove(clerkNewPwLabel);
+        fillLayout();
+        isClerkMode = false;
         revalidate();
         repaint();
     }

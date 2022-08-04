@@ -49,6 +49,7 @@ public class AdminPanel extends ThemedPanel {
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessages();
                 // Route to a reset password page.
+                getFrame().changeScreen("reset-guest-credentials");
             }
         });
     }

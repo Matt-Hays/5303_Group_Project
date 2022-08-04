@@ -130,6 +130,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void resetGuestPassword(UUID sessionId, String username) {
+        if(sessionDao.getSessionUser(sessionId).getAccountType().equals(Account.ADMIN))
+            userDao.resetGuestPassword(username);
+    }
+
+    @Override
     public void deleteUser(User user) {
 
     }

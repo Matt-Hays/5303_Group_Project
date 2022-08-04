@@ -8,6 +8,7 @@ import hotel.reservations.views.login.LoginPanel;
 import hotel.reservations.views.register.RegisterPanel;
 import hotel.reservations.views.reservation.ReservationPanel;
 import hotel.reservations.views.search.SearchPanel;
+import hotel.reservations.views.user.ResetGuestCredentials;
 import hotel.reservations.views.user.UserPanel;
 
 import javax.swing.*;
@@ -43,6 +44,7 @@ public class FrameImpl extends JFrame implements Frame {
         cardPanel.add(new SearchPanel(this), "search");
         cardPanel.add(new UserPanel(this), "account");
         cardPanel.add(new AdminPanel(this), "admin");
+        cardPanel.add(new ResetGuestCredentials(this), "reset-guest-credentials");
 
         add(cardPanel);
 

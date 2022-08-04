@@ -41,6 +41,15 @@ public class UserDaoImpl implements UserDao {
         return Response.FAILURE;
     }
 
+    @Override
+    public Response resetGuestPassword(String username) {
+        try {
+            return db.updatePassword(username, HotelAuth.generatePasswordHash("password123$"));
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Update user profile in db
      * @param userId

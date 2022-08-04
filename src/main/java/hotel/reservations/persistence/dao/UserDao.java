@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public interface UserDao {
     public Response changePassword(String username, char[] currentPassword, char[] newPassword);
+    public Response resetGuestPassword(String username);
 
     public Response updateUser(UUID userId, String newUsername, String firstName, String lastName, String street,
                                String state, String zipCode, boolean active);

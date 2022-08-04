@@ -24,6 +24,7 @@ public interface AppController {
 
     // Use Case 14
     public void resetPassword(String username, char[] oldPassword, char[] newPassword);
+    public void resetGuestPassword(UUID sessionId, String username);
 
     // Use Case 15
     public User modifyUser(UUID sessionId, String newUsername, String firstName, String lastName, String address, String state,
