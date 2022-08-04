@@ -1,7 +1,7 @@
 package hotel.reservations.views.search;
 
 import com.github.lgooddatepicker.components.DatePicker;
-import hotel.reservations.views.controller.GuiHandler;
+import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.ThemedPanel;
 
@@ -11,13 +11,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SearchPanel extends ThemedPanel {
-    private GuiHandler guiHandler;
+    private Frame frame;
     private DatePicker datePicker1, datePicker2;
     private JLabel pageHeader, arrivalLabel, departureLabel;
     private RoundedButton btnSearch, btnBack;
 
-    public SearchPanel(GuiHandler guiHandler){
-        setGuiHandler(guiHandler);
+    public SearchPanel(Frame frame){
+        setFrame(frame);
 
         setLayout(new GridBagLayout());
 
@@ -34,7 +34,7 @@ public class SearchPanel extends ThemedPanel {
         btnBack.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                getGuiHandler().changeScreen("home");
+                getFrame().changeScreen("home");
             }
         });
 
@@ -42,17 +42,17 @@ public class SearchPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // SEARCH ROOMS !!! IMPLEMENT !!!
-                getGuiHandler().getAppController();
+                getFrame().getAppController();
             }
         });
     }
 
-    private void setGuiHandler(GuiHandler guiHandler) {
-        this.guiHandler = guiHandler;
+    private void setFrame(Frame frame) {
+        this.frame = frame;
     }
 
-    private GuiHandler getGuiHandler(){
-        return guiHandler;
+    private Frame getFrame(){
+        return frame;
     }
 
     private void fillLayout(){

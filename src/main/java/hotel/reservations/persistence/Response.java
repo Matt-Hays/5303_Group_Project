@@ -1,4 +1,4 @@
-package hotel.reservations.persistence.dao.impls;
+package hotel.reservations.persistence;
 
 public enum Response {
     SUCCESS (0),

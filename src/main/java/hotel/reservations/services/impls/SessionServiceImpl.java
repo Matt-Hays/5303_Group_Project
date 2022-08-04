@@ -15,7 +15,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public UUID createSession(User user) {
+    public Session createSession(User user) {
         return sessionDao.createSession(user);
     }
 

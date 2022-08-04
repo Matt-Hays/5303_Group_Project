@@ -1,6 +1,7 @@
 package hotel.reservations.views.login;
 
-import hotel.reservations.views.controller.GuiHandler;
+import hotel.reservations.models.session.Session;
+import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.RoundedPasswordField;
 import hotel.reservations.views.styles.RoundedTextField;
@@ -10,12 +11,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
 
 public class LoginPanel extends ThemedPanel {
-    private GuiHandler guiHandler;
+    private Frame frame;
     private JLabel pageHeader;
     private RoundedTextField usernameField;
     private RoundedPasswordField passwordField;
@@ -23,8 +22,8 @@ public class LoginPanel extends ThemedPanel {
     private GridBagConstraints gbc = new GridBagConstraints();
     private boolean hasPreviousErrorMessage;
 
-    public LoginPanel(GuiHandler guiHandler){
-        setGuiHandler(guiHandler);
+    public LoginPanel(Frame frame){
+        setFrame(frame);
 
         setLayout(new GridBagLayout());
         usernameField = new RoundedTextField(20);
@@ -39,11 +38,12 @@ public class LoginPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (hasPreviousErrorMessage) clearErrorMessage();
-                UUID sessionId = getGuiHandler().getAppController().logIn(getUsernameField(), getPasswordField());
-                if(sessionId == null) displayErrorMessage();
+                Session session = getFrame().getAppController().logIn(getUsernameField(), getPasswordField());
+                if(session == null) displayErrorMessage();
                 else {
-                    getGuiHandler().getHomePanel().loggedInDisplay();
-                    getGuiHandler().changeScreen("home");
+                    getFrame().setSession(session);
+                    getFrame().getHomePanel().loggedInDisplay();
+                    getFrame().changeScreen("home");
                 }
             }
         });
@@ -52,7 +52,7 @@ public class LoginPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousErrorMessage) clearErrorMessage();
-                getGuiHandler().changeScreen("home");
+                getFrame().changeScreen("home");
             }
         });
     }
@@ -101,12 +101,12 @@ public class LoginPanel extends ThemedPanel {
         add(btnBack, gbc);
     }
 
-    private void setGuiHandler(GuiHandler guiHandler){
-        this.guiHandler = guiHandler;
+    private void setFrame(Frame frame){
+        this.frame = frame;
     }
 
-    private GuiHandler getGuiHandler() {
-        return guiHandler;
+    private Frame getFrame() {
+        return frame;
     }
 
     public JLabel getPageHeader() {

@@ -5,7 +5,8 @@ import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.User;
-import hotel.reservations.persistence.Database;
+import hotel.reservations.persistence.DatabaseImpl;
+import hotel.reservations.persistence.Response;
 import hotel.reservations.persistence.dao.InvoiceDao;
 import hotel.reservations.persistence.dao.ReservationDao;
 
@@ -16,9 +17,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
-    private Database db = null;
+    private DatabaseImpl db = null;
 
-    public ReservationDaoImpl(Database db) {
+    public ReservationDaoImpl(DatabaseImpl db) {
         this.db = db;
     }
 

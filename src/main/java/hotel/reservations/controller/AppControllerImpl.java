@@ -2,11 +2,12 @@ package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
+import hotel.reservations.models.session.Session;
+import hotel.reservations.persistence.DatabaseImpl;
 import hotel.reservations.persistence.dao.SessionDao;
 import hotel.reservations.persistence.dao.impls.SessionDaoImpl;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
-import hotel.reservations.persistence.Database;
 import hotel.reservations.services.UserService;
 import hotel.reservations.services.impls.UserServiceImpl;
 import hotel.reservations.persistence.dao.ReservationDao;
@@ -15,14 +16,14 @@ import hotel.reservations.persistence.dao.RoomDao;
 import hotel.reservations.persistence.dao.impls.RoomDaoImpl;
 import hotel.reservations.persistence.dao.UserDao;
 import hotel.reservations.persistence.dao.impls.UserDaoImpl;
-import hotel.reservations.views.controller.GuiHandler;
+import hotel.reservations.views.frame.Frame;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 public class AppControllerImpl implements AppController{
-    private GuiHandler guiHandler;
+    private Frame guiHandler;
     private SessionDao sessionDAO;
     private UserDao userDAO;
     private ReservationDao reservationDAO;
@@ -31,7 +32,7 @@ public class AppControllerImpl implements AppController{
     private final UserService userService;
 
 
-    public AppControllerImpl(Database db){
+    public AppControllerImpl(DatabaseImpl db){
         this.guiHandler = null;
         this.sessionDAO = new SessionDaoImpl();
         this.userDAO = new UserDaoImpl(db);
@@ -50,13 +51,13 @@ public class AppControllerImpl implements AppController{
      *                        */
 
     @Override
-    public UUID registerUser(String username, char[] password, String firstName, String lastName, String street,
-                             String state, String zipCode) {
+    public Session registerUser(String username, char[] password, String firstName, String lastName, String street,
+                                String state, String zipCode) {
         return userService.createUser(Account.GUEST, username, password, firstName, lastName, street, state, zipCode);
     }
 
     @Override
-    public UUID logIn(String username, char[] password) {
+    public Session logIn(String username, char[] password) {
         return userService.login(username, password);
     }
 
@@ -73,11 +74,7 @@ public class AppControllerImpl implements AppController{
     @Override
     public User modifyUser(UUID sessionId, String newUsername, String firstName, String lastName, String street, String state,
                            String zipCode, boolean active) {
-        /**
-         * This call needs to return a User. Currently, returns a Response.
-         */
-        userService.updateUser(sessionId, newUsername, firstName, lastName, street, state, zipCode, active);
-        return null;
+        return userService.updateUser(sessionId, newUsername, firstName, lastName, street, state, zipCode, active);
     }
 
     @Override
@@ -183,7 +180,7 @@ public class AppControllerImpl implements AppController{
     }
 
     @Override
-    public void addViewsHandler(GuiHandler guiHandler) {
+    public void addViewsHandler(Frame guiHandler) {
         this.guiHandler = guiHandler;
     }
 
@@ -237,11 +234,11 @@ public class AppControllerImpl implements AppController{
     /**
      * APP CONTROLLER PRIVATE ACCESS METHODS
      */
-    private GuiHandler getGuiHandler() {
+    private Frame getGuiHandler() {
         return guiHandler;
     }
 
-    private void setGuiController(GuiHandler guiHandler) {
+    private void setGuiController(Frame guiHandler) {
         this.guiHandler = guiHandler;
     }
 

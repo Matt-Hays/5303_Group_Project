@@ -17,11 +17,11 @@ public class SessionDaoImpl implements SessionDao {
     }
 
     @Override
-    public UUID createSession(User user) {
+    public Session createSession(User user) {
         if(user == null) return null;
         Session newSession = new Session(user);
         sessions.add(newSession);
-        return newSession.getId();
+        return newSession;
     }
 
     @Override
@@ -45,6 +45,17 @@ public class SessionDaoImpl implements SessionDao {
             }
         }
         return null;
+    }
+
+    @Override
+    public void updateSessionUser(User user){
+        Iterator<Session> itr = sessions.iterator();
+        while(itr.hasNext()){
+            Session temp = itr.next();
+            if(temp.getUser().getUserId().equals(user.getUserId())){
+                temp.setUser(user);
+            }
+        }
     }
 
     @Override

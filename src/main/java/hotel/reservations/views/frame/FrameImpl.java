@@ -1,24 +1,26 @@
-package hotel.reservations.views.controller;
+package hotel.reservations.views.frame;
 
 import hotel.reservations.controller.AppController;
+import hotel.reservations.models.session.Session;
 import hotel.reservations.views.admin.AdminPanel;
 import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
 import hotel.reservations.views.register.RegisterPanel;
 import hotel.reservations.views.reservation.ReservationPanel;
 import hotel.reservations.views.search.SearchPanel;
+import hotel.reservations.views.user.UserPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.UUID;
 
-public class GuiFrame extends JFrame implements GuiHandler{
+public class FrameImpl extends JFrame implements Frame {
     private AppController appController;
     private JPanel cardPanel;
     private CardLayout cardLayout;
-    private UUID sessionCtx;
+    private Session session;
 
-    public GuiFrame(AppController appController) {
+    public FrameImpl(AppController appController) {
         setApplicationController(appController);
 
         setSize(850, 720);
@@ -35,6 +37,7 @@ public class GuiFrame extends JFrame implements GuiHandler{
         cardPanel.add(new LoginPanel(this), "login");
         cardPanel.add(new RegisterPanel(this), "register");
         cardPanel.add(new SearchPanel(this), "search");
+        cardPanel.add(new UserPanel(this), "account");
 
         // Add card panel to app frame.
         add(cardPanel);
@@ -58,13 +61,13 @@ public class GuiFrame extends JFrame implements GuiHandler{
     }
 
     @Override
-    public void setSessionCtx(UUID sessionCtx) {
-        this.sessionCtx = sessionCtx;
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     @Override
-    public UUID getSessionCtx() {
-        return sessionCtx;
+    public Session getSession() {
+        return session;
     }
 
     @Override
@@ -100,5 +103,10 @@ public class GuiFrame extends JFrame implements GuiHandler{
     @Override
     public SearchPanel getSearchPanel() {
         return (SearchPanel) cardPanel.getComponent(3);
+    }
+
+    @Override
+    public UserPanel getUserPanel() {
+        return (UserPanel) cardPanel.getComponent(4);
     }
 }

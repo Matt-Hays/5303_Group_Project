@@ -2,7 +2,8 @@ package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
-import hotel.reservations.persistence.Database;
+import hotel.reservations.persistence.DatabaseImpl;
+import hotel.reservations.persistence.Response;
 import hotel.reservations.persistence.dao.RoomDao;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.persistence.dao.ReservationDao;
@@ -14,10 +15,10 @@ import java.sql.SQLException;
 
 public class RoomDaoImpl implements RoomDao {
 
-    private Database db = null;
+    private DatabaseImpl db = null;
     private ReservationDao rd = null;
 
-    public RoomDaoImpl(Database database, ReservationDao reservationDAO) {
+    public RoomDaoImpl(DatabaseImpl database, ReservationDao reservationDAO) {
         db = database;
         rd = reservationDAO;
     }

@@ -4,7 +4,7 @@ import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.User;
-import hotel.reservations.persistence.dao.impls.Response;
+import hotel.reservations.persistence.Response;
 
 
 import java.time.LocalDate;

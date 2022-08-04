@@ -1,6 +1,6 @@
 package hotel.reservations.views.home;
 
-import hotel.reservations.views.controller.GuiHandler;
+import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.ThemedPanel;
 
@@ -8,10 +8,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Dimension2D;
 
 public class HomePanel extends ThemedPanel {
-    private GuiHandler guiHandler;
+    private Frame frame;
     private JLabel pageHeader;
     private RoundedButton btnLogin, btnRegister, btnSearch;
     private GridBagConstraints gbc = new GridBagConstraints();
@@ -19,10 +18,10 @@ public class HomePanel extends ThemedPanel {
 
     /**
      * View Constructor - Define the view
-     * @param guiHandler The GUI controller or GUI JFrame.
+     * @param frame The GUI controller or GUI JFrame.
      */
-    public HomePanel(GuiHandler guiHandler){
-        setGuiHandler(guiHandler);
+    public HomePanel(Frame frame){
+        setFrame(frame);
 
         setLayout(new GridBagLayout());
 
@@ -40,7 +39,7 @@ public class HomePanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
-                getGuiHandler().changeScreen("login");
+                getFrame().changeScreen("login");
             }
         });
 
@@ -48,7 +47,7 @@ public class HomePanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
-                getGuiHandler().changeScreen("register");
+                getFrame().changeScreen("register");
             }
         });
 
@@ -56,7 +55,7 @@ public class HomePanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
-                getGuiHandler().changeScreen("search");
+                getFrame().changeScreen("search");
             }
         });
     }
@@ -64,8 +63,9 @@ public class HomePanel extends ThemedPanel {
     public void displayNewUserMessage(){
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridy++;
-        gbc.insets = new Insets(24, 0, 0, 0);
+        gbc.insets = new Insets(0, 0, 0, 0);
         add(new JLabel("<html><p style='color:green'>Welcome to the hotel!</p></html>"), gbc);
+        this.hasPreviousMessage = true;
         revalidate();
         repaint();
     }
@@ -85,11 +85,26 @@ public class HomePanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
-                getGuiHandler().getAppController().logOut(getGuiHandler().getSessionCtx());
+                getFrame().getAppController().logOut(getFrame().getSession().getId());
                 displayMessage("Logged out successfully!");
                 loggedOutDisplay();
             }
         });
+
+        btnRegister.setText("Account");
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(0, 0, 0, 48);
+        for(ActionListener al : btnRegister.getActionListeners()){
+            btnRegister.removeActionListener(al);
+        }
+        btnRegister.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().getUserPanel().populateAccount(getFrame().getSession().getUser());
+                getFrame().changeScreen("account");
+            }
+        });
+        add(btnRegister, gbc, 3);
 
         revalidate();
         repaint();
@@ -112,7 +127,24 @@ public class HomePanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
-                getGuiHandler().changeScreen("login");
+                getFrame().changeScreen("login");
+            }
+        });
+
+        btnRegister.setText("Register");
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(0, 0, 0, 48);
+        for(ActionListener al : btnRegister.getActionListeners()){
+            btnRegister.removeActionListener(al);
+        }
+
+        add(btnRegister, gbc, 3);
+
+        btnRegister.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
+                getFrame().changeScreen("register");
             }
         });
 
@@ -122,7 +154,7 @@ public class HomePanel extends ThemedPanel {
 
     private void displayMessage(String message){
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(76, 0, 0, 0);
+        gbc.insets = new Insets(64, 0, 0, 0);
         add(new JLabel("<html><p style='color:green'>" + message + "</p></html>"), gbc);
         this.hasPreviousMessage = true;
         revalidate();
@@ -152,11 +184,11 @@ public class HomePanel extends ThemedPanel {
         add(btnSearch, gbc);
     }
 
-    private void setGuiHandler(GuiHandler guiHandler){
-        this.guiHandler = guiHandler;
+    private void setFrame(Frame frame){
+        this.frame = frame;
     }
 
-    private GuiHandler getGuiHandler() {
-        return guiHandler;
+    private Frame getFrame() {
+        return frame;
     }
 }

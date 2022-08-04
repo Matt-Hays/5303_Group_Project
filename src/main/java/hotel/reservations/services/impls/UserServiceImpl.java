@@ -1,10 +1,11 @@
 package hotel.reservations.services.impls;
 
+import hotel.reservations.models.session.Session;
 import hotel.reservations.persistence.dao.SessionDao;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.dao.UserDao;
-import hotel.reservations.persistence.dao.impls.Response;
+import hotel.reservations.persistence.Response;
 import hotel.reservations.services.UserService;
 
 import java.security.NoSuchAlgorithmException;
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UUID login(String username, char[] password) {
+    public Session login(String username, char[] password) {
         User user;
         try {
             user = userDao.logIn(username, password);
@@ -37,8 +38,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UUID createUser(Account accountType, String username, char[] password, String fName, String lName,
-                           String street, String state, String zipCode) {
+    public Session createUser(Account accountType, String username, char[] password, String fName, String lName,
+                              String street, String state, String zipCode) {
         User user;
         try {
             user = userDao.createUser(accountType, username, password, fName, lName, street, state, zipCode);
@@ -54,10 +55,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response updateUser(UUID id, String newUsername, String firstName, String lastName, String street, String state,
+    public User updateUser(UUID id, String newUsername, String firstName, String lastName, String street, String state,
                                String zipCode, boolean active) {
-        return userDao.updateUser(sessionDao.getSessionUser(id).getUserId(), newUsername, firstName, lastName, street,
-                                  state, zipCode, active);
+        Response res = userDao.updateUser(sessionDao.getSessionUser(id).getUserId(), newUsername, firstName, lastName, street,
+                state, zipCode, active);
+        User user = null;
+        if(res == Response.SUCCESS) {
+            user = userDao.getUserById(sessionDao.getSessionUser(id).getUserId());
+            sessionDao.updateSessionUser(user);
+        }
+        return user;
     }
 
     @Override

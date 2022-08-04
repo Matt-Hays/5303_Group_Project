@@ -1,22 +1,24 @@
-package hotel.reservations.views.controller;
+package hotel.reservations.views.frame;
 
 import hotel.reservations.controller.AppController;
+import hotel.reservations.models.session.Session;
 import hotel.reservations.views.admin.AdminPanel;
 import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
 import hotel.reservations.views.register.RegisterPanel;
 import hotel.reservations.views.reservation.ReservationPanel;
 import hotel.reservations.views.search.SearchPanel;
+import hotel.reservations.views.user.UserPanel;
 
 import java.util.UUID;
 
-public interface GuiHandler {
+public interface Frame {
     public void changeScreen(String screenName);
 
     public AppController getAppController();
 
-    public void setSessionCtx(UUID sessionCtx);
-    public UUID getSessionCtx();
+    public void setSession(Session session);
+    public Session getSession();
 
     public void setHomePanel(String userType);
 
@@ -31,4 +33,6 @@ public interface GuiHandler {
     public RegisterPanel getRegisterPanel();
 
     public SearchPanel getSearchPanel();
+
+    public UserPanel getUserPanel();
 }

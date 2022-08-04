@@ -2,8 +2,9 @@ package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
+import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.User;
-import hotel.reservations.views.controller.GuiHandler;
+import hotel.reservations.views.frame.Frame;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,11 +15,11 @@ public interface AppController {
      * User Service Endpoints *
      *                        */
     // Use Case 10
-    public UUID logIn(String username, char[] password);
+    public Session logIn(String username, char[] password);
     public void logOut(UUID sessionId);
 
     // Use Case 11
-    public UUID registerUser(String username, char[] password, String firstName, String lastName, String address,
+    public Session registerUser(String username, char[] password, String firstName, String lastName, String address,
                              String state, String zipCode);
 
     // Use Case 14
@@ -82,5 +83,5 @@ public interface AppController {
     public void payInvoice(Reservation reservation);
 
     // Misc. Methods
-    public void addViewsHandler(GuiHandler guiHandler);
+    public void addViewsHandler(Frame guiHandler);
 }

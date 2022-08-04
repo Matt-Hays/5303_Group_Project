@@ -1,7 +1,7 @@
 package hotel.reservations.persistence.dao;
 
 import hotel.reservations.models.reservation.Invoice;
-import hotel.reservations.persistence.dao.impls.Response;
+import hotel.reservations.persistence.Response;
 
 import java.util.UUID;
 

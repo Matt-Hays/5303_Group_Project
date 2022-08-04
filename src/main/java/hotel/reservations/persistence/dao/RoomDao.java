@@ -3,7 +3,7 @@ package hotel.reservations.persistence.dao;
 
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.room.Bed;
-import hotel.reservations.persistence.dao.impls.Response;
+import hotel.reservations.persistence.Response;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

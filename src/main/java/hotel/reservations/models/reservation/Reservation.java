@@ -1,9 +1,7 @@
 package hotel.reservations.models.reservation;
 
 import hotel.reservations.models.room.Room;
-import hotel.reservations.models.user.Guest;
 import hotel.reservations.models.user.User;
-import hotel.reservations.persistence.Database;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;

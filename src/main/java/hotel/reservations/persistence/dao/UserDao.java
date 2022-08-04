@@ -2,7 +2,7 @@ package hotel.reservations.persistence.dao;
 
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
-import hotel.reservations.persistence.dao.impls.Response;
+import hotel.reservations.persistence.Response;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;

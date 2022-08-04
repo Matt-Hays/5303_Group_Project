@@ -1,6 +1,7 @@
 package hotel.reservations.views.register;
 
-import hotel.reservations.views.controller.GuiHandler;
+import hotel.reservations.models.session.Session;
+import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.RoundedPasswordField;
 import hotel.reservations.views.styles.RoundedTextField;
@@ -10,12 +11,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
 
 public class RegisterPanel extends ThemedPanel {
-    private GuiHandler guiHandler;
+    private Frame frame;
     private RoundedTextField usernameField, firstNameField, lastNameField, addressField, stateField, zipCodeField;
     private RoundedPasswordField passwordField;
     private RoundedButton btnBack, btnRegister;
@@ -23,8 +22,8 @@ public class RegisterPanel extends ThemedPanel {
     private boolean hasPreviousMessage;
 
 
-    public RegisterPanel(GuiHandler guiHandler){
-        setGuiHandler(guiHandler);
+    public RegisterPanel(Frame frame){
+        setFrame(frame);
 
         setLayout(new GridBagLayout());
 
@@ -53,24 +52,25 @@ public class RegisterPanel extends ThemedPanel {
                 String state = getStateField();
                 String zipCode = getZipCodeField();
 
-                UUID sessionId = getGuiHandler()
+                Session session = getFrame()
                         .getAppController()
                         .registerUser(username, password, firstName, lastName, address, state, zipCode);
 
-                if(sessionId == null) {
+                if(session == null) {
                     displayErrorMessage();
                     return;
                 };
 
-                getGuiHandler().getHomePanel().displayNewUserMessage();
-                getGuiHandler().changeScreen("home");
+                getFrame().setSession(session);
+                getFrame().getHomePanel().displayNewUserMessage();
+                getFrame().changeScreen("home");
             }
         });
 
         btnBack.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                getGuiHandler().changeScreen("home");
+                getFrame().changeScreen("home");
             }
         });
     }
@@ -142,12 +142,12 @@ public class RegisterPanel extends ThemedPanel {
         add(btnBack, gbc);
     }
 
-    private void setGuiHandler(GuiHandler guiHandler){
-        this.guiHandler = guiHandler;
+    private void setFrame(Frame frame){
+        this.frame = frame;
     }
 
-    private GuiHandler getGuiHandler(){
-        return guiHandler;
+    private Frame getFrame(){
+        return frame;
     }
 
     public String getUsernameField() {

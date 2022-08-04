@@ -1,17 +1,17 @@
 package hotel.reservations;
 
-import hotel.reservations.controller.ApplicationController;
+import hotel.reservations.controller.AppController;
 import hotel.reservations.controller.AppControllerImpl;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.*;
-import hotel.reservations.persistence.Database;
+import hotel.reservations.persistence.DatabaseImpl;
 import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
 import hotel.reservations.persistence.dao.impls.RoomDaoImpl;
 import hotel.reservations.persistence.dao.impls.UserDaoImpl;
-import hotel.reservations.views.controller.GuiFrame;
-import hotel.reservations.views.controller.GuiHandler;
+import hotel.reservations.views.frame.FrameImpl;
+import hotel.reservations.views.frame.Frame;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
@@ -26,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(OrderAnnotation.class)
 class Hr2sTests {
     private static final String dbName = "hr2s_test.sqlite";
-    private static Database db = null;
-    private static ApplicationController applicationController = null;
+    private static DatabaseImpl db = null;
+    private static AppController appController = null;
     private static UserDaoImpl ud = null;
     private static ReservationDaoImpl reservationDAO = null;
     private static RoomDaoImpl roomDAO = null;
@@ -44,12 +44,12 @@ class Hr2sTests {
         }
 
         // create the test db
-        db = new Database(dbName);
+        db = new DatabaseImpl(dbName);
 
-        applicationController = new AppControllerImpl(db);
-        GuiHandler guiHandler = new GuiFrame(applicationController);
+        appController = new AppControllerImpl(db);
+        Frame guiHandler = new FrameImpl(appController);
         // Associate Views with the ApplicationController
-        applicationController.addViewsHandler(guiHandler);
+        appController.addViewsHandler(guiHandler);
 
         ud = new UserDaoImpl(db);
         reservationDAO = new ReservationDaoImpl(db);
@@ -142,17 +142,17 @@ class Hr2sTests {
         }
 
         // register a new user
-        applicationController.registerUser("uc01_guest", password.toCharArray(), "bob", "thebuilder",
+        appController.registerUser("uc01_guest", password.toCharArray(), "bob", "thebuilder",
                 "1234 Something Street", "MyState", "12345");
 
         // act like they've logged in
-        applicationController.logIn("uc01_guest", password.toCharArray());
+        appController.logIn("uc01_guest", password.toCharArray());
 
         // I don't have access to the private sessionDAO to be able to validate login
         User user = ud.getUserByUsername("uc01_guest");
 
         // create a reservation
-        applicationController.createReservation(user, rooms.get(0), arrival, departure);
+        appController.createReservation(user, rooms.get(0), arrival, departure);
 
         // check the db to see if the reservation was successful
         ArrayList<Reservation> reservations = reservationDAO.findReservations(user.getUserId());

@@ -1,7 +1,8 @@
 package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.user.*;
-import hotel.reservations.persistence.Database;
+import hotel.reservations.persistence.DatabaseImpl;
+import hotel.reservations.persistence.Response;
 import hotel.reservations.persistence.dao.UserDao;
 import hotel.reservations.services.authentication.HotelAuth;
 
@@ -14,11 +15,11 @@ import java.sql.ResultSet;
 
 public class UserDaoImpl implements UserDao {
 
-    private Database db;
+    private DatabaseImpl db;
 
     User customer;
 
-    public UserDaoImpl(Database db) {
+    public UserDaoImpl(DatabaseImpl db) {
         this.db = db;
     }
 
