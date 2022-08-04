@@ -57,7 +57,7 @@ class Hr2sTests {
 
         ud = new UserDAO(db);
         reservationDAO = new ReservationDAO(db);
-        roomDAO = new RoomDAO(db);
+        roomDAO = new RoomDAO(db, reservationDAO);
     }
 
     /**

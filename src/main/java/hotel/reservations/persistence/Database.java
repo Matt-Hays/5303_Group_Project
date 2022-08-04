@@ -1,17 +1,14 @@
 package hotel.reservations.persistence;
 
 import hotel.reservations.models.reservation.Invoice;
-import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
-import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.*;
 import hotel.reservations.services.Response;
 
 import java.io.*;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.FileHandler;
 import java.util.logging.LogManager;
@@ -273,7 +270,7 @@ public class Database implements IDatabase {
 	 * @param reservationId the reservation to look up
 	 * @return a Reservation instance or null
 	 */
-	public Reservation getReservation(UUID reservationId) {
+	public ResultSet getReservationByReservationId(UUID reservationId) {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
@@ -288,15 +285,7 @@ public class Database implements IDatabase {
 				return null;
 			}
 
-			UUID customerId = UUID.fromString(rs.getString("customerId"));
-			UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
-			int roomId = rs.getInt("roomId");
-			LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
-			LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
-			LocalDate departure = LocalDate.parse(rs.getString("departure"));
-			ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
-
-			return new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status);
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -310,8 +299,7 @@ public class Database implements IDatabase {
 	 * @param customerId the id of the guest
 	 * @return list of reservations
 	 */
-	public ArrayList<Reservation> getReservationByGuestId(UUID customerId) {
-		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+	public ResultSet getReservationByGuestId(UUID customerId) {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
@@ -323,28 +311,16 @@ public class Database implements IDatabase {
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
 				// an empty set could be normal
-				return reservations;
+				return null;
 			}
 
-			while (rs.next()) {
-				UUID reservationId = UUID.fromString(rs.getString("id"));
-				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
-				int roomId = rs.getInt("roomId");
-				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
-				LocalDate arrival = LocalDate.parse(rs.getString("arrival"));
-				LocalDate departure = LocalDate.parse(rs.getString("departure"));
-				ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
-
-				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
-			}
-
-			return reservations;
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
 		}
 
-		return reservations;
+		return null;
 	}
 
 	/**
@@ -352,19 +328,20 @@ public class Database implements IDatabase {
 	 * @param r
 	 * @return Response - Success or Fail
 	 */
-	public Response insertReservation(Reservation r) {
+	public Response insertReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
+			LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO `reservation` " +
 							"(`id`, `customerId`, `invoiceId`, `roomId`, `createdAt`, `arrival`, `departure`, `status`) " +
 							"VALUES (?,?,?,?,?,?,?,?)");
-			ps.setString(1, r.getReservationId().toString());
-			ps.setString(2, r.getCustomerId().toString());
-			ps.setString(3, r.getInvoiceId().toString());
-			ps.setInt(4, r.getRoomNumber());
-			ps.setString(5, r.getCreatedAt().toString());
-			ps.setString(6, r.getArrival().toString());
-			ps.setString(7, r.getDeparture().toString());
-			ps.setString(8, r.getStatus().name());
+			ps.setString(1, reservationId.toString());
+			ps.setString(2, customerId.toString());
+			ps.setString(3, invoiceId.toString());
+			ps.setInt(4, roomId);
+			ps.setString(5, createdAt.toString());
+			ps.setString(6, arrival.toString());
+			ps.setString(7, departure.toString());
+			ps.setString(8, status.name());
 
 			// Execute the query
 			if (ps.executeUpdate() > 0) {
@@ -526,19 +503,21 @@ public class Database implements IDatabase {
 	 * Updates a reservation
 	 * @param r a reservation object
 	 */
-	public Response updateReservation(Reservation r) {
+	public Response updateReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
+	LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("UPDATE `reservation` " +
 					"SET `customerId`=?, `invoiceId`=?, `roomId`=?, `createdAt`=?, `arrival`=?, `departure`=?, `status`=? " +
 					"WHERE `id`=?;");
-			ps.setString(1, r.getCustomerId().toString());
-			ps.setString(2, r.getInvoiceId().toString());
-			ps.setInt(3, r.getRoomNumber());
-			ps.setString(4, r.getCreatedAt().toString());
-			ps.setString(5, r.getArrival().toString());
-			ps.setString(6, r.getDeparture().toString());
-			ps.setString(7, r.getStatus().name());
-			ps.setString(8, r.getReservationId().toString());
+				ps.setString(1, customerId.toString());
+				ps.setString(2, invoiceId.toString());
+				ps.setInt(3, roomId);
+				ps.setString(4, createdAt.toString());
+				ps.setString(5, arrival.toString());
+				ps.setString(6, departure.toString());
+				ps.setString(7, status.name());
+				ps.setString(8, reservationId.toString());
+
 
 			// Execute the update
 			if (ps.executeUpdate() > 0) {
@@ -557,13 +536,13 @@ public class Database implements IDatabase {
 	 * @param r the reservation id
 	 * @return success or fail
 	 */
-	public Response deleteReservation(Reservation r) {
+	public Response deleteReservation(UUID reservationId, UUID invoiceId) {
 		try {
 			// invoices for the reservation
 			PreparedStatement ps = conn.prepareStatement("DELETE FROM `invoice` " +
 					"WHERE `id`=?;");
 
-			ps.setString(1, r.getInvoiceId().toString());
+			ps.setString(1, invoiceId.toString());
 
 			// Execute the query
 			ps.executeQuery();
@@ -572,7 +551,7 @@ public class Database implements IDatabase {
 			ps = conn.prepareStatement("DELETE FROM `reservation` " +
 					"WHERE `id`=?;");
 
-			ps.setString(1, r.getReservationId().toString());
+			ps.setString(1, reservationId.toString());
 
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
@@ -593,8 +572,7 @@ public class Database implements IDatabase {
 	 * @param departure end date
 	 * @return list of reservations
 	 */
-	public ArrayList<Reservation> getOverlappingReservations(LocalDate arrival, LocalDate departure) {
-		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+	public ResultSet getOverlappingReservations(LocalDate arrival, LocalDate departure) {
 
 		try {
 			// attempts to find reservations that overlap with requested arrival and departure dates
@@ -614,25 +592,16 @@ public class Database implements IDatabase {
 			ResultSet rs = ps.executeQuery();
 			if (!validate(rs)) {
 				// an empty set could be normal
-				return reservations;
+				return null;
 			}
 
-			while (rs.next()) {
-				UUID reservationId = UUID.fromString(rs.getString("id"));
-				UUID customerId = UUID.fromString(rs.getString("customerId"));
-				UUID invoiceId = UUID.fromString(rs.getString("invoiceId"));
-				int roomId = rs.getInt("roomId");
-				LocalDate createdAt = LocalDate.parse(rs.getString("createdAt"));
-				ReservationStatus status = ReservationStatus.valueOf(rs.getString("status"));
-
-				reservations.add(new Reservation(reservationId, customerId, invoiceId, roomId, createdAt, arrival, departure, status));
-			}
+			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
 		}
 
-		return reservations;
+		return null;
 	}
 
 	/**

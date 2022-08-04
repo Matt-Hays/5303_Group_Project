@@ -1,7 +1,7 @@
 package hotel.reservations.persistence;
 
 import hotel.reservations.models.reservation.Invoice;
-import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.reservation.*;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.services.Response;
@@ -34,12 +34,14 @@ public interface IDatabase {
     public Response deleteRoom(int roomId);
 
     // reservation methods
-    public Reservation getReservation(UUID reservationId);
-    public ArrayList<Reservation> getReservationByGuestId(UUID customerId);
-    public Response insertReservation(Reservation r);
-    public Response updateReservation(Reservation r);
-    public Response deleteReservation(Reservation r);
-    public ArrayList<Reservation> getOverlappingReservations(LocalDate arrival, LocalDate departure);
+    public ResultSet getReservationByReservationId(UUID reservationId);
+    public ResultSet getReservationByGuestId(UUID customerId);
+    public Response insertReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
+			LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status);
+    public Response updateReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
+    LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status);
+    public Response deleteReservation(UUID reservationId, UUID invoiceId);
+    public ResultSet getOverlappingReservations(LocalDate arrival, LocalDate departure);
 
     // invoice methods
     public Response insertInvoice(Invoice i);

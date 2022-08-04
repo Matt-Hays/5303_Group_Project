@@ -4,6 +4,8 @@ import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.User;
+import hotel.reservations.services.Response;
+
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,15 +23,12 @@ public interface IReservationDAO {
     public ArrayList<Reservation> findReservations(UUID guestId);
 
     public Reservation findReservation(UUID reservationId);
-    // what is the difference between findReservation and getReservation (from HotelModels)??
 
-    public ArrayList<Reservation> getAllGuestReservations(UUID userId);
+    public Response updateReservation(Reservation reservation);
 
-    public void updateReservation(Reservation reservation);
+    Response deleteReservation(Reservation reservation);
 
-    void deleteReservation(Reservation reservation);
-
-    void cancelReservation(hotel.reservations.models.reservation.Reservation reservation);
+    Response cancelReservation(Reservation reservation);
 
     public Invoice generateInvoice(double roomRate, long stayLength);
 

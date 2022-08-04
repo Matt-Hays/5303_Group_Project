@@ -5,6 +5,7 @@ import hotel.reservations.models.room.Room;
 import hotel.reservations.persistence.Database;
 import hotel.reservations.services.Response;
 import hotel.reservations.models.room.Bed;
+import hotel.reservations.services.reservationDAO.IReservationDAO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,15 +15,17 @@ import java.sql.SQLException;
 public class RoomDAO implements IRoomDAO {
 
     private Database db = null;
+    private IReservationDAO rd = null;
 
-    public RoomDAO(Database database) {
+    public RoomDAO(Database database, IReservationDAO reservationDAO) {
         db = database;
+        rd = reservationDAO;
     }
 
     public ArrayList<Room> filterRooms(LocalDate arrival, LocalDate departure, Bed bedType, int numBeds, boolean smoking) {
 
         ArrayList<Room> all_rooms = getFilteredRooms(bedType, numBeds, smoking);
-        ArrayList<Reservation> occupiedRooms = db.getOverlappingReservations(arrival, departure);
+        ArrayList<Reservation> occupiedRooms = rd.findReservations(arrival, departure);
         ArrayList<Room> filteredRooms = new ArrayList<Room>();
 
         boolean found;
