@@ -42,6 +42,7 @@ public class FrameImpl extends JFrame implements Frame {
         cardPanel.add(new RegisterPanel(this), "register");
         cardPanel.add(new SearchPanel(this), "search");
         cardPanel.add(new UserPanel(this), "account");
+        cardPanel.add(new AdminPanel(this), "admin");
 
         add(cardPanel);
 

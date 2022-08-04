@@ -1,5 +1,6 @@
 package hotel.reservations.views.home;
 
+import hotel.reservations.models.user.Account;
 import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.ThemedPanel;
@@ -17,7 +18,7 @@ import java.awt.event.ActionListener;
 public class HomePanel extends ThemedPanel {
     private Frame frame;
     private JLabel pageHeader;
-    private RoundedButton btnLogin, btnRegister, btnSearch;
+    private RoundedButton btnLogin, btnRegister, btnSearch, btnAdmin;
     private GridBagConstraints gbc = new GridBagConstraints();
     private boolean hasPreviousMessage;
 
@@ -34,6 +35,7 @@ public class HomePanel extends ThemedPanel {
         btnRegister = new RoundedButton("Register Account");
         btnSearch = new RoundedButton("Search Rooms");
         pageHeader = new JLabel("<html><h1 style='font-size:28; color:white'>Welcome to the Raven Hotel</h1></html>");
+        btnAdmin = new RoundedButton("Admin");
 
         fillLayout();
 
@@ -69,6 +71,15 @@ public class HomePanel extends ThemedPanel {
                 getFrame().changeScreen("search");
             }
         });
+
+        btnAdmin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
+                getFrame().changeScreen("admin");
+                System.out.println("Admin Button Clicked");
+            }
+        });
     }
 
 
@@ -78,51 +89,22 @@ public class HomePanel extends ThemedPanel {
      * by clearing existing ActionListeners and adding new ActionListeners specific to the needs of the user type.
      */
     public void loggedInDisplay(){
-        remove(btnLogin);
-        btnLogin.setText("Logout");
-        btnLogin.setPreferredSize(new Dimension(btnLogin.getWidth() + 12, btnLogin.getHeight()));
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 0, 0, 0);
-        // Remove previous action listeners.
-        for(ActionListener al : btnLogin.getActionListeners()){
-            btnLogin.removeActionListener(al);
-        }
-        add(btnLogin, gbc, 2);
-        btnLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(hasPreviousMessage) clearMessage();
-                getFrame().getAppController().logOut(getFrame().getSession().getId());
-                displayMessage("Logged out successfully!", "green");
-                loggedOutDisplay();
-            }
-        });
+        guestLoggedInDisplay();
 
-        btnRegister.setText("Account");
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(0, 0, 0, 48);
-        for(ActionListener al : btnRegister.getActionListeners()){
-            btnRegister.removeActionListener(al);
-        }
-        btnRegister.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                getFrame().getUserPanel().populateAccount(getFrame().getSession().getUser());
-                getFrame().changeScreen("account");
-            }
-        });
-        add(btnRegister, gbc, 3);
+        if(getFrame().getSession().getUser().getAccountType().equals(Account.ADMIN))
+            adminLoggedInDisplay();
 
         revalidate();
         repaint();
     }
 
     /**
-     * Reverts the Home Page display to a logged out page state.
+     * Reverts the Home Page display to a logged-out page state.
      * Removes added ActionListeners and re-adds the original ActionListeners on the reusable JButtons.
      */
     public void loggedOutDisplay(){
         remove(btnLogin);
+        if(btnAdmin != null) remove(btnAdmin);
         btnLogin.setText("Login");
         btnLogin.setPreferredSize(new Dimension(btnLogin.getWidth() - 12, btnLogin.getHeight()));
         gbc.anchor = GridBagConstraints.WEST;
@@ -177,6 +159,56 @@ public class HomePanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * The Guest's logged-in display panel.
+     */
+    public void guestLoggedInDisplay(){
+        remove(btnLogin);
+        btnLogin.setText("Logout");
+        btnLogin.setPreferredSize(new Dimension(btnLogin.getWidth() + 12, btnLogin.getHeight()));
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        // Remove previous action listeners.
+        for(ActionListener al : btnLogin.getActionListeners()){
+            btnLogin.removeActionListener(al);
+        }
+        add(btnLogin, gbc, 2);
+        btnLogin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
+                getFrame().getAppController().logOut(getFrame().getSession().getId());
+                displayMessage("Logged out successfully!", "green");
+                loggedOutDisplay();
+            }
+        });
+
+        btnRegister.setText("Account");
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(0, 0, 0, 48);
+        for(ActionListener al : btnRegister.getActionListeners()){
+            btnRegister.removeActionListener(al);
+        }
+        btnRegister.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().getUserPanel().populateAccount(getFrame().getSession().getUser());
+                getFrame().changeScreen("account");
+            }
+        });
+        add(btnRegister, gbc, 3);
+    }
+
+    /**
+     * The Admin's logged-in display panel.
+     */
+    public void adminLoggedInDisplay(){
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(64, 0, 0, 0);
+        add(btnAdmin, gbc);
+        revalidate();
+        repaint();
+    }
     /**
      * Removes the last message from the panel to ensure additional messages are not displayed on top of each other.
      */
