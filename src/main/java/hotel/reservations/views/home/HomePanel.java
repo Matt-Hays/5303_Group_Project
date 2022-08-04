@@ -9,6 +9,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * The Home Page of the User Interface.
+ * Provides user interface page switching to accessible areas of the application depending on a variety of factors
+ * such as authentication status, user type, login, logout, etc.
+ */
 public class HomePanel extends ThemedPanel {
     private Frame frame;
     private JLabel pageHeader;
@@ -18,7 +23,7 @@ public class HomePanel extends ThemedPanel {
 
     /**
      * View Constructor - Define the view
-     * @param frame The GUI controller or GUI JFrame.
+     * @param frame The user interface frame (JFrame).
      */
     public HomePanel(Frame frame){
         setFrame(frame);
@@ -33,7 +38,7 @@ public class HomePanel extends ThemedPanel {
         fillLayout();
 
         /**
-         * Swap between views based on button click.
+         * Login Action Listener
          */
         btnLogin.addActionListener(new ActionListener() {
             @Override
@@ -43,6 +48,9 @@ public class HomePanel extends ThemedPanel {
             }
         });
 
+        /**
+         * Register Action Listener
+         */
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -51,6 +59,9 @@ public class HomePanel extends ThemedPanel {
             }
         });
 
+        /**
+         * Search Action Listener
+         */
         btnSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -60,16 +71,12 @@ public class HomePanel extends ThemedPanel {
         });
     }
 
-    public void displayNewUserMessage(){
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 0, 0, 0);
-        add(new JLabel("<html><p style='color:green'>Welcome to the hotel!</p></html>"), gbc);
-        this.hasPreviousMessage = true;
-        revalidate();
-        repaint();
-    }
 
+    /**
+     * Provides display modification dependent on authentication status. Additionally, provides functionality for
+     * differing use cases dependent on user type (Guest, Clerk, or Admin). Updates and reuses JButton components
+     * by clearing existing ActionListeners and adding new ActionListeners specific to the needs of the user type.
+     */
     public void loggedInDisplay(){
         remove(btnLogin);
         btnLogin.setText("Logout");
@@ -86,7 +93,7 @@ public class HomePanel extends ThemedPanel {
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
                 getFrame().getAppController().logOut(getFrame().getSession().getId());
-                displayMessage("Logged out successfully!");
+                displayMessage("Logged out successfully!", "green");
                 loggedOutDisplay();
             }
         });
@@ -110,6 +117,10 @@ public class HomePanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Reverts the Home Page display to a logged out page state.
+     * Removes added ActionListeners and re-adds the original ActionListeners on the reusable JButtons.
+     */
     public void loggedOutDisplay(){
         remove(btnLogin);
         btnLogin.setText("Login");
@@ -152,15 +163,23 @@ public class HomePanel extends ThemedPanel {
         repaint();
     }
 
-    private void displayMessage(String message){
+    /**
+     * Given a message to display and the desired (standard named html) color, display the message to the user.
+     * @param message The message to be displayed.
+     * @param color The standard HTML named color of the text.
+     */
+    public void displayMessage(String message, String color){
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(64, 0, 0, 0);
-        add(new JLabel("<html><p style='color:green'>" + message + "</p></html>"), gbc);
+        add(new JLabel("<html><p style='color:" + color + "'>" + message + "</p></html>"), gbc);
         this.hasPreviousMessage = true;
         revalidate();
         repaint();
     }
 
+    /**
+     * Removes the last message from the panel to ensure additional messages are not displayed on top of each other.
+     */
     private void clearMessage(){
         remove(getComponentCount() - 1);
         this.hasPreviousMessage = false;
@@ -168,6 +187,9 @@ public class HomePanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Provides the initial grid structure (layout) of the Home Page.
+     */
     private void fillLayout(){
         gbc.gridx = gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
@@ -184,10 +206,17 @@ public class HomePanel extends ThemedPanel {
         add(btnSearch, gbc);
     }
 
+    /**
+     * Sets the parent JFrame object.
+     * @param frame
+     */
     private void setFrame(Frame frame){
         this.frame = frame;
     }
 
+    /**
+     * @return The parent JFrame object.
+     */
     private Frame getFrame() {
         return frame;
     }

@@ -3,10 +3,13 @@ package hotel.reservations.services;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
-import hotel.reservations.persistence.Response;
 
 import java.util.UUID;
 
+/**
+ * The UserService interface.
+ * Provides an interface into the User domain.
+ */
 public interface UserService  {
     // Log in
     public Session login(String username, char[] password);

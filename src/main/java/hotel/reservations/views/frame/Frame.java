@@ -12,6 +12,10 @@ import hotel.reservations.views.user.UserPanel;
 
 import java.util.UUID;
 
+/**
+ * The parent frame (JFrame) interface.
+ * Provides an interface such that pages can access additional pages and the controller.
+ */
 public interface Frame {
     public void changeScreen(String screenName);
 

@@ -13,6 +13,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.UUID;
 
+/**
+ * The Register Panel of the user interface.
+ * Provides the user with the functionality to crete a new user account.
+ * Routes the user to the Home Page and displays a Welcome message to the user upon creation success.
+ * Displays an error message to the user upon creation failure.
+ */
 public class RegisterPanel extends ThemedPanel {
     private Frame frame;
     private RoundedTextField usernameField, firstNameField, lastNameField, addressField, stateField, zipCodeField;
@@ -39,6 +45,13 @@ public class RegisterPanel extends ThemedPanel {
 
         fillLayout();
 
+        /**
+         * Register ActionListener.
+         * Requests the creation of a new user account.
+         * Returns an error message to the user upon failure.
+         * Saves the Session object to the view cache, redirects the user to the Home page and displays a welcome
+         * message upon success.
+         */
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -57,12 +70,13 @@ public class RegisterPanel extends ThemedPanel {
                         .registerUser(username, password, firstName, lastName, address, state, zipCode);
 
                 if(session == null) {
-                    displayErrorMessage();
+                    displayMessage("Registration attempt failed. Please try again.", "red");
                     return;
                 };
 
                 getFrame().setSession(session);
-                getFrame().getHomePanel().displayNewUserMessage();
+                getFrame().getHomePanel().displayMessage("Welcome to our hotel!", "green");
+                getFrame().getHomePanel().loggedInDisplay();
                 getFrame().changeScreen("home");
             }
         });
@@ -70,20 +84,29 @@ public class RegisterPanel extends ThemedPanel {
         btnBack.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
                 getFrame().changeScreen("home");
             }
         });
     }
 
-    private void displayErrorMessage(){
+    /**
+     * Given a message to display and a desired HTML standard named color, displays the message using the color.
+     * @param message The message to display.
+     * @param color The standard HTML named color used to display the message.
+     */
+    private void displayMessage(String message, String color){
         gbc.gridy++;
         gbc.insets = new Insets(24,0,0,0);
-        add(new JLabel("<html><p style='color:red'>Registration attempt failed. Please try again.</p></html>"), gbc);
+        add(new JLabel("<html><p style='color:" + color + "'>" + message + "</p></html>"), gbc);
         this.hasPreviousMessage = true;
         revalidate();
         repaint();
     }
 
+    /**
+     * Clears the previous message so that messages do not overwhelm the user interface.
+     */
     private void clearMessage(){
         remove(getComponentCount() - 1);
         this.hasPreviousMessage = false;
@@ -91,6 +114,9 @@ public class RegisterPanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Provides the initial grid structure of the Register Page.
+     */
     private void fillLayout(){
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -142,6 +168,9 @@ public class RegisterPanel extends ThemedPanel {
         add(btnBack, gbc);
     }
 
+    /**
+     * Standard getter and setter methods follow through the end of the page.
+     */
     private void setFrame(Frame frame){
         this.frame = frame;
     }

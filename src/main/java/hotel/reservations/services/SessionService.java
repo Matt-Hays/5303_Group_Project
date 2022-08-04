@@ -5,6 +5,10 @@ import hotel.reservations.models.user.User;
 
 import java.util.UUID;
 
+/**
+ * The Session Service Interface.
+ * Provides an interface into the Session domain.
+ */
 public interface SessionService {
     public Session createSession(User user);
     public boolean validateSession(UUID id);

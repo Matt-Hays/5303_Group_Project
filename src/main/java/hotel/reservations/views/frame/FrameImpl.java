@@ -12,8 +12,12 @@ import hotel.reservations.views.user.UserPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.UUID;
 
+/**
+ * The parent frame of all user interface pages (JPanel).
+ * Provides page switching and access to additional pages to all children pages.
+ * Additionally, stores the Session object for the user for caching of the User object and endpoint authorization.
+ */
 public class FrameImpl extends JFrame implements Frame {
     private AppController appController;
     private JPanel cardPanel;
@@ -27,32 +31,39 @@ public class FrameImpl extends JFrame implements Frame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Hotel Reservations");
 
-        // Create card layout
         cardPanel = new JPanel(new CardLayout());
         cardLayout = (CardLayout) cardPanel.getLayout();
 
-        // Create cards
-        // Add cards to card layout
+        /**
+         * Create all user interface pages (JPanel) and add them to the frame's card layout.
+         */
         cardPanel.add(new HomePanel(this), "home");
         cardPanel.add(new LoginPanel(this), "login");
         cardPanel.add(new RegisterPanel(this), "register");
         cardPanel.add(new SearchPanel(this), "search");
         cardPanel.add(new UserPanel(this), "account");
 
-        // Add card panel to app frame.
         add(cardPanel);
 
-        // Display app frame.
         setVisible(true);
     }
 
-    private void setApplicationController(AppController appController){
-        this.appController = appController;
-    }
-
+    /**
+     * Given a requested screen name, change the current screen to the requested screen.
+     * @param screenName The requested screen name.
+     */
     @Override
     public void changeScreen(String screenName) {
         cardLayout.show(cardPanel, screenName);
+    }
+
+    /**
+     * Standard getter and setter methods follow through the end of the file.
+     * These methods allow pages to gain access to other pages as well as the controller.
+     */
+
+    private void setApplicationController(AppController appController){
+        this.appController = appController;
     }
 
     @Override
