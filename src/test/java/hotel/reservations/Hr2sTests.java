@@ -3,11 +3,13 @@ package hotel.reservations;
 import hotel.reservations.controller.AppController;
 import hotel.reservations.controller.AppControllerImpl;
 import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.*;
 import hotel.reservations.persistence.DatabaseImpl;
+import hotel.reservations.persistence.Response;
 import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
 import hotel.reservations.persistence.dao.impls.RoomDaoImpl;
 import hotel.reservations.persistence.dao.impls.UserDaoImpl;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -157,7 +160,6 @@ class Hr2sTests {
         User user = session.getUser();
         assertTrue(null != user);
         Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
-        System.out.println(reservation);
         assertTrue(null != reservation);
 
         // check the db to see if the reservation was successful
@@ -171,7 +173,46 @@ class Hr2sTests {
         }
 
         assertTrue(found);
+
+        // TODO: how can I check sucess
+        appController.logOut(sessionId);
     }
 
-    
+    @Test
+    @Order(8)
+    void checkin() throws NoSuchAlgorithmException, InvalidKeySpecException  {
+        String password = "password123$";
+
+        // act like they've logged in
+        Session session = appController.logIn("uc01_guest", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        User user = session.getUser();
+        assertTrue(null != user);
+
+        // get reservations
+        List<Reservation> reservations = appController.getReservationByUserId(user.getUserId());
+        assertFalse(reservations.isEmpty());
+
+        // choose the first reservation
+        Reservation reservation = reservations.get(0);
+        assertTrue(null != reservation);
+
+        // checkin
+        Response response = appController.checkIn(reservation);
+        assertTrue(response == Response.SUCCESS);
+
+        // check if db indicates checkedin
+        reservation = appController.getReservationByReservationId(reservation.getReservationId());
+        assertTrue(reservation.getStatus() == ReservationStatus.CHECKEDIN);
+
+        // checkout
+        response = appController.checkOut(reservation);
+        assertTrue(response == Response.SUCCESS);
+
+        // check if db indicates complete
+        reservation = appController.getReservationByReservationId(reservation.getReservationId());
+        assertTrue(reservation.getStatus() == ReservationStatus.COMPLETE);
+    }
 }

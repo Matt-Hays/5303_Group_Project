@@ -1,10 +1,12 @@
 package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.persistence.DatabaseImpl;
+import hotel.reservations.persistence.Response;
 import hotel.reservations.persistence.dao.SessionDao;
 import hotel.reservations.persistence.dao.impls.SessionDaoImpl;
 import hotel.reservations.models.user.Account;
@@ -114,6 +116,11 @@ public class AppControllerImpl implements AppController{
         return reservationDAO.findReservations(id);
     }
 
+    @Override
+    public Reservation getReservationByReservationId(UUID id) {
+        return reservationDAO.findReservation(id);
+    }
+
 //    @Override
 //    public void addViewsHandler(GuiHandler guiHandler){
 //        this.guiHandler = guiHandler;
@@ -125,23 +132,33 @@ public class AppControllerImpl implements AppController{
     }
 
     @Override
-    public void cancelReservation(Reservation reservation) {
-        reservationDAO.cancelReservation(reservation);
+    public Response cancelReservation(Reservation reservation) {
+        return reservationDAO.cancelReservation(reservation);
     }
 
     @Override
-    public void modifyReservation(Reservation modifiedReservation) {
-        reservationDAO.updateReservation(modifiedReservation);
+    public Response modifyReservation(Reservation modifiedReservation) {
+        return reservationDAO.updateReservation(modifiedReservation);
     }
 
     @Override
-    public void checkIn(Reservation reservation) {
-
+    public Response checkIn(Reservation reservation) {
+        if (reservation.getStatus() != ReservationStatus.AWAITING) {
+            return Response.FAILURE;
+        }
+        reservation.setStatus(ReservationStatus.CHECKEDIN);
+        reservation.setCheckIn(LocalDate.now());
+        return reservationDAO.updateReservation(reservation);
     }
 
     @Override
-    public void checkOut(Reservation reservation) {
-
+    public Response checkOut(Reservation reservation) {
+        if (reservation.getStatus() != ReservationStatus.CHECKEDIN) {
+            return Response.FAILURE;
+        }
+        reservation.setStatus(ReservationStatus.COMPLETE);
+        reservation.setCheckout(LocalDate.now());
+        return reservationDAO.updateReservation(reservation);
     }
 
     /**

@@ -5,6 +5,7 @@ import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.User;
+import hotel.reservations.persistence.Response;
 import hotel.reservations.views.frame.Frame;
 
 import java.time.LocalDate;
@@ -51,6 +52,8 @@ public interface AppController {
 
     public List<Reservation> getReservationByUserId(UUID id);
 
+    Reservation getReservationByReservationId(UUID id);
+
     /**
      * Not yet organized...
      *
@@ -60,16 +63,16 @@ public interface AppController {
     public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure);
 
     // Use Case 02
-    public void cancelReservation(Reservation reservation);
+    public Response cancelReservation(Reservation reservation);
 
     // Use Case 03
-    public void modifyReservation(Reservation modifiedReservation);
+    public Response modifyReservation(Reservation modifiedReservation);
 
     // Use Case 04
-    public void checkIn(Reservation reservation);
+    public Response checkIn(Reservation reservation);
 
     // Use Case 05
-    public void checkOut(Reservation reservation);
+    public Response checkOut(Reservation reservation);
 
     // Use Case 06
     public void viewReport(UUID sessionId);
