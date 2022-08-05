@@ -120,8 +120,8 @@ public class AppControllerImpl implements AppController{
 //    }
 
     @Override
-    public void createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
-        reservationDAO.createReservation(guest, room, arrival, departure);
+    public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
+        return reservationDAO.createReservation(guest, room, arrival, departure);
     }
 
     @Override

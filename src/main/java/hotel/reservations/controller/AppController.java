@@ -53,9 +53,11 @@ public interface AppController {
 
     /**
      * Not yet organized...
+     *
+     * @return
      */
     // Use Case 01
-    public void createReservation(User guest, Room room, LocalDate arrival, LocalDate departure);
+    public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure);
 
     // Use Case 02
     public void cancelReservation(Reservation reservation);
