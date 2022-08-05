@@ -5,6 +5,7 @@ import hotel.reservations.controller.AppControllerImpl;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
+import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.*;
 import hotel.reservations.persistence.DatabaseImpl;
 import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
@@ -20,6 +21,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -146,19 +149,22 @@ class Hr2sTests {
                 "1234 Something Street", "MyState", "12345");
 
         // act like they've logged in
-        appController.logIn("uc01_guest", password.toCharArray());
-
-        // I don't have access to the private sessionDAO to be able to validate login
-        User user = ud.getUserByUsername("uc01_guest");
+        Session session = appController.logIn("uc01_guest", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
 
         // create a reservation
-        appController.createReservation(user, rooms.get(0), arrival, departure);
+        User user = session.getUser();
+        assertTrue(null != user);
+        Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
+        System.out.println(reservation);
+        assertTrue(null != reservation);
 
         // check the db to see if the reservation was successful
-        ArrayList<Reservation> reservations = reservationDAO.findReservations(user.getUserId());
+        List<Reservation> reservations = appController.getReservationByUserId(user.getUserId());
         Boolean found = false;
-        for(Reservation reservation: reservations) {
-            if (reservation.getArrival().isEqual(arrival) && reservation.getDeparture().isEqual(departure)) {
+        for(Reservation r: reservations) {
+            if (0 == reservation.getReservationId().toString().compareTo(r.getReservationId().toString())) {
                 found = true;
                 break;
             }
