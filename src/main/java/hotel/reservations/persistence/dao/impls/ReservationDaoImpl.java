@@ -177,4 +177,24 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
 
         return reservation;
     }
+
+    @Override
+    public Response checkIn(Reservation reservation) {
+        if (reservation.getStatus() != ReservationStatus.AWAITING) {
+            return Response.FAILURE;
+        }
+        reservation.setStatus(ReservationStatus.CHECKEDIN);
+        reservation.setCheckIn(LocalDate.now());
+        return updateReservation(reservation);
+    }
+
+    @Override
+    public Response checkOut(Reservation reservation) {
+        if (reservation.getStatus() != ReservationStatus.CHECKEDIN) {
+            return Response.FAILURE;
+        }
+        reservation.setStatus(ReservationStatus.COMPLETE);
+        reservation.setCheckout(LocalDate.now());
+        return updateReservation(reservation);
+    }
 }

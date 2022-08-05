@@ -143,22 +143,12 @@ public class AppControllerImpl implements AppController{
 
     @Override
     public Response checkIn(Reservation reservation) {
-        if (reservation.getStatus() != ReservationStatus.AWAITING) {
-            return Response.FAILURE;
-        }
-        reservation.setStatus(ReservationStatus.CHECKEDIN);
-        reservation.setCheckIn(LocalDate.now());
-        return reservationDAO.updateReservation(reservation);
+        return reservationDAO.checkIn(reservation);
     }
 
     @Override
     public Response checkOut(Reservation reservation) {
-        if (reservation.getStatus() != ReservationStatus.CHECKEDIN) {
-            return Response.FAILURE;
-        }
-        reservation.setStatus(ReservationStatus.COMPLETE);
-        reservation.setCheckout(LocalDate.now());
-        return reservationDAO.updateReservation(reservation);
+        return reservationDAO.checkOut(reservation);
     }
 
     /**
