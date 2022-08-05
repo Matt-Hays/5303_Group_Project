@@ -7,6 +7,8 @@ import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
 import hotel.reservations.views.register.RegisterPanel;
 import hotel.reservations.views.reservation.ReservationPanel;
+import hotel.reservations.views.room.RoomPanel;
+import hotel.reservations.views.room.RoomsPanel;
 import hotel.reservations.views.search.SearchPanel;
 import hotel.reservations.views.user.ResetGuestCredentials;
 import hotel.reservations.views.user.UserPanel;
@@ -45,6 +47,8 @@ public class FrameImpl extends JFrame implements Frame {
         cardPanel.add(new UserPanel(this), "account");
         cardPanel.add(new AdminPanel(this), "admin");
         cardPanel.add(new ResetGuestCredentials(this), "reset-guest-credentials");
+        cardPanel.add(new RoomPanel(this), "room");
+        cardPanel.add(new RoomsPanel(this), "rooms");
 
         add(cardPanel);
 
@@ -123,4 +127,15 @@ public class FrameImpl extends JFrame implements Frame {
     public UserPanel getUserPanel() {
         return (UserPanel) cardPanel.getComponent(4);
     }
+
+    @Override
+    public RoomPanel getRoomPanel() {
+        return (RoomPanel) cardPanel.getComponent(7);
+    }
+
+    @Override
+    public RoomsPanel getRoomsPanel() {
+        return (RoomsPanel) cardPanel.getComponent(8);
+    }
+
 }

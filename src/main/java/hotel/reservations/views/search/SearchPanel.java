@@ -17,7 +17,7 @@ import java.util.List;
 
 public class SearchPanel extends ThemedPanel {
     private Frame frame;
-    private DatePicker arrivalDatePicker, depatureDatePicker;
+    private DatePicker arrivalDatePicker, departureDatePicker;
     private JLabel pageHeader, arrivalLabel, departureLabel, smokingLabel, numBedsLabel, bedTypeLabel, occupiedLabel, rateLabel;
     private RoundedTextField smokingField, numBedsField, bedTypeField, occupiedField, rateField;
     private RoundedButton btnSearch, btnBack;
@@ -33,7 +33,7 @@ public class SearchPanel extends ThemedPanel {
         arrivalDatePicker = new DatePicker();
 
         departureLabel = new JLabel("<html><h1 style='font-size:14; color:white'>Departure: </h1></html>");
-        depatureDatePicker = new DatePicker();
+        departureDatePicker = new DatePicker();
 
         smokingLabel = new JLabel("<html><h1 style='font-size:14; color:white'>Smoking Preference</h1></html>");
         smokingField = new RoundedTextField(20);
@@ -64,16 +64,15 @@ public class SearchPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 LocalDate arrival = getArrivalDatePicker();
-                LocalDate departure = getDepatureDatePicker();
+                LocalDate departure = getDepartureDatePicker();
                 int numBeds = getNumBedsField();
                 Bed bedType = getBedTypeField();
                 boolean smoking = getSmokingField();
 
                 List<Room> rooms = getFrame().getAppController().searchRooms(arrival, departure, numBeds, bedType, smoking);
 
-                for(Room room : rooms){
-                    // Update the Room Page to Display all Rooms in a Scrollable
-                }
+                getFrame().getRoomsPanel().fillLayout(rooms, arrival, departure);
+                getFrame().changeScreen("rooms");
             }
         });
     }
@@ -124,7 +123,7 @@ public class SearchPanel extends ThemedPanel {
         gbc.gridy--;
         add(departureLabel, gbc);
         gbc.gridy++;
-        add(depatureDatePicker, gbc);
+        add(departureDatePicker, gbc);
         gbc.gridx--;
 
         gbc.insets = new Insets(8, 0, 8, 0);
@@ -143,8 +142,8 @@ public class SearchPanel extends ThemedPanel {
         return arrivalDatePicker.getDate();
     }
 
-    public LocalDate getDepatureDatePicker() {
-        return depatureDatePicker.getDate();
+    public LocalDate getDepartureDatePicker() {
+        return departureDatePicker.getDate();
     }
 
     public boolean getSmokingField() {
