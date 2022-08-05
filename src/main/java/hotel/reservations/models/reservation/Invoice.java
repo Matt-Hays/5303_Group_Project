@@ -8,6 +8,7 @@ public class Invoice {
     private double tax_rate = 0.0625;
     private double fees = 0.0;
     private boolean isPaid = false;
+    private double nightly_rate;
     private double total = subtotal + (subtotal*tax_rate) + fees;
 
     public Invoice() {
@@ -27,6 +28,9 @@ public class Invoice {
     }
 
     public double setSubtotal(double nightly_rate, long lengthOfStay) {
+        // keep a copy for later recall when finalizing
+        this.nightly_rate = nightly_rate;
+
         double temp = nightly_rate*lengthOfStay + fees;
         subtotal =  temp * (1+tax_rate);
         return subtotal;
@@ -58,6 +62,9 @@ public class Invoice {
 
     public boolean getIsPaid() {
         return this.isPaid;
+    }
+    public double getNightly_rate() {
+        return nightly_rate;
     }
 
     @java.lang.Override

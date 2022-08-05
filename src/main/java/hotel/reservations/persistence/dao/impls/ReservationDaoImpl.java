@@ -116,6 +116,10 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
 
     @Override
     public Response cancelReservation(Reservation reservation) {
+        if (reservation.getStatus() != ReservationStatus.AWAITING) {
+            return Response.FAILURE;
+        }
+
         reservation.setStatus(ReservationStatus.CANCELLED);
         System.out.println("Reservation cancel called!");
         return db.updateReservation(reservation.getReservationId(), reservation.getCustomerId(),
@@ -195,6 +199,20 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
         }
         reservation.setStatus(ReservationStatus.COMPLETE);
         reservation.setCheckout(LocalDate.now());
+
+        UUID invoiceId = reservation.getInvoiceId();
+        Invoice invoice = db.getInvoice(invoiceId);
+        if (null == invoice) {
+            return Response.FAILURE;
+        }
+
+        // update subtotal in case dates changed
+        invoice.setSubtotal(invoice.getNightly_rate(), reservation.lengthOfStay());
+        Response response = db.updateInvoice(invoice);
+        if (response == Response.FAILURE) {
+            return Response.FAILURE;
+        }
+        
         return updateReservation(reservation);
     }
 }
