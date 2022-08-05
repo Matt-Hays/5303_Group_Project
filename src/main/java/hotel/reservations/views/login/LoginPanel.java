@@ -86,7 +86,7 @@ public class LoginPanel extends ThemedPanel {
      * @param message The message to display.
      * @param color The standard HTML named color to display the message.
      */
-    private void displayMessage(String message, String color){
+    public void displayMessage(String message, String color){
         gbc.gridy++;
         gbc.insets = new Insets(24,0,0,0);
         add(new JLabel("<html><p style='color:" + color + "'>" + message + "</p></html>"), gbc);

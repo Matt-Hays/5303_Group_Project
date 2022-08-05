@@ -1,5 +1,6 @@
 package hotel.reservations.views.user;
 
+import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
@@ -13,6 +14,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * The User Page.
@@ -88,6 +91,10 @@ public class UserPanel extends ThemedPanel {
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
                 if(isClerkMode) clearClerkMode();
+                UUID userId = getFrame().getSession().getUser().getUserId();
+                List<Reservation> reservations = getFrame().getAppController().getReservationByUserId(userId);
+                getFrame().getReservationsPanel().fillLayout(reservations);
+                getFrame().changeScreen("reservations");
             }
         });
 

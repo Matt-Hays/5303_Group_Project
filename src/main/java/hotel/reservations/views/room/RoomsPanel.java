@@ -16,6 +16,7 @@ public class RoomsPanel extends ThemedPanel {
     private final Frame frame;
     private JScrollPane scrollPane;
     private JPanel scrollPanel;
+    private RoundedButton btnBack;
     private List<Room> roomCache;
     private LocalDate arrival, departure;
 
@@ -45,8 +46,14 @@ public class RoomsPanel extends ThemedPanel {
             gbc.gridx = 0;
             gbc.insets = new Insets(8, 0, 8, 0);
         }
-
-        scrollPanel.add(new RoundedButton("Back"));
+        btnBack = new RoundedButton("Back");
+        btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().changeScreen("search");
+            }
+        });
+        scrollPanel.add(btnBack);
         scrollPane.setViewportView(scrollPanel);
 
         scrollPane.revalidate();

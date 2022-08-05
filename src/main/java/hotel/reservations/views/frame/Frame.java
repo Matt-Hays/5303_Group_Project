@@ -7,6 +7,7 @@ import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
 import hotel.reservations.views.register.RegisterPanel;
 import hotel.reservations.views.reservation.ReservationPanel;
+import hotel.reservations.views.reservation.ReservationsPanel;
 import hotel.reservations.views.room.RoomPanel;
 import hotel.reservations.views.room.RoomsPanel;
 import hotel.reservations.views.search.SearchPanel;
@@ -44,4 +45,6 @@ public interface Frame {
 
     public RoomPanel getRoomPanel();
     public RoomsPanel getRoomsPanel();
+
+    public ReservationsPanel getReservationsPanel();
 }

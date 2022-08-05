@@ -43,6 +43,14 @@ public interface AppController {
 
     public List<Room> searchRooms(LocalDate arrival, LocalDate departure, int numberOfBeds, Bed typeOfBeds, boolean smoking);
 
+    /**                              *
+     * End of Room Service Endpoints *
+     * ----------------------------- *
+     * Reservation Service Endpoints *
+     *                               */
+
+    public List<Reservation> getReservationByUserId(UUID id);
+
     /**
      * Not yet organized...
      */

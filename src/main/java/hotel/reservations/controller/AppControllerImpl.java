@@ -104,6 +104,16 @@ public class AppControllerImpl implements AppController{
         return searchService.searchRooms(arrival, departure, numberOfBeds, typeOfBeds, smoking);
     }
 
+    /**                              *
+     * End of Room Service Endpoints *
+     * ----------------------------- *
+     * Reservation Service Endpoints *
+     *                               */
+    @Override
+    public List<Reservation> getReservationByUserId(UUID id){
+        return reservationDAO.findReservations(id);
+    }
+
 //    @Override
 //    public void addViewsHandler(GuiHandler guiHandler){
 //        this.guiHandler = guiHandler;
@@ -116,12 +126,12 @@ public class AppControllerImpl implements AppController{
 
     @Override
     public void cancelReservation(Reservation reservation) {
-
+        reservationDAO.cancelReservation(reservation);
     }
 
     @Override
     public void modifyReservation(Reservation modifiedReservation) {
-
+        reservationDAO.updateReservation(modifiedReservation);
     }
 
     @Override
