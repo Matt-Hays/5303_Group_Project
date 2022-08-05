@@ -90,7 +90,6 @@ class Hr2sTests {
     @Order(2)
     void getAdminUser() {
         User user = ud.getUserByUsername("admin");
-        System.out.println(user);
         assertTrue(null != user);
         if (null != user) {
             assertTrue(user.getAccountType() == Account.ADMIN);
