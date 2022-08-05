@@ -1,6 +1,7 @@
 package hotel.reservations.views.login;
 
-import hotel.reservations.views.controller.GuiHandler;
+import hotel.reservations.models.session.Session;
+import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.RoundedPasswordField;
 import hotel.reservations.views.styles.RoundedTextField;
@@ -10,18 +11,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
+/**
+ * Provides a login interface to accept the user's username and password.
+ * Return the user's to the Home Page upon successful login.
+ * Displays an error message to the user on login failure.
+ */
 public class LoginPanel extends ThemedPanel {
-    private GuiHandler guiHandler;
+    private Frame frame;
     private JLabel pageHeader;
     private RoundedTextField usernameField;
     private RoundedPasswordField passwordField;
     private RoundedButton btnBack, btnLogin;
+    private GridBagConstraints gbc = new GridBagConstraints();
+    private boolean hasPreviousMessage;
 
-    public LoginPanel(GuiHandler guiHandler){
-        setGuiHandler(guiHandler);
+    public LoginPanel(Frame frame){
+        setFrame(frame);
 
         setLayout(new GridBagLayout());
         usernameField = new RoundedTextField(20);
@@ -32,29 +38,77 @@ public class LoginPanel extends ThemedPanel {
 
         fillLayout();
 
+        /**
+         * Login ActionListener. Requests the login function from the controller. Returns an error message to the user
+         * on login failure. Accepts and sets the Session object to the view for cached use of the User object, prepares
+         * the Home Page for a logged-in user, changes the page to the Home page, and clears all text fields on the
+         * login page.
+         */
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    getGuiHandler().getApplicationController().logIn(getUsernameField(), getPasswordField());
-                } catch (NoSuchAlgorithmException ex) {
-                    throw new RuntimeException(ex);
-                } catch (InvalidKeySpecException ex) {
-                    throw new RuntimeException(ex);
+                if (hasPreviousMessage) clearMessage();
+                Session session = getFrame().getAppController().logIn(getUsernameField(), getPasswordField());
+                if(session == null) displayMessage("Login attempt failed. Please try again.", "red");
+                else {
+                    getFrame().setSession(session);
+                    getFrame().getHomePanel().loggedInDisplay();
+                    getFrame().changeScreen("home");
+                    clearTextFields();
                 }
             }
         });
 
+        /**
+         * Returns the user to the Home page.
+         * Clears the text fields.
+         */
         btnBack.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                getGuiHandler().changeScreen("home");
+                if(hasPreviousMessage) clearMessage();
+                getFrame().changeScreen("home");
+                clearTextFields();
             }
         });
     }
 
+    /**
+     * Resets JTextFields to empty strings. (Clears the text fields)
+     */
+    private void clearTextFields(){
+        usernameField.setText("");
+        passwordField.setText("");
+    }
+
+    /**
+     * Given a message to display and a desired HTML standard named color, display the message in the color.
+     * @param message The message to display.
+     * @param color The standard HTML named color to display the message.
+     */
+    private void displayMessage(String message, String color){
+        gbc.gridy++;
+        gbc.insets = new Insets(24,0,0,0);
+        add(new JLabel("<html><p style='color:" + color + "'>" + message + "</p></html>"), gbc);
+        this.hasPreviousMessage = true;
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Clears the previous message so that multiple messages do not overwhelm the layout.
+     */
+    private void clearMessage(){
+        remove(getComponentCount() - 1);
+        this.hasPreviousMessage = false;
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Provide the initial grid structure for the Login Page.
+     */
     private void fillLayout(){
-        GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gbc.gridy = 0;
         gbc.gridwidth = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
@@ -82,14 +136,24 @@ public class LoginPanel extends ThemedPanel {
         add(btnBack, gbc);
     }
 
-    private void setGuiHandler(GuiHandler guiHandler){
-        this.guiHandler = guiHandler;
+    /**
+     * Set the JFrame.
+     * @param frame The parent JFrame object.
+     */
+    private void setFrame(Frame frame){
+        this.frame = frame;
     }
 
-    private GuiHandler getGuiHandler() {
-        return guiHandler;
+    /**
+     * @return The parent JFrame object.
+     */
+    private Frame getFrame() {
+        return frame;
     }
 
+    /**
+     * Standard getters and setters follow through the end of the file.
+     */
     public JLabel getPageHeader() {
         return pageHeader;
     }

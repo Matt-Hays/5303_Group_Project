@@ -1,6 +1,7 @@
 package hotel.reservations.views.register;
 
-import hotel.reservations.views.controller.GuiHandler;
+import hotel.reservations.models.session.Session;
+import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.RoundedPasswordField;
 import hotel.reservations.views.styles.RoundedTextField;
@@ -10,121 +11,263 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
+/**
+ * The Register Panel of the user interface.
+ * Provides the user with the functionality to crete a new user account.
+ * Routes the user to the Home Page and displays a Welcome message to the user upon creation success.
+ * Displays an error message to the user upon creation failure.
+ */
 public class RegisterPanel extends ThemedPanel {
-    private GuiHandler guiHandler;
-    private RoundedTextField usernameField, firstNameField, lastNameField, addressField, stateField, zipCodeField;
+    private Frame frame;
+    private JLabel username, password, fName, lName, street, state, zip, pageTitle;
+    private RoundedTextField usernameField, firstNameField, lastNameField, streetField, stateField, zipCodeField;
     private RoundedPasswordField passwordField;
     private RoundedButton btnBack, btnRegister;
+    private GridBagConstraints gbc = new GridBagConstraints();
+    private boolean hasPreviousMessage, isAdminMode;
 
 
-    public RegisterPanel(GuiHandler guiHandler){
-        setGuiHandler(guiHandler);
+    public RegisterPanel(Frame frame){
+        setFrame(frame);
 
         setLayout(new GridBagLayout());
 
+        pageTitle = new JLabel("<html><h1 style='color:white; font-size:24px; font-weight:bold'>Register</h1></html>");
+        username = new JLabel("<html><p style='color:white; font-size:12px'>Username:</p></html>");
         usernameField = new RoundedTextField(20);
+        password = new JLabel("<html><p style='color:white; font-size:12px'>Password:</p></html>");
         passwordField = new RoundedPasswordField(20);
+        fName = new JLabel("<html><p style='color:white; font-size:12px'>First Name:</p></html>");
         firstNameField = new RoundedTextField(20);
+        lName = new JLabel("<html><p style='color:white; font-size:12px'>Last Name:</p></html>");
         lastNameField = new RoundedTextField(20);
-        addressField = new RoundedTextField(20);
-        stateField = new RoundedTextField(2);
-        zipCodeField = new RoundedTextField(5);
+        street = new JLabel("<html><p style='color:white; font-size:12px'>Street:</p></html>");
+        streetField = new RoundedTextField(20);
+        state = new JLabel("<html><p style='color:white; font-size:12px'>State:</p></html>");
+        stateField = new RoundedTextField(20);
+        zip = new JLabel("<html><p style='color:white; font-size:12px'>Zip Code:</p></html>");
+        zipCodeField = new RoundedTextField(20);
         btnBack = new RoundedButton("Back");
         btnRegister = new RoundedButton("Register");
 
         fillLayout();
 
+        btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
+                if(isAdminMode) removeAdminMode();
+                clearTextFields();
+                getFrame().changeScreen("home");
+            }
+        });
+    }
+
+    /**
+     * Given a message to display and a desired HTML standard named color, displays the message using the color.
+     * @param message The message to display.
+     * @param color The standard HTML named color used to display the message.
+     */
+    private void displayMessage(String message, String color){
+        gbc.gridy++;
+        gbc.insets = new Insets(24,0,0,0);
+        add(new JLabel("<html><p style='color:" + color + "'>" + message + "</p></html>"), gbc);
+        this.hasPreviousMessage = true;
+        revalidate();
+        repaint();
+    }
+
+    public void removeAdminMode(){
+        // Remove existing ActionListeners
+        for(ActionListener al : btnRegister.getActionListeners()){
+            btnRegister.removeActionListener(al);
+        }
+
+        // Reconfigure the initial layout including initial ActionListener(s).
+        fillLayout();
+
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Arranges the Display for an Admin
+     */
+    public void prepareAdminDisplay(){
+        // Remove existing ActionListeners
+        for(ActionListener al : btnRegister.getActionListeners()){
+            btnRegister.removeActionListener(al);
+        }
+
+        // Remove the unnecessary fields and associated labels.
+        if(passwordField != null && password != null){
+            remove(passwordField);
+            remove(password);
+        }
+
+        // Change the Register Button's text to match to use case.
+        btnRegister.setText("Create Clerk");
+
+        // Change the ActionListener to call create clerk instead of register user.
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = getUsernameField();
-                char[] password = getPasswordField();
                 String firstName = getFirstNameField();
                 String lastName = getLastNameField();
-                String address = getAddressField();
+                String street = getStreetField();
                 String state = getStateField();
-                String zipCode = getZipCodeField();
-                try {
-                    getGuiHandler()
-                            .getApplicationController()
-                            .registerUser(username, password, firstName, lastName, address, state, zipCode);
-                } catch (NoSuchAlgorithmException ex) {
-                    throw new RuntimeException(ex);
-                } catch (InvalidKeySpecException ex) {
-                    throw new RuntimeException(ex);
-                }
+                String zip = getZipCodeField();
+
+                getFrame().getAppController().createClerk(username, firstName, lastName, street, state, zip);
+                getFrame().getHomePanel().displayMessage("Clerk has been created successfully!", "green");
+                getFrame().changeScreen("home");
+                removeAdminMode();
+                clearTextFields();
             }
         });
 
-        btnBack.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                getGuiHandler().changeScreen("home");
-            }
-        });
+        // Update the page to reflect that Admin Mode is now set.
+        isAdminMode = true;
     }
 
+    private void clearTextFields(){
+        usernameField.setText("");
+        firstNameField.setText("");
+        lastNameField.setText("");
+        streetField.setText("");
+        stateField.setText("");
+        zipCodeField.setText("");
+    }
+    /**
+     * Clears the previous message so that messages do not overwhelm the user interface.
+     */
+    private void clearMessage(){
+        remove(getComponentCount() - 1);
+        this.hasPreviousMessage = false;
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Provides the initial grid structure of the Register Page.
+     */
     private void fillLayout(){
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        add(new JLabel("<html><h1 style='color:white; font-weight:bold; " +
-                "text-decoration:underline'>Register</h1></html>"));
-        gbc.gridx = 0;
-        gbc.gridy = 36;
-        gbc.insets = new Insets(6,2,0,2);
-        gbc.anchor = GridBagConstraints.EAST;
-        add(new JLabel("<html><p style='color:white; font-size:12px'>Username:</p></html> "), gbc);
-        gbc.gridy++;
-        add(new JLabel("<html><p style='color:white; font-size:12px'>Password:</p></html> "), gbc);
-        gbc.gridy++;
-        add(new JLabel("<html><p style='color:white; font-size:12px'>First Name:</p></html> "), gbc);
-        gbc.gridy++;
-        add(new JLabel("<html><p style='color:white; font-size:12px'>Last Name:</p></html> "), gbc);
-        gbc.gridy++;
-        add(new JLabel("<html><p style='color:white; font-size:12px'>Address:</p></html> "), gbc);
-        gbc.gridy++;
-        add(new JLabel("<html><p style='color:white; font-size:12px'>City:</p></html> "), gbc);
-        gbc.gridy++;
-        add(new JLabel("<html><p style='color:white; font-size:12px'>State:</p></html> "), gbc);
-        gbc.gridy++;
-        add(new JLabel("<html><p style='color:white; font-size:12px'>Zip Code:</p></html> "), gbc);
-        gbc.gridx = 1;
-        gbc.gridy = 36;
+        gbc.gridx = gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(pageTitle, gbc);
+
+        gbc.insets = new Insets(2, 0, 2, 0);
+
+        gbc.gridy++;
+        add(username, gbc);
+        gbc.gridx++;
         add(usernameField, gbc);
+        gbc.gridx--;
+
+        gbc.insets = new Insets(2, 0, 2, 0);
+
         gbc.gridy++;
+        add(password, gbc);
+        gbc.gridx++;
         add(passwordField, gbc);
+        gbc.gridx--;
+
+        gbc.insets = new Insets(2, 0, 2, 0);
+
         gbc.gridy++;
+        add(fName, gbc);
+        gbc.gridx++;
         add(firstNameField, gbc);
+        gbc.gridx--;
+
+        gbc.insets = new Insets(2, 0, 2, 0);
+
         gbc.gridy++;
+        add(lName, gbc);
+        gbc.gridx++;
         add(lastNameField, gbc);
+        gbc.gridx--;
+
+        gbc.insets = new Insets(2, 0, 2, 0);
+
         gbc.gridy++;
-        add(addressField, gbc);
+        add(street, gbc);
+        gbc.gridx++;
+        add(streetField, gbc);
+        gbc.gridx--;
+
+        gbc.insets = new Insets(2, 0, 2, 0);
+
         gbc.gridy++;
+        add(state, gbc);
+        gbc.gridx++;
         add(stateField, gbc);
+        gbc.gridx--;
+
+        gbc.insets = new Insets(2, 0, 2, 0);
+
         gbc.gridy++;
+        add(zip, gbc);
+        gbc.gridx++;
         add(zipCodeField, gbc);
+
+        gbc.insets = new Insets(16, 0, 0, 0);
+
         gbc.gridy++;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(16, 24, 0, 0);
         add(btnRegister, gbc);
-        gbc.insets = new Insets(16, 136, 0, 0);
+        gbc.anchor = GridBagConstraints.EAST;
         add(btnBack, gbc);
+
+        /**
+         * Register ActionListener.
+         * Requests the creation of a new user account.
+         * Returns an error message to the user upon failure.
+         * Saves the Session object to the view cache, redirects the user to the Home page and displays a welcome
+         * message upon success.
+         */
+        btnRegister.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
+
+                String username = getUsernameField();
+                char[] password = getPasswordField();
+                String firstName = getFirstNameField();
+                String lastName = getLastNameField();
+                String address = getStreetField();
+                String state = getStateField();
+                String zipCode = getZipCodeField();
+
+                Session session = getFrame()
+                        .getAppController()
+                        .registerUser(username, password, firstName, lastName, address, state, zipCode);
+
+                if(session == null) {
+                    displayMessage("Registration attempt failed. Please try again.", "red");
+                    return;
+                };
+
+                getFrame().setSession(session);
+                getFrame().getHomePanel().displayMessage("Welcome to our hotel!", "green");
+                getFrame().getHomePanel().loggedInDisplay();
+                getFrame().changeScreen("home");
+            }
+        });
     }
 
-    private void setGuiHandler(GuiHandler guiHandler){
-        this.guiHandler = guiHandler;
+    /**
+     * Standard getter and setter methods follow through the end of the page.
+     */
+    private void setFrame(Frame frame){
+        this.frame = frame;
     }
 
-    private GuiHandler getGuiHandler(){
-        return guiHandler;
+    private Frame getFrame(){
+        return frame;
     }
 
     public String getUsernameField() {
@@ -151,12 +294,12 @@ public class RegisterPanel extends ThemedPanel {
         this.lastNameField.setText(lastNameField);
     }
 
-    public String getAddressField() {
-        return addressField.getText();
+    public String getStreetField() {
+        return streetField.getText();
     }
 
-    public void setAddressField(String addressField) {
-        this.addressField.setText(addressField);
+    public void setStreetField(String streetField) {
+        this.streetField.setText(streetField);
     }
 
     public String getStateField() {

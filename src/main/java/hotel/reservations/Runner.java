@@ -1,26 +1,26 @@
 package hotel.reservations;
 
-import hotel.reservations.controller.ApplicationController;
-import hotel.reservations.controller.PrimaryController;
-import hotel.reservations.persistence.Database;
-import hotel.reservations.views.controller.GuiFrame;
-import hotel.reservations.views.controller.GuiHandler;
+import hotel.reservations.controller.AppController;
+import hotel.reservations.controller.AppControllerImpl;
+import hotel.reservations.persistence.DatabaseImpl;
+import hotel.reservations.views.frame.FrameImpl;
+import hotel.reservations.views.frame.Frame;
 
 import javax.swing.*;
 
 public class Runner {
     public static void main(String[] args) throws NoSuchMethodException {
         // Persistence Layer
-        Database db = new Database();
+        DatabaseImpl db = new DatabaseImpl();
 
         // Views Layer
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 // Application Layer Controller
-                ApplicationController applicationController = new PrimaryController(db);
+                AppController applicationController = new AppControllerImpl(db);
                 // Views Layer Controller
-                GuiHandler guiHandler = new GuiFrame(applicationController);
+                Frame guiHandler = new FrameImpl(applicationController);
                 // Associate Views with the ApplicationController
                 applicationController.addViewsHandler(guiHandler);
             }

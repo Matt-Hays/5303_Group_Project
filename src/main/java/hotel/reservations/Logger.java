@@ -1,3 +1,0 @@
-// TODO: this should the a singular logging function for the entire app rather than each one relying on building their own logger.
-//  Could output to console / file / both.
-//  Should except a default level to log such as all logs go to file but only severe logs go to console. etc...
