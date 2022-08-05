@@ -343,11 +343,9 @@ public class DatabaseImpl implements Database {
 			ps.setString(8, status.name());
 
 			// Execute the query
-			if (ps.executeUpdate() > 0) {
-				return Response.FAILURE;
+			if (ps.executeUpdate() == 1) {
+				return Response.SUCCESS;
 			}
-
-			return Response.SUCCESS;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -375,8 +373,9 @@ public class DatabaseImpl implements Database {
 
 
 			// Execute the query
-			ps.executeUpdate();
-			return Response.SUCCESS;
+			if (ps.executeUpdate() == 1) {
+				return Response.SUCCESS;
+			}
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
