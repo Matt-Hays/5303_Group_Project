@@ -89,6 +89,11 @@ class Hr2sTests {
         }
     }
 
+    /**
+     * test registration of a user
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     @Order(3)
     void registerUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -98,7 +103,7 @@ class Hr2sTests {
     }
 
     /**
-     * creation of a clerk
+     * test creation of a clerk
      */
     @Test
     @Order(4)
@@ -108,6 +113,11 @@ class Hr2sTests {
         assertTrue(user.getAccountType() == Account.CLERK);
     }
 
+    /**
+     * test modification of a user
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     @Order(5)
     void modifyUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -128,6 +138,9 @@ class Hr2sTests {
         appController.logOut(session.getId());
     }
 
+    /**
+     * test getting available rooms
+     */
     @Test
     @Order(6)
     void getAvailableRooms() {
@@ -137,6 +150,11 @@ class Hr2sTests {
         assertTrue(rooms.size() > 0);
     }
 
+    /**
+     * more comprehensive test covering UC01 - Make a reservation
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     @Order(7)
     void UC01() throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -182,6 +200,11 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test checking in and checking out
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     @Order(8)
     void checkInOut() throws NoSuchAlgorithmException, InvalidKeySpecException  {
@@ -222,6 +245,11 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test canceling a reservation
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     @Order(9)
     void cancelReservation() throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -259,6 +287,9 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test modifying a reservation
+     */
     @Test
     @Order(10)
     void modifyReservation() {
@@ -296,4 +327,116 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test retrieving a room
+     */
+    @Test
+    @Order(11)
+    void getRoom() {
+        String password = "password123$";
+        int roomNumber = 102;
+
+        // act like they've logged in
+        Session session = appController.logIn("clerk1", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        Room room = appController.getRoom(roomNumber);
+        assertTrue(null != room);
+        assertTrue(room.getRoomId() == roomNumber);
+
+        appController.logOut(sessionId);
+    }
+
+    /**
+     * test creating a new room
+     */
+    @Test
+    @Order(12)
+    void insertRoom() {
+        String password = "password123$";
+        int roomNumber = 1024;
+
+        // act like they've logged in
+        Session session = appController.logIn("clerk1", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        Response response = appController.createRoom(roomNumber, Bed.KING, 2, false, false, 1999.99);
+        assertTrue(response == Response.SUCCESS);
+
+        // try to insert duplicate roomId
+        response = appController.createRoom(roomNumber, Bed.QUEEN, 4, false, false, 195.35);
+        assertTrue(response == Response.FAILURE);
+
+        Room room = appController.getRoom(roomNumber);
+        assertTrue(null != room);
+        assertTrue(room.getRoomId() == roomNumber);
+
+        appController.logOut(sessionId);
+    }
+
+    /**
+     * test modification of a room
+     */
+    @Test
+    @Order(13)
+    void modifyRoom() {
+        String password = "password123$";
+        int roomNumber = 102;
+        int numBeds = 1500;
+
+        // act like they've logged in
+        Session session = appController.logIn("clerk1", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        // get a room to modify
+        Room room = appController.getRoom(roomNumber);
+        assertTrue(null != room);
+        assertTrue(room.getRoomId() == roomNumber);
+
+        // this room is now a barracks
+        room.setNumBeds(numBeds);
+
+        // modify a room
+        Response response = appController.updateRoom(room.getRoomId(), room.getBedType(), room.getNumBeds(), room.getSmoking(), room.getOccupied(), room.getNumBeds());
+        assertTrue(response == Response.SUCCESS);
+
+        room = appController.getRoom(roomNumber);
+        assertTrue(null != room);
+        assertTrue(room.getRoomId() == roomNumber);
+        assertTrue(room.getNumBeds() == numBeds);
+
+        appController.logOut(sessionId);
+    }
+
+    /**
+     * test deleting a room
+     */
+    @Test
+    @Order(14)
+    void deleteRoom() {
+        String password = "password123$";
+        int roomNumber = 1024;
+
+        // act like they've logged in
+        Session session = appController.logIn("clerk1", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        // delete the room
+        Response response = appController.deleteRoom(roomNumber);
+        assertTrue(response == Response.SUCCESS);
+
+        // try to delete it again
+        response = appController.deleteRoom(roomNumber);
+        assertTrue(response == Response.FAILURE);
+
+        // make sure it is not in the db
+        Room room = appController.getRoom(roomNumber);
+        assertTrue(null == room);
+
+        appController.logOut(sessionId);
+    }
 }

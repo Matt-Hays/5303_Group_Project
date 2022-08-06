@@ -247,6 +247,8 @@ public class AppControllerImpl implements AppController{
 
     /**
      * ROOM ROUTES BEGIN
+     *
+     * @return
      */
     @Override
     public Response createRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate) {
@@ -259,16 +261,11 @@ public class AppControllerImpl implements AppController{
     }
 
     @Override
-    public void deleteRoom(Room room) {
-        // Validate User is logged-in & Validate User is a Clerk or an Admin.
-//        if(getSessionDAO().validateSession(sessionId).equals("Clerk") || getSessionDAO().validateSession(sessionId).equals("Admin")){
-//            getRoomDAO().deleteRoom(room);
-//        }
-    }
-
-    @Override
     public Response updateRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate){
         return roomDAO.updateRoom(roomId, bedType, numBeds, smoking, occupied, nightly_rate);
+    }
+    public Response deleteRoom(int roomId) {
+        return roomDAO.deleteRoom(roomId);
     }
 
     @Override
