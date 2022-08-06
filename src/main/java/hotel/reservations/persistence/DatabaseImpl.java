@@ -236,10 +236,6 @@ public class DatabaseImpl implements Database {
 
 	/**
 	 * Updates a room
-<<<<<<< HEAD
-	 * @param room a room
-	 * @return Response - Success or Fail
-=======
 	 * @param roomId
 	 * @param bedType
 	 * @param numBeds
@@ -247,7 +243,6 @@ public class DatabaseImpl implements Database {
 	 * @param occupied
 	 * @param nightly_rate
 	 * @return
->>>>>>> add-service-layer
 	 */
 	public Response updateRoom (int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate) {
 		try {
@@ -330,12 +325,7 @@ public class DatabaseImpl implements Database {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Inserts a new reservation into the Database
-	 * @param r
-	 * @return Response - Success or Fail
-=======
-	 * Inserts a new reservation
+	 * Inserts a reservation into the database
 	 * @param reservationId
 	 * @param customerId
 	 * @param invoiceId
@@ -344,8 +334,7 @@ public class DatabaseImpl implements Database {
 	 * @param arrival
 	 * @param departure
 	 * @param status
-	 * @return Response - Success ro Fail
->>>>>>> add-service-layer
+	 * @return
 	 */
 	public Response insertReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
 			LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
