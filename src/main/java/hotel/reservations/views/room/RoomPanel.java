@@ -1,9 +1,12 @@
 package hotel.reservations.views.room;
 
+import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
+import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
 import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
+import hotel.reservations.views.styles.RoundedTextField;
 import hotel.reservations.views.styles.ThemedPanel;
 
 import javax.swing.*;
@@ -11,6 +14,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class RoomPanel extends ThemedPanel {
     private final Frame frame;
@@ -19,11 +23,19 @@ public class RoomPanel extends ThemedPanel {
     private RoundedButton btnMakeReservation, btnBack;
     private Room roomCache;
     private LocalDate arrival, departure;
+    private JLabel guestUsernameLabel;
+    private RoundedTextField guestUsernameField;
+
+    private boolean hasPreviousMessage = false;
+    private GridBagConstraints gbc = new GridBagConstraints();
+    private boolean clerkMode = false;
 
     public RoomPanel(Frame frame) {
         this.frame = frame;
 
         setLayout(new GridBagLayout());
+
+
 
         roomId = new JLabel();
         smoking = new JLabel();
@@ -35,7 +47,6 @@ public class RoomPanel extends ThemedPanel {
         btnMakeReservation = new RoundedButton("Make Reservation");
         btnBack = new RoundedButton("Back");
 
-        GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.WEST;
         add(roomId, gbc);
@@ -59,12 +70,29 @@ public class RoomPanel extends ThemedPanel {
         btnMakeReservation.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
+
                 User sessionUser;
                 if(getFrame().getSession() != null){
                     sessionUser = getFrame().getSession().getUser();
-                    getFrame().getAppController().createReservation(sessionUser, roomCache, arrival, departure);
-                    getFrame().getHomePanel().displayMessage("Reservation Successfully created!", "green");
-                    getFrame().changeScreen("home");
+
+                    if (sessionUser.getAccountType() == Account.CLERK) {
+                        String username = guestUsernameField.getText();
+                        sessionUser = getFrame().getAppController().getUser(username);
+                        if (null == sessionUser) {
+                            displayMessage("Invalid username!", "red");
+                            return;
+                        }
+                    }
+
+                    Reservation reservation = getFrame().getAppController().createReservation(sessionUser, roomCache, arrival, departure);
+                    if (null != reservation) {
+                        clearClerkMode();
+                        getFrame().getHomePanel().displayMessage("Reservation Successfully created!", "green");
+                        getFrame().changeScreen("home");
+                    } else {
+                        displayMessage("Failed to make reservation!", "red");
+                    }
                 }
                 else {
                     getFrame().getLoginPanel().displayMessage("You must be legged in to reserve a room.", "red");
@@ -80,6 +108,38 @@ public class RoomPanel extends ThemedPanel {
                 getFrame().changeScreen("rooms");
             }
         });
+    }
+
+    /**
+     * Provides display modification dependent on authentication status. Additionally, provides functionality for
+     * differing use cases dependent on user type (Guest, Clerk, or Admin). Updates and reuses JButton components
+     * by clearing existing ActionListeners and adding new ActionListeners specific to the needs of the user type.
+     */
+    public void loggedInDisplay(){
+        if(getFrame().getSession().getUser().getAccountType().equals(Account.CLERK)) {
+            clerkMode = true;
+            guestUsernameLabel = new JLabel("<html><p style='color:white; font-size:16px'>Guest's Username: </p></html>");
+            guestUsernameField = new RoundedTextField(20);
+
+            gbc.gridy++;
+            gbc.gridx--;
+            add(guestUsernameLabel,gbc);
+            gbc.gridx++;
+            add(guestUsernameField, gbc);
+        }
+
+        revalidate();
+        repaint();
+    }
+
+    private void clearClerkMode(){
+        if (clerkMode) {
+            remove(guestUsernameLabel);
+            remove(guestUsernameField);
+            revalidate();
+            repaint();
+        }
+        clerkMode = false;
     }
 
     public void setRoom(Room room, LocalDate arrival, LocalDate departure){
@@ -125,5 +185,29 @@ public class RoomPanel extends ThemedPanel {
 
     private String getNightlyRate() {
         return nightlyRate.getText();
+    }
+
+    /**
+     * Given a message to display and the desired (standard named html) color, display the message to the user.
+     * @param message The message to be displayed.
+     * @param color The standard HTML named color of the text.
+     */
+    public void displayMessage(String message, String color){
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        add(new JLabel("<html><p style='color:" + color + "'>" + message + "</p></html>"), gbc);
+        this.hasPreviousMessage = true;
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Removes the last message from the panel to ensure additional messages are not displayed on top of each other.
+     */
+    private void clearMessage(){
+        remove(getComponentCount() - 1);
+        this.hasPreviousMessage = false;
+        revalidate();
+        repaint();
     }
 }

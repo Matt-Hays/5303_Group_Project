@@ -63,6 +63,7 @@ public interface AppController {
      */
     // Use Case 01
     public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure);
+    public User getUser(String username);
 
     // Use Case 02
     public Response cancelReservation(Reservation reservation);
