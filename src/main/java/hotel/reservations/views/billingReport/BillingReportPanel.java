@@ -83,19 +83,19 @@ public class BillingReportPanel extends ThemedPanel {
 
     private void insertInvoices(Invoice inv, GridBagConstraints gbc) {
 
-        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + inv.getIsPaid() + "</p></html>"), gbc);
+/*        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + inv.getIsPaid() + "</p></html>"), gbc);
+        gbc.gridy++;
+        gbc.insets = new Insets(0, 16, 0, 16);*/
+        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + "Invoice ID: " + inv.getInvoiceId()+ "</p></html>"), gbc);
         gbc.gridy++;
         gbc.insets = new Insets(0, 16, 0, 16);
-        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + inv.getInvoiceId()+ "</p></html>"), gbc);
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 16, 0, 16);
-        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + inv.getFees() + "</p></html>"), gbc);
+        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + "Resort Fees: " + inv.getFees() + "</p></html>"), gbc);
         gbc.gridx++;
         gbc.insets = new Insets(0, 16, 0, 16);
-        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + inv.getTaxRate() + "</p></html>"), gbc);
+/*        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + inv.getTaxRate() + "</p></html>"), gbc);
         gbc.gridx++;
-        gbc.insets = new Insets(0, 16, 0, 16);
-        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + inv.getSubtotal() + "</p></html>"), gbc);
+        gbc.insets = new Insets(0, 16, 0, 16);*/
+        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + "Subtotal: "+ inv.getSubtotal() + "</p></html>"), gbc);
         gbc.gridx = 0;
         RoundedButton tempBtn = new RoundedButton("View Invoice");
         tempBtn.setActionCommand(String.valueOf(inv.getInvoiceId()));
