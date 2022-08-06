@@ -257,7 +257,7 @@ public class DatabaseImpl implements Database {
 			ps.setInt(6, roomId);
 
 			// Execute the query
-			if (ps.executeUpdate() > 0) {
+			if (ps.executeUpdate() == 1) {
 				return Response.SUCCESS;
 			};
 		} catch (SQLException e) {
@@ -418,8 +418,9 @@ public class DatabaseImpl implements Database {
 
 
 			// Execute the query
-			ps.executeUpdate();
-			return Response.SUCCESS;
+			if (ps.executeUpdate() == 1) {
+				return Response.SUCCESS;
+			}
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -435,8 +436,9 @@ public class DatabaseImpl implements Database {
 			ps.setInt(1, roomId);
 
 			// Execute the query
-			ps.executeUpdate();
-			return Response.SUCCESS;
+			if (ps.executeUpdate() == 1) {
+				return Response.SUCCESS;
+			}
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -495,7 +497,7 @@ public class DatabaseImpl implements Database {
 			ps.setString(5, i.getInvoiceId().toString());
 
 			// Execute the query
-			if (ps.executeUpdate() > 0) {
+			if (ps.executeUpdate() == 1) {
 				return Response.SUCCESS;
 			}
 
@@ -535,7 +537,7 @@ public class DatabaseImpl implements Database {
 
 
 			// Execute the update
-			if (ps.executeUpdate() > 0) {
+			if (ps.executeUpdate() == 1) {
 				return Response.SUCCESS;
 			};
 
@@ -709,7 +711,7 @@ public class DatabaseImpl implements Database {
 
 
 			// Execute the query
-			if (ps.executeUpdate() > 0) {
+			if (ps.executeUpdate() == 1) {
 				return Response.SUCCESS;
 			};
 		} catch (SQLException e) {
@@ -747,7 +749,7 @@ public class DatabaseImpl implements Database {
 			ps.setString(8, String.valueOf(userId));
 
 			// Execute the query
-			if (ps.executeUpdate() > 0) {
+			if (ps.executeUpdate() == 1) {
 				return Response.SUCCESS;
 			};
 		} catch (SQLException e) {
