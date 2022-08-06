@@ -1,6 +1,7 @@
 package hotel.reservations.views.reservation;
 
 import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
@@ -65,6 +66,8 @@ public class ReservationsPanel extends ThemedPanel {
         gbc.anchor = GridBagConstraints.WEST;
 
         for(Reservation res : reservations){
+            if(res.getStatus().equals(ReservationStatus.CANCELLED) || res.getStatus().equals(ReservationStatus.COMPLETE))
+                continue;
             insertReservation(res, gbc);
             gbc.gridy++;
             gbc.gridx = 0;

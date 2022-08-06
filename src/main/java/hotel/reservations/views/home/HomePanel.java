@@ -18,7 +18,7 @@ import java.awt.event.ActionListener;
 public class HomePanel extends ThemedPanel {
     private Frame frame;
     private JLabel pageHeader;
-    private RoundedButton btnLogin, btnRegister, btnSearch, btnAdmin;
+    private RoundedButton btnLogin, btnRegister, btnSearch, btnAdmin, btnClerk;
     private GridBagConstraints gbc = new GridBagConstraints();
     private boolean hasPreviousMessage;
 
@@ -36,6 +36,8 @@ public class HomePanel extends ThemedPanel {
         btnSearch = new RoundedButton("Search Rooms");
         pageHeader = new JLabel("<html><h1 style='font-size:28; color:white'>Welcome to the Raven Hotel</h1></html>");
         btnAdmin = new RoundedButton("Admin");
+        btnClerk = new RoundedButton("Clerk");
+
 
         fillLayout();
 
@@ -80,6 +82,15 @@ public class HomePanel extends ThemedPanel {
                 System.out.println("Admin Button Clicked");
             }
         });
+
+        btnClerk.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
+//                System.out.println("Clerk Button Works!!!");
+//                getFrame().changeScreen("clerk");
+            }
+        });
     }
 
 
@@ -93,6 +104,8 @@ public class HomePanel extends ThemedPanel {
 
         if(getFrame().getSession().getUser().getAccountType().equals(Account.ADMIN))
             adminLoggedInDisplay();
+        else if(getFrame().getSession().getUser().getAccountType().equals(Account.CLERK))
+            clerkLoggedInDisplay();
 
         revalidate();
         repaint();
@@ -192,6 +205,7 @@ public class HomePanel extends ThemedPanel {
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(hasPreviousMessage) clearMessage();
                 getFrame().getUserPanel().populateAccount(getFrame().getSession().getUser());
                 getFrame().changeScreen("account");
             }
@@ -206,6 +220,17 @@ public class HomePanel extends ThemedPanel {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(64, 0, 0, 0);
         add(btnAdmin, gbc);
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * The Clerk's logged-in display panel
+     */
+    public void clerkLoggedInDisplay(){
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(64, 0, 0, 0);
+        add(btnClerk, gbc);
         revalidate();
         repaint();
     }

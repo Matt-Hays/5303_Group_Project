@@ -25,6 +25,7 @@ public class RoomsPanel extends ThemedPanel {
     }
 
     public void fillLayout(List<Room> rooms, LocalDate arrival, LocalDate departure){
+        if(roomCache != null) clearPanel();
         this.roomCache = rooms;
         this.arrival = arrival;
         this.departure = departure;
@@ -33,7 +34,6 @@ public class RoomsPanel extends ThemedPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setAutoscrolls(true);
-
         scrollPanel = new JPanel(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -64,6 +64,7 @@ public class RoomsPanel extends ThemedPanel {
     }
 
     private void insertRoom(Room room, GridBagConstraints gbc){
+        System.out.println(room.getRoomId());
         scrollPanel.add(new JLabel("<html><p style='color:black; font-size:16px; font-weight:bold'>" + room.getRoomId() + "</p></html>"), gbc);
         gbc.gridx++;
         gbc.insets = new Insets(0, 16, 0, 16);
@@ -98,6 +99,11 @@ public class RoomsPanel extends ThemedPanel {
             }
         });
         scrollPanel.add(tempBtn, gbc);
+    }
+
+    private void clearPanel(){
+        for(Component comp : getComponents())
+            remove(comp);
     }
 
     public Frame getFrame() {

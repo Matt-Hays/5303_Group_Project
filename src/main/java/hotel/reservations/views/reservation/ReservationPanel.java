@@ -66,7 +66,9 @@ public class ReservationPanel extends ThemedPanel {
                         getDepartureField(), reservationCache.getStatus());
                 // Cancel Reservation
                 getFrame().getAppController().modifyReservation(updatedRes);
-                System.out.println("Fired Update Reservation!");
+                getFrame().getHomePanel().displayMessage("Reservation updated!", "green");
+                getFrame().changeScreen("home");
+                clearLayout();
             }
         });
 
@@ -74,6 +76,9 @@ public class ReservationPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 getFrame().getAppController().cancelReservation(reservationCache);
+                getFrame().getHomePanel().displayMessage("Reservation successfully cancelled!", "green");
+                getFrame().changeScreen("home");
+                clearLayout();
             }
         });
 
@@ -81,6 +86,7 @@ public class ReservationPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 getFrame().changeScreen("reservations");
+                clearLayout();
             }
         });
 
@@ -152,5 +158,11 @@ public class ReservationPanel extends ThemedPanel {
             default:
                 return null;
         }
+    }
+
+    private void clearLayout(){
+        this.reservationCache = null;
+        for(Component comp : getComponents())
+            remove(comp);
     }
 }
