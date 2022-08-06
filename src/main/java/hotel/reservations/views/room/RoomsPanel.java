@@ -16,6 +16,7 @@ public class RoomsPanel extends ThemedPanel {
     private final Frame frame;
     private JScrollPane scrollPane;
     private JPanel scrollPanel;
+    private RoundedButton btnBack;
     private List<Room> roomCache;
     private LocalDate arrival, departure;
 
@@ -24,6 +25,7 @@ public class RoomsPanel extends ThemedPanel {
     }
 
     public void fillLayout(List<Room> rooms, LocalDate arrival, LocalDate departure){
+        if(roomCache != null) clearPanel();
         this.roomCache = rooms;
         this.arrival = arrival;
         this.departure = departure;
@@ -32,7 +34,6 @@ public class RoomsPanel extends ThemedPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setAutoscrolls(true);
-
         scrollPanel = new JPanel(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -45,8 +46,14 @@ public class RoomsPanel extends ThemedPanel {
             gbc.gridx = 0;
             gbc.insets = new Insets(8, 0, 8, 0);
         }
-
-        scrollPanel.add(new RoundedButton("Back"));
+        btnBack = new RoundedButton("Back");
+        btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().changeScreen("search");
+            }
+        });
+        scrollPanel.add(btnBack);
         scrollPane.setViewportView(scrollPanel);
 
         scrollPane.revalidate();
@@ -57,6 +64,7 @@ public class RoomsPanel extends ThemedPanel {
     }
 
     private void insertRoom(Room room, GridBagConstraints gbc){
+        System.out.println(room.getRoomId());
         scrollPanel.add(new JLabel("<html><p style='color:black; font-size:16px; font-weight:bold'>" + room.getRoomId() + "</p></html>"), gbc);
         gbc.gridx++;
         gbc.insets = new Insets(0, 16, 0, 16);
@@ -91,6 +99,11 @@ public class RoomsPanel extends ThemedPanel {
             }
         });
         scrollPanel.add(tempBtn, gbc);
+    }
+
+    private void clearPanel(){
+        for(Component comp : getComponents())
+            remove(comp);
     }
 
     public Frame getFrame() {

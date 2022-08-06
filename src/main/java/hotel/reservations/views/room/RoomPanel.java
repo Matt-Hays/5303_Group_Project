@@ -39,16 +39,17 @@ public class RoomPanel extends ThemedPanel {
         gbc.gridy = gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.WEST;
         add(roomId, gbc);
-        gbc.gridy++;
-        add(smoking, gbc);
-        gbc.gridy++;
-        add(numBeds, gbc);
-        gbc.gridy++;
-        add(bedType, gbc);
-        gbc.gridy++;
-        add(occupied, gbc);
-        gbc.gridy++;
-        add(nightlyRate, gbc);
+
+        layoutComponent(smoking, gbc);
+
+        layoutComponent(numBeds, gbc);
+
+        layoutComponent(bedType, gbc);
+
+        layoutComponent(occupied, gbc);
+
+        layoutComponent(nightlyRate, gbc);
+
         gbc.gridy++;
         add(btnMakeReservation, gbc);
         gbc.gridx++;
@@ -58,10 +59,18 @@ public class RoomPanel extends ThemedPanel {
         btnMakeReservation.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                User sessionUser = getFrame().getSession().getUser();
-                getFrame().getAppController().createReservation(sessionUser, roomCache, arrival, departure);
-                getFrame().getHomePanel().displayMessage("Reservation Successfully created!", "green");
-                getFrame().changeScreen("home");
+                User sessionUser;
+                if(getFrame().getSession() != null){
+                    sessionUser = getFrame().getSession().getUser();
+                    getFrame().getAppController().createReservation(sessionUser, roomCache, arrival, departure);
+                    getFrame().getHomePanel().displayMessage("Reservation Successfully created!", "green");
+                    getFrame().changeScreen("home");
+                }
+                else {
+                    getFrame().getLoginPanel().displayMessage("You must be legged in to reserve a room.", "red");
+                    getFrame().changeScreen("login");
+                }
+
             }
         });
 
@@ -83,6 +92,11 @@ public class RoomPanel extends ThemedPanel {
         bedType.setText("<html><p style='color:white; font-size:16px; font-weight:bold'>" + room.getBedType() + "</p></html>");
         occupied.setText("<html><p style='color:white; font-size:16px; font-weight:bold'>" + room.getOccupied() + "</p></html>");
         nightlyRate.setText("<html><p style='color:white; font-size:16px; font-weight:bold'>" + room.getNightlyRate() + "</p></html>");
+    }
+
+    private void layoutComponent(Component comp, GridBagConstraints gbc){
+        gbc.gridy++;
+        add(comp, gbc);
     }
 
     private Frame getFrame() {
