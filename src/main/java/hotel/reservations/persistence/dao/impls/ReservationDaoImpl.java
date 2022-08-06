@@ -140,7 +140,7 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
 
     @Override
     public Invoice getInvoice(UUID invoiceId) {
-        return null;
+        return db.getInvoice(invoiceId);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
 
     @Override
     public Response updateInvoice(Invoice invoice) {
-        return null;
+        return db.updateInvoice(invoice);
     }
 
     @Override
@@ -180,39 +180,5 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
         }
 
         return reservation;
-    }
-
-    @Override
-    public Response checkIn(Reservation reservation) {
-        if (reservation.getStatus() != ReservationStatus.AWAITING) {
-            return Response.FAILURE;
-        }
-        reservation.setStatus(ReservationStatus.CHECKEDIN);
-        reservation.setCheckIn(LocalDate.now());
-        return updateReservation(reservation);
-    }
-
-    @Override
-    public Response checkOut(Reservation reservation) {
-        if (reservation.getStatus() != ReservationStatus.CHECKEDIN) {
-            return Response.FAILURE;
-        }
-        reservation.setStatus(ReservationStatus.COMPLETE);
-        reservation.setCheckout(LocalDate.now());
-
-        UUID invoiceId = reservation.getInvoiceId();
-        Invoice invoice = db.getInvoice(invoiceId);
-        if (null == invoice) {
-            return Response.FAILURE;
-        }
-
-        // update subtotal in case dates changed
-        invoice.setSubtotal(invoice.getNightly_rate(), reservation.lengthOfStay());
-        Response response = db.updateInvoice(invoice);
-        if (response == Response.FAILURE) {
-            return Response.FAILURE;
-        }
-        
-        return updateReservation(reservation);
     }
 }
