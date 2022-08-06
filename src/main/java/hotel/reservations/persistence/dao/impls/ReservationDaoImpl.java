@@ -153,10 +153,10 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
         return db.updateInvoice(invoice);
     }
 
-    @Override
-    public Response deleteInvoice(Invoice invoice) {
-        return null;
-    }
+//    @Override
+//    public Response deleteInvoice(Invoice invoice) {
+//        return null;
+//    }
 
     @Override
     public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
