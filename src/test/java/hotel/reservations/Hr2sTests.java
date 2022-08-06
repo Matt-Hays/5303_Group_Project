@@ -296,4 +296,28 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    @Test
+    @Order(11)
+    void insertRoom() {
+        String password = "password123$";
+        int roomNumber = 1024;
+
+        // act like they've logged in
+        Session session = appController.logIn("clerk1", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        Response response = appController.createRoom(roomNumber, Bed.KING, 2, false, false, 1999.99);
+        assertTrue(response == Response.SUCCESS);
+
+        // try to insert duplicate roomId
+        response = appController.createRoom(roomNumber, Bed.QUEEN, 4, false, false, 195.35);
+        assertTrue(response == Response.FAILURE);
+
+        Room room = appController.getRoom(roomNumber);
+        assertTrue(null != room);
+        assertTrue(room.getRoomId() == roomNumber);
+
+        appController.logOut(sessionId);
+    }
 }
