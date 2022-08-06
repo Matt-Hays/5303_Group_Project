@@ -217,7 +217,7 @@ public class DatabaseImpl implements Database {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
-					"SELECT `bedType`, `numBeds`, `nightlyRate`, `smoking`, `occupied` FROM `room` WHERE `id`=?;"
+					"SELECT * FROM `room` WHERE `id`=?;"
 			);
 			ps.setInt(1, roomId);
 
