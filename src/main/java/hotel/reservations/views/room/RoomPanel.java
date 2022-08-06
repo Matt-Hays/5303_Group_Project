@@ -95,7 +95,7 @@ public class RoomPanel extends ThemedPanel {
                     }
                 }
                 else {
-                    getFrame().getLoginPanel().displayMessage("You must be legged in to reserve a room.", "red");
+                    getFrame().getLoginPanel().displayMessage("You must be logged in to reserve a room.", "red");
                     getFrame().changeScreen("login");
                 }
 

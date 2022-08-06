@@ -42,7 +42,8 @@ public class ClerkPanel extends ThemedPanel {
         btnRoomMgmt.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Room Management Button");
+                getFrame().changeScreen("roomMgmt");
+                System.out.println("Room Management Button Clicked");
             }
         });
 

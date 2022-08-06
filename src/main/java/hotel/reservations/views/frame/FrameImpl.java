@@ -11,8 +11,7 @@ import hotel.reservations.views.register.RegisterPanel;
 import hotel.reservations.views.reports.StatusReportPanel;
 import hotel.reservations.views.reservation.ReservationPanel;
 import hotel.reservations.views.reservation.ReservationsPanel;
-import hotel.reservations.views.room.RoomPanel;
-import hotel.reservations.views.room.RoomsPanel;
+import hotel.reservations.views.room.*;
 import hotel.reservations.views.search.SearchPanel;
 import hotel.reservations.views.user.ResetGuestCredentials;
 import hotel.reservations.views.user.UserPanel;
@@ -58,6 +57,10 @@ public class FrameImpl extends JFrame implements Frame {
         cardPanel.add(new ClerkPanel(this), "clerk"); // 11
         cardPanel.add(new StatusReportPanel(this), "status-report"); // 12
         cardPanel.add(new BillingReportPanel(this), "billing-report"); //12
+        cardPanel.add(new RoomManagementPanel(this), "roomMgmt"); // 12
+        cardPanel.add(new CreateRoomPanel(this), "createRoom"); // 13
+        cardPanel.add(new ModifyRoomPanel(this), "modifyRoom"); // 14
+        //cardPanel.add(new DeleteRoomPanel(this), "deleteRoom"); // 15
 
         add(cardPanel);
 

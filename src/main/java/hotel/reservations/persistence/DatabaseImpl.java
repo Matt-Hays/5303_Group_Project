@@ -217,18 +217,15 @@ public class DatabaseImpl implements Database {
 		// Build the query
 		try {
 			PreparedStatement ps = conn.prepareStatement(
-					"SELECT `bedType`, `numBeds`, `nightlyRate`, `smoking`, `occupied` FROM `room` WHERE `id`=?;"
+					"SELECT * FROM `room` WHERE `id`=?;"
 			);
 			ps.setInt(1, roomId);
 
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
-			if (!validate(rs)) {
-				logger.info("Empty set for room: " + roomId);
-				return null;
+			if (rs.next() != false) {
+				return rs;
 			}
-			
-			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
