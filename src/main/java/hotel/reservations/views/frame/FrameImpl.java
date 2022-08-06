@@ -3,6 +3,7 @@ package hotel.reservations.views.frame;
 import hotel.reservations.controller.AppController;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.views.admin.AdminPanel;
+import hotel.reservations.views.billingReport.BillingReportPanel;
 import hotel.reservations.views.clerk.ClerkPanel;
 import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
@@ -56,6 +57,7 @@ public class FrameImpl extends JFrame implements Frame {
         cardPanel.add(new ReservationsPanel(this), "reservations"); // 10
         cardPanel.add(new ClerkPanel(this), "clerk"); // 11
         cardPanel.add(new StatusReportPanel(this), "status-report"); // 12
+        cardPanel.add(new BillingReportPanel(this), "billing-report"); //12
 
         add(cardPanel);
 
@@ -158,6 +160,10 @@ public class FrameImpl extends JFrame implements Frame {
     @Override
     public StatusReportPanel getStatusReportPanel(){
         return (StatusReportPanel) cardPanel.getComponent(12);
+    }
+
+    public BillingReportPanel getBillingReportPanel() {
+        return (BillingReportPanel) cardPanel.getComponent(12);
     }
 
 }

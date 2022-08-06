@@ -3,6 +3,7 @@ package hotel.reservations.views.frame;
 import hotel.reservations.controller.AppController;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.views.admin.AdminPanel;
+import hotel.reservations.views.billingReport.BillingReportPanel;
 import hotel.reservations.views.clerk.ClerkPanel;
 import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
@@ -14,8 +15,6 @@ import hotel.reservations.views.room.RoomPanel;
 import hotel.reservations.views.room.RoomsPanel;
 import hotel.reservations.views.search.SearchPanel;
 import hotel.reservations.views.user.UserPanel;
-
-import java.util.UUID;
 
 /**
  * The parent frame (JFrame) interface.
@@ -53,4 +52,6 @@ public interface Frame {
     public ClerkPanel getClerkPanel();
 
     public StatusReportPanel getStatusReportPanel();
+
+    public BillingReportPanel getBillingReportPanel();
 }

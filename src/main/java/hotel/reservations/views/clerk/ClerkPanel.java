@@ -3,6 +3,7 @@ package hotel.reservations.views.clerk;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.user.User;
+import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.RoundedTextField;
@@ -13,7 +14,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.UUID;
 
 public class ClerkPanel extends ThemedPanel {
     private final Frame frame;
@@ -72,9 +72,24 @@ public class ClerkPanel extends ThemedPanel {
             }
         });
 
+        btnGenerateBilling.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //view logic
+                List<Invoice> invoices = getFrame().getAppController().generateBillingReport(getUsernameField());
+                getFrame().getBillingReportPanel().fillLayout(invoices);
+                getFrame().changeScreen("billing-report");
+            }
+        });
+
+
         gbc = new GridBagConstraints();
 
         fillLayout();
+    }
+
+    public String getUsernameField() {
+        return guestUsernameField.getText();
     }
 
     private void fillLayout(){

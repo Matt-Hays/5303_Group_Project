@@ -1,5 +1,6 @@
 package hotel.reservations.controller;
 
+import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
@@ -49,8 +50,10 @@ public interface AppController {
     /**                              *
      * End of Room Service Endpoints *
      * ----------------------------- *
-     * Reservation Service Endpoints *
+     * Billing Service Endpoints *
      *                               */
+
+    public List<Invoice> generateBillingReport(String username);
 
     public List<Reservation> getReservationByUserId(UUID id);
 

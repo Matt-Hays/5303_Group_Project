@@ -33,4 +33,6 @@ public interface ReservationDao {
     public Invoice generateInvoice(double roomRate, long stayLength);
 
     public Reservation createReservation(User guest, Room room, LocalDate start, LocalDate end);
+
+    public Invoice getInvoice(UUID invoiceId);
 }
