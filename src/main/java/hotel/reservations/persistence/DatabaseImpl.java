@@ -223,12 +223,9 @@ public class DatabaseImpl implements Database {
 
 			// Execute the query
 			ResultSet rs = ps.executeQuery();
-			if (!validate(rs)) {
-				logger.info("Empty set for room: " + roomId);
-				return null;
+			if (rs.next() != false) {
+				return rs;
 			}
-			
-			return rs;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());

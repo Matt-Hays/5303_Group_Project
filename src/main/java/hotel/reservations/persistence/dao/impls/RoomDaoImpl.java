@@ -47,8 +47,13 @@ public class RoomDaoImpl implements RoomDao {
         return filteredRooms;
     }
 
-    public Room getRoom(String roomId){
-        ResultSet rs = db.getRoom(Integer.parseInt(roomId));
+    public Room getRoom(int roomId){
+        ResultSet rs = db.getRoom(roomId);
+        try {
+            System.out.println(rs.getInt("id"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return createRoom(rs);
     }
 

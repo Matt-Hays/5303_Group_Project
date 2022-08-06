@@ -254,6 +254,11 @@ public class AppControllerImpl implements AppController{
     }
 
     @Override
+    public Room getRoom(int roomId){
+        return roomDAO.getRoom(roomId);
+    }
+
+    @Override
     public void deleteRoom(Room room) {
         // Validate User is logged-in & Validate User is a Clerk or an Admin.
 //        if(getSessionDAO().validateSession(sessionId).equals("Clerk") || getSessionDAO().validateSession(sessionId).equals("Admin")){

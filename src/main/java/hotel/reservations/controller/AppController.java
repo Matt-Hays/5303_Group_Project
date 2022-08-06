@@ -86,6 +86,8 @@ public interface AppController {
     // Use Case 07
     public void createRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
 
+    public Room getRoom(int roomId);
+
     // Use Case 08
     public void deleteRoom(Room room);
 
