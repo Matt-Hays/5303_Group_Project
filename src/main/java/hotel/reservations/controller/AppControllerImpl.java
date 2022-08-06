@@ -264,6 +264,9 @@ public class AppControllerImpl implements AppController{
     public Response updateRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate){
         return roomDAO.updateRoom(roomId, bedType, numBeds, smoking, occupied, nightly_rate);
     }
+    public Response deleteRoom(int roomId) {
+        return roomDAO.deleteRoom(roomId);
+    }
 
     @Override
     public void viewStatus(List<Room> roomReport) {

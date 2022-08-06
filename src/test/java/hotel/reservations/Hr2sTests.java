@@ -400,7 +400,7 @@ class Hr2sTests {
         room.setNumBeds(numBeds);
 
         // modify a room
-        Response response = appController.modifyRoom(room);
+        Response response = appController.updateRoom(room.getRoomId(), room.getBedType(), room.getNumBeds(), room.getSmoking(), room.getOccupied(), room.getNumBeds());
         assertTrue(response == Response.SUCCESS);
 
         room = appController.getRoom(roomNumber);
