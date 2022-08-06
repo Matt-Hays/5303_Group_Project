@@ -56,7 +56,7 @@ public class ModifyRoomPanel extends ThemedPanel {
         btnModifyRoom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //getFrame().getAppController().updateRoom(getRoomField(),getBedTypeField(),getBedNumField(),getSmokingField(),getOccupiedField(),getNightlyRateField());
+                getFrame().getAppController().updateRoom(getRoomField(),getBedTypeField(),getBedNumField(),getSmokingField(),getOccupiedField(),getNightlyRateField());
                 //System.out.println("Room Created!");
                 getFrame().getHomePanel().displayMessage("Your room has been updated!", "green");
                 getFrame().changeScreen("home");

@@ -141,9 +141,8 @@ public class RoomDaoImpl implements RoomDao {
         return null;
     }
 
-    public Response updateRoom(Room room){
-        return db.updateRoom(room.getRoomId(), room.getBedType(), room.getNumBeds(),
-            room.getSmoking(), room.getOccupied(), room.getNightlyRate());
+    public Response updateRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate){
+        return db.updateRoom(roomId, bedType, numBeds, smoking, occupied, nightly_rate);
     }
 
     /**

@@ -12,7 +12,7 @@ public interface RoomDao {
     public ArrayList<Room> filterRooms(LocalDate arrival, LocalDate departure, Bed bedType, int numBeds, boolean smoking);
     public hotel.reservations.models.room.Room getRoom(int roomId);
     public ArrayList<hotel.reservations.models.room.Room> getAllRooms();
-    public Response updateRoom(hotel.reservations.models.room.Room room);
+    public Response updateRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
     public Response createRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
     public Response deleteRoom(int roomId);
 }
