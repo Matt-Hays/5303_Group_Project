@@ -298,6 +298,24 @@ class Hr2sTests {
 
     @Test
     @Order(11)
+    void getRoom() {
+        String password = "password123$";
+        int roomNumber = 102;
+
+        // act like they've logged in
+        Session session = appController.logIn("clerk1", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        Room room = appController.getRoom(roomNumber);
+        assertTrue(null != room);
+        assertTrue(room.getRoomId() == roomNumber);
+
+        appController.logOut(sessionId);
+    }
+
+    @Test
+    @Order(12)
     void insertRoom() {
         String password = "password123$";
         int roomNumber = 1024;
@@ -317,6 +335,64 @@ class Hr2sTests {
         Room room = appController.getRoom(roomNumber);
         assertTrue(null != room);
         assertTrue(room.getRoomId() == roomNumber);
+
+        appController.logOut(sessionId);
+    }
+
+    @Test
+    @Order(13)
+    void modifyRoom() {
+        String password = "password123$";
+        int roomNumber = 102;
+        int numBeds = 1500;
+
+        // act like they've logged in
+        Session session = appController.logIn("clerk1", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        // get a room to modify
+        Room room = appController.getRoom(roomNumber);
+        assertTrue(null != room);
+        assertTrue(room.getRoomId() == roomNumber);
+
+        // this room is now a barracks
+        room.setNumBeds(numBeds);
+
+        // modify a room
+        Response response = appController.modifyRoom(room);
+        assertTrue(response == Response.SUCCESS);
+
+        room = appController.getRoom(roomNumber);
+        assertTrue(null != room);
+        assertTrue(room.getRoomId() == roomNumber);
+        assertTrue(room.getNumBeds() == numBeds);
+
+        appController.logOut(sessionId);
+    }
+
+    @Test
+    @Order(14)
+    void deleteRoom() {
+        String password = "password123$";
+        int roomNumber = 1024;
+
+        // act like they've logged in
+        Session session = appController.logIn("clerk1", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        // delete the room
+        Response response = appController.deleteRoom(roomNumber);
+        assertTrue(response == Response.SUCCESS);
+
+        // try to delete it again
+        response = appController.deleteRoom(roomNumber);
+        assertTrue(response == Response.FAILURE);
+
+        // make sure it is not in the db
+        Room room = appController.getRoom(roomNumber);
+        assertTrue(null == room);
 
         appController.logOut(sessionId);
     }
