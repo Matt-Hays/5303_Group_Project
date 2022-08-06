@@ -3,6 +3,7 @@ package hotel.reservations.views.frame;
 import hotel.reservations.controller.AppController;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.views.admin.AdminPanel;
+import hotel.reservations.views.clerk.ClerkPanel;
 import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
 import hotel.reservations.views.register.RegisterPanel;
@@ -41,17 +42,18 @@ public class FrameImpl extends JFrame implements Frame {
         /**
          * Create all user interface pages (JPanel) and add them to the frame's card layout.
          */
-        cardPanel.add(new HomePanel(this), "home");
-        cardPanel.add(new LoginPanel(this), "login");
-        cardPanel.add(new RegisterPanel(this), "register");
-        cardPanel.add(new SearchPanel(this), "search");
-        cardPanel.add(new UserPanel(this), "account");
-        cardPanel.add(new AdminPanel(this), "admin");
-        cardPanel.add(new ResetGuestCredentials(this), "reset-guest-credentials");
-        cardPanel.add(new RoomPanel(this), "room");
-        cardPanel.add(new RoomsPanel(this), "rooms");
-        cardPanel.add(new ReservationPanel(this), "reservation");
-        cardPanel.add(new ReservationsPanel(this), "reservations");
+        cardPanel.add(new HomePanel(this), "home"); // 0
+        cardPanel.add(new LoginPanel(this), "login"); // 1
+        cardPanel.add(new RegisterPanel(this), "register"); // 2
+        cardPanel.add(new SearchPanel(this), "search"); // 3
+        cardPanel.add(new UserPanel(this), "account"); // 4
+        cardPanel.add(new AdminPanel(this), "admin"); // 5
+        cardPanel.add(new ResetGuestCredentials(this), "reset-guest-credentials"); // 6
+        cardPanel.add(new RoomPanel(this), "room"); // 7
+        cardPanel.add(new RoomsPanel(this), "rooms"); // 8
+        cardPanel.add(new ReservationPanel(this), "reservation"); // 9
+        cardPanel.add(new ReservationsPanel(this), "reservations"); // 10
+        cardPanel.add(new ClerkPanel(this), "clerk"); // 11
 
         add(cardPanel);
 
@@ -145,6 +147,11 @@ public class FrameImpl extends JFrame implements Frame {
     @Override
     public ReservationsPanel getReservationsPanel() {
         return (ReservationsPanel) cardPanel.getComponent(10);
+    }
+
+    @Override
+    public ClerkPanel getClerkPanel(){
+        return (ClerkPanel) cardPanel.getComponent(11);
     }
 
 }

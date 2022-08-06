@@ -87,8 +87,7 @@ public class HomePanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
-//                System.out.println("Clerk Button Works!!!");
-//                getFrame().changeScreen("clerk");
+                getFrame().changeScreen("clerk");
             }
         });
     }
