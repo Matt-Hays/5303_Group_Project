@@ -1,7 +1,6 @@
 package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
-import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.session.Session;
@@ -136,6 +135,11 @@ public class AppControllerImpl implements AppController{
     public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
         return reservationDAO.createReservation(guest, room, arrival, departure);
     }
+
+    public User getUser(String username) {
+        return getUserDAO().getUserByUsername(username);
+    }
+
 
     @Override
     public Response cancelReservation(Reservation reservation) {
