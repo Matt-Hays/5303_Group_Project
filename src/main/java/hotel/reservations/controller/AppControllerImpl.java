@@ -107,6 +107,11 @@ public class AppControllerImpl implements AppController{
         return searchService.searchRooms(arrival, departure, numberOfBeds, typeOfBeds, smoking);
     }
 
+    @Override
+    public List<Room> getRooms(){
+        return roomDAO.getAllRooms();
+    }
+
     /**                              *
      * End of Room Service Endpoints *
      * ----------------------------- *

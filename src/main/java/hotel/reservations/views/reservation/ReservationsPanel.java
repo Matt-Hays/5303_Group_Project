@@ -139,7 +139,7 @@ public class ReservationsPanel extends ThemedPanel {
         scrollPanel.add(tempBtn, gbc);
     }
 
-    public Frame getFrame() {
+    private Frame getFrame() {
         return frame;
     }
 }

@@ -1,5 +1,6 @@
 package hotel.reservations.views.clerk;
 
+import hotel.reservations.models.room.Room;
 import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.RoundedTextField;
@@ -9,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.UUID;
 
 public class ClerkPanel extends ThemedPanel {
     private final Frame frame;
@@ -37,6 +40,15 @@ public class ClerkPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Room Management Button");
+            }
+        });
+
+        btnViewStatusReport.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Room> rooms = getFrame().getAppController().getRooms();
+                getFrame().getStatusReportPanel().fillLayout(rooms);
+                getFrame().changeScreen("status-report");
             }
         });
 

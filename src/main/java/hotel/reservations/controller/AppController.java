@@ -44,6 +44,8 @@ public interface AppController {
 
     public List<Room> searchRooms(LocalDate arrival, LocalDate departure, int numberOfBeds, Bed typeOfBeds, boolean smoking);
 
+    public List<Room> getRooms();
+
     /**                              *
      * End of Room Service Endpoints *
      * ----------------------------- *

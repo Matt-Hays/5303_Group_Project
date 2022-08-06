@@ -7,6 +7,7 @@ import hotel.reservations.views.clerk.ClerkPanel;
 import hotel.reservations.views.home.HomePanel;
 import hotel.reservations.views.login.LoginPanel;
 import hotel.reservations.views.register.RegisterPanel;
+import hotel.reservations.views.reports.StatusReportPanel;
 import hotel.reservations.views.reservation.ReservationPanel;
 import hotel.reservations.views.reservation.ReservationsPanel;
 import hotel.reservations.views.room.RoomPanel;
@@ -54,6 +55,7 @@ public class FrameImpl extends JFrame implements Frame {
         cardPanel.add(new ReservationPanel(this), "reservation"); // 9
         cardPanel.add(new ReservationsPanel(this), "reservations"); // 10
         cardPanel.add(new ClerkPanel(this), "clerk"); // 11
+        cardPanel.add(new StatusReportPanel(this), "status-report"); // 12
 
         add(cardPanel);
 
@@ -151,6 +153,11 @@ public class FrameImpl extends JFrame implements Frame {
     @Override
     public ClerkPanel getClerkPanel(){
         return (ClerkPanel) cardPanel.getComponent(11);
+    }
+
+    @Override
+    public StatusReportPanel getStatusReportPanel(){
+        return (StatusReportPanel) cardPanel.getComponent(12);
     }
 
 }

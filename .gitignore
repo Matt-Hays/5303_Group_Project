@@ -67,7 +67,7 @@ buildNumber.properties
 ####################################
 
 *.sqlite
-*.log
+*.log*
 *.log.*
 *.log 2
 *.log 2.*
