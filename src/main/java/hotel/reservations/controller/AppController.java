@@ -89,7 +89,7 @@ public interface AppController {
     public Room getRoom(int roomId);
 
     // Use Case 08
-    public void deleteRoom(Room room);
+    public Response deleteRoom(int roomId);
 
     // Use Case 09
     public Response updateRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
