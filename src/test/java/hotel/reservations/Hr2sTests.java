@@ -10,6 +10,7 @@ import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.*;
 import hotel.reservations.persistence.DatabaseImpl;
 import hotel.reservations.persistence.Response;
+import hotel.reservations.persistence.dao.RoomDao;
 import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
 import hotel.reservations.persistence.dao.impls.RoomDaoImpl;
 import hotel.reservations.persistence.dao.impls.UserDaoImpl;
@@ -22,7 +23,6 @@ import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,9 +34,6 @@ class Hr2sTests {
     private static final String dbName = "hr2s_test.sqlite";
     private static DatabaseImpl db = null;
     private static AppController appController = null;
-    private static UserDaoImpl ud = null;
-    private static ReservationDaoImpl reservationDAO = null;
-    private static RoomDaoImpl roomDAO = null;
 
     /**
      * Ensures database is created and in a clean state before each test
@@ -48,7 +45,6 @@ class Hr2sTests {
         if (dbFile.exists()) {
             dbFile.delete();
         }
-
         // create the test db
         db = new DatabaseImpl(dbName);
 
@@ -56,10 +52,6 @@ class Hr2sTests {
         Frame guiHandler = new FrameImpl(appController);
         // Associate Views with the ApplicationController
         appController.addViewsHandler(guiHandler);
-
-        ud = new UserDaoImpl(db);
-        reservationDAO = new ReservationDaoImpl(db);
-        roomDAO = new RoomDaoImpl(db, reservationDAO);
     }
 
     /**
@@ -89,7 +81,7 @@ class Hr2sTests {
     @Test
     @Order(2)
     void getAdminUser() {
-        User user = ud.getUserByUsername("admin");
+        User user = appController.getUser("admin");
         System.out.println(user);
         assertTrue(null != user);
         if (null != user) {
@@ -101,10 +93,9 @@ class Hr2sTests {
     @Order(3)
     void registerUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
         String password = "password123$";
-        assertTrue(null != ud.createUser(Account.GUEST, "guest1", password.toCharArray(), "bob", "thebuilder",
+        assertTrue(null != appController.registerUser("guest1", password.toCharArray(), "bob", "thebuilder",
                 "1234 Something Street", "MyState", "12345"));
     }
-
 
     /**
      * creation of a clerk
@@ -112,16 +103,29 @@ class Hr2sTests {
     @Test
     @Order(4)
     void createClerk() {
-        User user = ud.getUserByUsername("admin");
-        assertTrue(user.getAccountType() == Account.ADMIN);
-        assertTrue(null != ud.createDefaultUser(Account.CLERK, "clerk1", "Clerky", "McClerk", "1234 Clerk Street", "ClerkState", "24680"));
+        appController.createClerk("clerk1", "Clerky", "McClerk", "1234 Clerk Street", "ClerkState", "24680");
+        User user = appController.getUser("clerk1");
+        assertTrue(user.getAccountType() == Account.CLERK);
     }
 
     @Test
     @Order(5)
-    void getClerkUser() {
-        User user = ud.getUserByUsername("clerk1");
-        assertTrue(user instanceof Clerk);
+    void modifyUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String password = "password123$";
+        String newLastName = "MyNewLastName";
+        String username = "clerk1";
+        User user = appController.getUser(username);
+        assertTrue(null != user);
+
+        Session session = appController.logIn(user.getUsername(), password.toCharArray());
+        user.setLastName(newLastName);
+        appController.modifyUser(session.getId(), user.getUsername(), user.getFirstName(), user.getLastName(),
+                user.getStreet(), user.getState(), user.getZipCode(), user.getActive());
+
+        user = appController.getUser(username);
+        assertTrue(user.getLastName().equals(newLastName));
+
+        appController.logOut(session.getId());
     }
 
     @Test
@@ -129,7 +133,7 @@ class Hr2sTests {
     void getAvailableRooms() {
         LocalDate arrival = LocalDate.parse("2022-01-01");
         LocalDate departure = LocalDate.parse("2022-12-01");
-        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure, Bed.KING, 1, false);
+        List<Room> rooms = appController.searchRooms(arrival, departure, 2, Bed.QUEEN, true);
         assertTrue(rooms.size() > 0);
     }
 
@@ -141,7 +145,7 @@ class Hr2sTests {
         LocalDate departure = LocalDate.parse("2022-09-15");
 
         // find available rooms
-        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure, Bed.QUEEN, 2, false);
+        List<Room> rooms = appController.searchRooms(arrival, departure, 2, Bed.QUEEN, false);
         if (rooms.size() == 0) {
             Assertions.fail("No rooms found");
             return;
@@ -180,7 +184,7 @@ class Hr2sTests {
 
     @Test
     @Order(8)
-    void checkin() throws NoSuchAlgorithmException, InvalidKeySpecException  {
+    void checkInOut() throws NoSuchAlgorithmException, InvalidKeySpecException  {
         String password = "password123$";
 
         // act like they've logged in
@@ -199,11 +203,11 @@ class Hr2sTests {
         Reservation reservation = reservations.get(0);
         assertTrue(null != reservation);
 
-        // checkin
+        // checkIn
         Response response = appController.checkIn(reservation);
         assertTrue(response == Response.SUCCESS);
 
-        // check if db indicates checkedin
+        // check if db indicates checkedIn
         reservation = appController.getReservationByReservationId(reservation.getReservationId());
         assertTrue(reservation.getStatus() == ReservationStatus.CHECKEDIN);
 
@@ -226,7 +230,7 @@ class Hr2sTests {
         LocalDate departure = LocalDate.parse("2022-10-15");
 
         // find available rooms
-        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure, Bed.QUEEN, 2, false);
+        List<Room> rooms = appController.searchRooms(arrival, departure, 2, Bed.QUEEN, false);
         if (rooms.size() == 0) {
             Assertions.fail("No rooms found");
             return;
@@ -244,15 +248,52 @@ class Hr2sTests {
         Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
         assertTrue(null != reservation);
 
-        // checkin
+        // checkIn
         Response response = appController.cancelReservation(reservation);
         assertTrue(response == Response.SUCCESS);
 
-
-        // check if db indicates checkedin
+        // check if db indicates checkedIn
         reservation = appController.getReservationByReservationId(reservation.getReservationId());
         assertTrue(reservation.getStatus() == ReservationStatus.CANCELLED);
 
         appController.logOut(sessionId);
     }
+
+    @Test
+    @Order(10)
+    void modifyReservation() {
+        String password = "password123$";
+        LocalDate arrival = LocalDate.parse("2022-11-01");
+        LocalDate departure = LocalDate.parse("2022-11-15");
+        LocalDate newDeparture = LocalDate.parse("2022-11-18");
+
+        // find available rooms
+        List<Room> rooms = appController.searchRooms(arrival, departure, 2, Bed.QUEEN, false);
+        if (rooms.size() == 0) {
+            Assertions.fail("No rooms found");
+            return;
+        }
+
+        // act like they've logged in
+        Session session = appController.logIn("uc01_guest", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        User user = session.getUser();
+        assertTrue(null != user);
+
+        // create a reservation
+        Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
+        assertTrue(null != reservation);
+
+        reservation.setCheckout(newDeparture);
+        Response response = appController.modifyReservation(reservation);
+        assertTrue(response == Response.SUCCESS);
+
+        reservation = appController.getReservationByReservationId(reservation.getReservationId());
+        assertTrue(reservation.getDeparture().isEqual(newDeparture));
+
+        appController.logOut(sessionId);
+    }
+
 }
