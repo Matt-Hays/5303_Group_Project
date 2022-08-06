@@ -89,6 +89,11 @@ class Hr2sTests {
         }
     }
 
+    /**
+     * test registration of a user
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     @Order(3)
     void registerUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -98,7 +103,7 @@ class Hr2sTests {
     }
 
     /**
-     * creation of a clerk
+     * test creation of a clerk
      */
     @Test
     @Order(4)
@@ -108,6 +113,11 @@ class Hr2sTests {
         assertTrue(user.getAccountType() == Account.CLERK);
     }
 
+    /**
+     * test modification of a user
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     @Order(5)
     void modifyUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -128,6 +138,9 @@ class Hr2sTests {
         appController.logOut(session.getId());
     }
 
+    /**
+     * test getting available rooms
+     */
     @Test
     @Order(6)
     void getAvailableRooms() {
@@ -137,6 +150,11 @@ class Hr2sTests {
         assertTrue(rooms.size() > 0);
     }
 
+    /**
+     * more comprehensive test covering UC01 - Make a reservation
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     @Order(7)
     void UC01() throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -182,6 +200,11 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test checking in and checking out
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     @Order(8)
     void checkInOut() throws NoSuchAlgorithmException, InvalidKeySpecException  {
@@ -222,6 +245,11 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test canceling a reservation
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     @Order(9)
     void cancelReservation() throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -259,6 +287,9 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test modifying a reservation
+     */
     @Test
     @Order(10)
     void modifyReservation() {
@@ -296,6 +327,9 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test retrieving a room
+     */
     @Test
     @Order(11)
     void getRoom() {
@@ -314,6 +348,9 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test creating a new room
+     */
     @Test
     @Order(12)
     void insertRoom() {
@@ -339,6 +376,9 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test modification of a room
+     */
     @Test
     @Order(13)
     void modifyRoom() {
@@ -371,6 +411,9 @@ class Hr2sTests {
         appController.logOut(sessionId);
     }
 
+    /**
+     * test deleting a room
+     */
     @Test
     @Order(14)
     void deleteRoom() {
