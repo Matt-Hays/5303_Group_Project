@@ -173,7 +173,7 @@ class Hr2sTests {
 
         assertTrue(found);
 
-        // TODO: how can I check sucess
+        // TODO: how can I check success
         appController.logOut(sessionId);
     }
 
@@ -213,5 +213,45 @@ class Hr2sTests {
         // check if db indicates complete
         reservation = appController.getReservationByReservationId(reservation.getReservationId());
         assertTrue(reservation.getStatus() == ReservationStatus.COMPLETE);
+
+        appController.logOut(sessionId);
+    }
+
+    @Test
+    @Order(9)
+    void cancelReservation() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String password = "password123$";
+        LocalDate arrival = LocalDate.parse("2022-10-01");
+        LocalDate departure = LocalDate.parse("2022-10-15");
+
+        // find available rooms
+        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure, Bed.QUEEN, 2, false);
+        if (rooms.size() == 0) {
+            Assertions.fail("No rooms found");
+            return;
+        }
+
+        // act like they've logged in
+        Session session = appController.logIn("uc01_guest", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        User user = session.getUser();
+        assertTrue(null != user);
+
+        // create a reservation
+        Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
+        assertTrue(null != reservation);
+
+        // checkin
+        Response response = appController.cancelReservation(reservation);
+        assertTrue(response == Response.SUCCESS);
+
+
+        // check if db indicates checkedin
+        reservation = appController.getReservationByReservationId(reservation.getReservationId());
+        assertTrue(reservation.getStatus() == ReservationStatus.CANCELLED);
+
+        appController.logOut(sessionId);
     }
 }
