@@ -19,6 +19,6 @@ public interface InvoiceDao {
     public Response updateInvoice(Invoice invoice);
 
 
-    // deleteInvoice
-    public Response deleteInvoice(Invoice invoice);
+    // invoice will be deleted when reservation is deleted
+//    public Response deleteInvoice(Invoice invoice);
 }

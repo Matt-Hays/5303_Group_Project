@@ -3,10 +3,13 @@ package hotel.reservations;
 import hotel.reservations.controller.AppController;
 import hotel.reservations.controller.AppControllerImpl;
 import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
+import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.*;
 import hotel.reservations.persistence.DatabaseImpl;
+import hotel.reservations.persistence.Response;
 import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
 import hotel.reservations.persistence.dao.impls.RoomDaoImpl;
 import hotel.reservations.persistence.dao.impls.UserDaoImpl;
@@ -20,7 +23,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -84,7 +90,6 @@ class Hr2sTests {
     @Order(2)
     void getAdminUser() {
         User user = ud.getUserByUsername("admin");
-        System.out.println(user);
         assertTrue(null != user);
         if (null != user) {
             assertTrue(user.getAccountType() == Account.ADMIN);
@@ -146,26 +151,107 @@ class Hr2sTests {
                 "1234 Something Street", "MyState", "12345");
 
         // act like they've logged in
-        appController.logIn("uc01_guest", password.toCharArray());
-
-        // I don't have access to the private sessionDAO to be able to validate login
-        User user = ud.getUserByUsername("uc01_guest");
+        Session session = appController.logIn("uc01_guest", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
 
         // create a reservation
-        appController.createReservation(user, rooms.get(0), arrival, departure);
+        User user = session.getUser();
+        assertTrue(null != user);
+        Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
+        assertTrue(null != reservation);
 
         // check the db to see if the reservation was successful
-        ArrayList<Reservation> reservations = reservationDAO.findReservations(user.getUserId());
+        List<Reservation> reservations = appController.getReservationByUserId(user.getUserId());
         Boolean found = false;
-        for(Reservation reservation: reservations) {
-            if (reservation.getArrival().isEqual(arrival) && reservation.getDeparture().isEqual(departure)) {
+        for(Reservation r: reservations) {
+            if (0 == reservation.getReservationId().toString().compareTo(r.getReservationId().toString())) {
                 found = true;
                 break;
             }
         }
 
         assertTrue(found);
+
+        // TODO: how can I check success
+        appController.logOut(sessionId);
     }
 
-    
+    @Test
+    @Order(8)
+    void checkin() throws NoSuchAlgorithmException, InvalidKeySpecException  {
+        String password = "password123$";
+
+        // act like they've logged in
+        Session session = appController.logIn("uc01_guest", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        User user = session.getUser();
+        assertTrue(null != user);
+
+        // get reservations
+        List<Reservation> reservations = appController.getReservationByUserId(user.getUserId());
+        assertFalse(reservations.isEmpty());
+
+        // choose the first reservation
+        Reservation reservation = reservations.get(0);
+        assertTrue(null != reservation);
+
+        // checkin
+        Response response = appController.checkIn(reservation);
+        assertTrue(response == Response.SUCCESS);
+
+        // check if db indicates checkedin
+        reservation = appController.getReservationByReservationId(reservation.getReservationId());
+        assertTrue(reservation.getStatus() == ReservationStatus.CHECKEDIN);
+
+        // checkout
+        response = appController.checkOut(reservation);
+        assertTrue(response == Response.SUCCESS);
+
+        // check if db indicates complete
+        reservation = appController.getReservationByReservationId(reservation.getReservationId());
+        assertTrue(reservation.getStatus() == ReservationStatus.COMPLETE);
+
+        appController.logOut(sessionId);
+    }
+
+    @Test
+    @Order(9)
+    void cancelReservation() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String password = "password123$";
+        LocalDate arrival = LocalDate.parse("2022-10-01");
+        LocalDate departure = LocalDate.parse("2022-10-15");
+
+        // find available rooms
+        ArrayList<Room> rooms = roomDAO.filterRooms(arrival, departure, Bed.QUEEN, 2, false);
+        if (rooms.size() == 0) {
+            Assertions.fail("No rooms found");
+            return;
+        }
+
+        // act like they've logged in
+        Session session = appController.logIn("uc01_guest", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        User user = session.getUser();
+        assertTrue(null != user);
+
+        // create a reservation
+        Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
+        assertTrue(null != reservation);
+
+        // checkin
+        Response response = appController.cancelReservation(reservation);
+        assertTrue(response == Response.SUCCESS);
+
+
+        // check if db indicates checkedin
+        reservation = appController.getReservationByReservationId(reservation.getReservationId());
+        assertTrue(reservation.getStatus() == ReservationStatus.CANCELLED);
+
+        appController.logOut(sessionId);
+    }
 }

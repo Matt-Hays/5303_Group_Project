@@ -1,23 +1,24 @@
 package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Reservation;
+import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.session.Session;
 import hotel.reservations.persistence.DatabaseImpl;
-import hotel.reservations.persistence.dao.SessionDao;
+import hotel.reservations.persistence.Response;
+import hotel.reservations.persistence.dao.*;
 import hotel.reservations.persistence.dao.impls.SessionDaoImpl;
 import hotel.reservations.models.user.Account;
 import hotel.reservations.models.user.User;
+import hotel.reservations.services.ReservationService;
 import hotel.reservations.services.SearchService;
 import hotel.reservations.services.UserService;
+import hotel.reservations.services.impls.ReservationServiceImpl;
 import hotel.reservations.services.impls.SearchServiceImpl;
 import hotel.reservations.services.impls.UserServiceImpl;
-import hotel.reservations.persistence.dao.ReservationDao;
 import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
-import hotel.reservations.persistence.dao.RoomDao;
 import hotel.reservations.persistence.dao.impls.RoomDaoImpl;
-import hotel.reservations.persistence.dao.UserDao;
 import hotel.reservations.persistence.dao.impls.UserDaoImpl;
 import hotel.reservations.views.frame.Frame;
 
@@ -29,11 +30,12 @@ public class AppControllerImpl implements AppController{
     private Frame guiHandler;
     private SessionDao sessionDAO;
     private UserDao userDAO;
-    private ReservationDao reservationDAO;
+    private ReservationDaoImpl reservationDAO;
     private RoomDao roomDAO;
 
     private final UserService userService;
     private final SearchService searchService;
+    private final ReservationService reservationService;
 
 
     public AppControllerImpl(DatabaseImpl db){
@@ -49,6 +51,7 @@ public class AppControllerImpl implements AppController{
 
         this.userService = new UserServiceImpl(this.userDAO, this.sessionDAO);
         this.searchService  = new SearchServiceImpl(this.roomDAO);
+        this.reservationService = new ReservationServiceImpl(this.reservationDAO);
     }
 
     /**                       *
@@ -114,34 +117,39 @@ public class AppControllerImpl implements AppController{
         return reservationDAO.findReservations(id);
     }
 
+    @Override
+    public Reservation getReservationByReservationId(UUID id) {
+        return reservationDAO.findReservation(id);
+    }
+
 //    @Override
 //    public void addViewsHandler(GuiHandler guiHandler){
 //        this.guiHandler = guiHandler;
 //    }
 
     @Override
-    public void createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
-        reservationDAO.createReservation(guest, room, arrival, departure);
+    public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
+        return reservationDAO.createReservation(guest, room, arrival, departure);
     }
 
     @Override
-    public void cancelReservation(Reservation reservation) {
-        reservationDAO.cancelReservation(reservation);
+    public Response cancelReservation(Reservation reservation) {
+        return reservationDAO.cancelReservation(reservation);
     }
 
     @Override
-    public void modifyReservation(Reservation modifiedReservation) {
-        reservationDAO.updateReservation(modifiedReservation);
+    public Response modifyReservation(Reservation modifiedReservation) {
+        return reservationDAO.updateReservation(modifiedReservation);
     }
 
     @Override
-    public void checkIn(Reservation reservation) {
-
+    public Response checkIn(Reservation reservation) {
+        return reservationService.checkIn(reservation);
     }
 
     @Override
-    public void checkOut(Reservation reservation) {
-
+    public Response checkOut(Reservation reservation) {
+        return reservationService.checkOut(reservation);
     }
 
     /**

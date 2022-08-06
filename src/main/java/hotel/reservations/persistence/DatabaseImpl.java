@@ -239,8 +239,13 @@ public class DatabaseImpl implements Database {
 
 	/**
 	 * Updates a room
-	 * @param room a room
-	 * @return Response - Success or Fail
+	 * @param roomId
+	 * @param bedType
+	 * @param numBeds
+	 * @param smoking
+	 * @param occupied
+	 * @param nightly_rate
+	 * @return
 	 */
 	public Response updateRoom (int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate) {
 		try {
@@ -323,9 +328,16 @@ public class DatabaseImpl implements Database {
 	}
 
 	/**
-	 * Inserts a new reservation into the Database
-	 * @param r
-	 * @return Response - Success or Fail
+	 * Inserts a new reservation
+	 * @param reservationId
+	 * @param customerId
+	 * @param invoiceId
+	 * @param roomId
+	 * @param createdAt
+	 * @param arrival
+	 * @param departure
+	 * @param status
+	 * @return Response - Success ro Fail
 	 */
 	public Response insertReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
 			LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
@@ -343,11 +355,9 @@ public class DatabaseImpl implements Database {
 			ps.setString(8, status.name());
 
 			// Execute the query
-			if (ps.executeUpdate() > 0) {
-				return Response.FAILURE;
+			if (ps.executeUpdate() == 1) {
+				return Response.SUCCESS;
 			}
-
-			return Response.SUCCESS;
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -375,8 +385,9 @@ public class DatabaseImpl implements Database {
 
 
 			// Execute the query
-			ps.executeUpdate();
-			return Response.SUCCESS;
+			if (ps.executeUpdate() == 1) {
+				return Response.SUCCESS;
+			}
 
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
@@ -500,7 +511,15 @@ public class DatabaseImpl implements Database {
 
 	/**
 	 * Updates a reservation
-	 * @param r a reservation object
+	 * @param reservationId
+	 * @param customerId
+	 * @param invoiceId
+	 * @param roomId
+	 * @param createdAt
+	 * @param arrival
+	 * @param departure
+	 * @param status
+	 * @return
 	 */
 	public Response updateReservation(UUID reservationId, UUID customerId, UUID invoiceId, int roomId,
 	LocalDate createdAt, LocalDate arrival, LocalDate departure, ReservationStatus status) {
@@ -531,9 +550,10 @@ public class DatabaseImpl implements Database {
 	}
 
 	/**
-	 * Delete a reservation from the database (invoice table and reservation table)
-	 * @param r the reservation id
-	 * @return success or fail
+	 * Deletes a Reservation
+	 * @param reservationId
+	 * @param invoiceId
+	 * @return
 	 */
 	public Response deleteReservation(UUID reservationId, UUID invoiceId) {
 		try {
@@ -565,6 +585,7 @@ public class DatabaseImpl implements Database {
 
 		return Response.FAILURE;
 	}
+
 	/**
 	 * Retrieves a list of reservations that overlap with the requested arrival and departure dates
 	 * @param arrival start date

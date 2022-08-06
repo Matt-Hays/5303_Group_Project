@@ -116,6 +116,10 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
 
     @Override
     public Response cancelReservation(Reservation reservation) {
+        if (reservation.getStatus() != ReservationStatus.AWAITING) {
+            return Response.FAILURE;
+        }
+
         reservation.setStatus(ReservationStatus.CANCELLED);
         System.out.println("Reservation cancel called!");
         return db.updateReservation(reservation.getReservationId(), reservation.getCustomerId(),
@@ -136,7 +140,7 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
 
     @Override
     public Invoice getInvoice(UUID invoiceId) {
-        return null;
+        return db.getInvoice(invoiceId);
     }
 
     @Override
@@ -146,13 +150,13 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
 
     @Override
     public Response updateInvoice(Invoice invoice) {
-        return null;
+        return db.updateInvoice(invoice);
     }
 
-    @Override
-    public Response deleteInvoice(Invoice invoice) {
-        return null;
-    }
+//    @Override
+//    public Response deleteInvoice(Invoice invoice) {
+//        return null;
+//    }
 
     @Override
     public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {

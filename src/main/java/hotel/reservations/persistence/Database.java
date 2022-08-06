@@ -45,4 +45,6 @@ public interface Database {
     public Response insertInvoice(Invoice i);
     public Invoice getInvoice(UUID invoiceId);
     public Response updateInvoice(Invoice i);
+    // gets deleted when a reservation is deleted
+//    public Response deleteInvoice(UUID invoiceId);
 }
