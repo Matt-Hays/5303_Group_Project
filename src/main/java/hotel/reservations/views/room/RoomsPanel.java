@@ -89,6 +89,7 @@ public class RoomsPanel extends ThemedPanel {
                 // Get the Room from the room id
                 for(Room room : roomCache){
                     if(String.valueOf(room.getRoomId()).equals(roomId)){
+                        getFrame().getRoomPanel().loggedInDisplay();
                         getFrame().getRoomPanel().setRoom(room, arrival, departure);
                         break;
                     }
