@@ -19,22 +19,22 @@ public interface AppController {
      *                        */
     // Use Case 10
     public Session logIn(String username, char[] password);
-    public void logOut(UUID sessionId);
+    public Response logOut(UUID sessionId);
 
     // Use Case 11
     public Session registerUser(String username, char[] password, String firstName, String lastName, String address,
                              String state, String zipCode);
 
     // Use Case 14
-    public void resetPassword(String username, char[] oldPassword, char[] newPassword);
-    public void resetGuestPassword(UUID sessionId, String username);
+    public Response resetPassword(String username, char[] oldPassword, char[] newPassword);
+    public Response resetGuestPassword(UUID sessionId, String username);
 
     // Use Case 15
     public User modifyUser(UUID sessionId, String newUsername, String firstName, String lastName, String address, String state,
                            String zipCode, boolean active);
 
     // Use Case 16
-    public void createClerk(String username, String firstName, String lastName, String address, String state,
+    public Response createClerk(String username, String firstName, String lastName, String address, String state,
                             String zipCode);
 
     /**
@@ -96,5 +96,5 @@ public interface AppController {
     public Response updateRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
 
     // Use Case 17
-    public void payInvoice(Reservation reservation);
+    public Response payInvoice(Reservation reservation);
 }

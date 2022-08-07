@@ -2,6 +2,7 @@ package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.User;
+import hotel.reservations.persistence.Response;
 import hotel.reservations.persistence.dao.SessionDao;
 
 import java.util.ArrayList;
@@ -48,23 +49,27 @@ public class SessionDaoImpl implements SessionDao {
     }
 
     @Override
-    public void updateSessionUser(User user){
+    public Response updateSessionUser(User user){
         Iterator<Session> itr = sessions.iterator();
         while(itr.hasNext()){
             Session temp = itr.next();
             if(temp.getUser().getUserId().equals(user.getUserId())){
                 temp.setUser(user);
+                return Response.SUCCESS;
             }
         }
+        return Response.FAILURE;
     }
 
     @Override
-    public void destroySessionById(UUID sessionId) {
+    public Response destroySessionById(UUID sessionId) {
         Iterator<Session> itr = sessions.iterator();
         while(itr.hasNext()){
             if(itr.next().getId().equals(sessionId)){
                 itr.remove();
+                return Response.SUCCESS;
             }
         }
+        return Response.FAILURE;
     }
 }

@@ -69,13 +69,13 @@ public class AppControllerImpl implements AppController{
     }
 
     @Override
-    public void logOut(UUID id){
-        userService.logout(id);
+    public Response logOut(UUID id){
+        return userService.logout(id);
     }
 
     @Override
-    public void resetPassword(String username, char[] oldPassword, char[] newPassword) {
-        userService.updatePassword(username, oldPassword, newPassword);
+    public Response resetPassword(String username, char[] oldPassword, char[] newPassword) {
+        return userService.updatePassword(username, oldPassword, newPassword);
     }
 
     @Override
@@ -85,9 +85,9 @@ public class AppControllerImpl implements AppController{
     }
 
     @Override
-    public void createClerk(String username, String firstName, String lastName, String street, String state,
+    public Response createClerk(String username, String firstName, String lastName, String street, String state,
                             String zipCode) {
-        userService.createClerk(username, firstName, lastName, street, state, zipCode);
+        return userService.createClerk(username, firstName, lastName, street, state, zipCode);
     }
 
     @Override
@@ -96,8 +96,8 @@ public class AppControllerImpl implements AppController{
     }
 
     @Override
-    public void resetGuestPassword(UUID sessionId, String username){
-        userService.resetGuestPassword(sessionId, username);
+    public Response resetGuestPassword(UUID sessionId, String username){
+        return userService.resetGuestPassword(sessionId, username);
     }
 
     /**                              *
@@ -188,7 +188,7 @@ public class AppControllerImpl implements AppController{
     }
 
     @Override
-    public void payInvoice(Reservation reservation) {
-
+    public Response payInvoice(Reservation reservation) {
+        return Response.FAILURE;
     }
 }
