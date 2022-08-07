@@ -1,3 +1,9 @@
+/**
+ * @file ReportService.java
+ * @author Christian Haddad
+ * @brief Provides and interface to interact with reporting requests.
+ */
+
 package hotel.reservations.services;
 
 import hotel.reservations.models.reservation.Invoice;
