@@ -3,18 +3,21 @@ package hotel.reservations.services.impls;
 import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.reservation.ReservationStatus;
+import hotel.reservations.models.room.Room;
+import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.Response;
 import hotel.reservations.persistence.dao.ReservationDao;
 import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
 import hotel.reservations.services.ReservationService;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 public class ReservationServiceImpl implements ReservationService {
-    ReservationDaoImpl reservationDao = null;
+    ReservationDao reservationDao = null;
 
-    public ReservationServiceImpl(ReservationDaoImpl reservationDao) {
+    public ReservationServiceImpl(ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
     }
 
@@ -50,5 +53,30 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         return reservationDao.updateReservation(reservation);
+    }
+
+    @Override
+    public List<Reservation> findReservationByUserId(UUID id) {
+        return reservationDao.findReservations(id);
+    }
+
+    @Override
+    public Reservation findReservationByReservationId(UUID id) {
+        return reservationDao.findReservation(id);
+    }
+
+    @Override
+    public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
+        return reservationDao.createReservation(guest, room, arrival, departure);
+    }
+
+    @Override
+    public Response cancelReservation(Reservation reservation) {
+        return reservationDao.cancelReservation(reservation);
+    }
+
+    @Override
+    public Response modifyReservation(Reservation modifiedReservation) {
+        return reservationDao.updateReservation(modifiedReservation);
     }
 }

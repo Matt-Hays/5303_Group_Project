@@ -30,4 +30,6 @@ public interface UserService  {
     // Delete a User
     public void deleteUser(User user);
     public void deleteUserById(UUID id);
+
+    public User getUserByUsername(String username);
 }
