@@ -81,5 +81,6 @@ public interface AppController {
      *                                      */
 
     // Use Case 17
+    public Response generateInvoice(double roomRate, long stayLength);
     public Response payInvoice(Reservation reservation);
 }

@@ -193,6 +193,10 @@ public class AppControllerImpl implements AppController{
      *                                      */
 
     @Override
+    public Response generateInvoice(double roomRate, long stayLength)  {
+        return reservationService.modifyReservation(modifiedReservation);
+    }
+    @Override
     public Response payInvoice(Reservation reservation) {
         return Response.FAILURE;
     }

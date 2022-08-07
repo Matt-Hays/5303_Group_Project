@@ -2,6 +2,7 @@ package hotel.reservations;
 
 import hotel.reservations.controller.AppController;
 import hotel.reservations.controller.AppControllerImpl;
+import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -503,5 +505,45 @@ class Hr2sTests {
 
         response = appController.logOut(session.getId());
         assertTrue(response == Response.SUCCESS);
+    }
+
+    /**
+     * test generating an invoice
+     */
+    @Test
+    @Order(16)
+    void generateInvoice() {
+        String password = "password123$";
+        LocalDate arrival = LocalDate.parse("2022-10-01");
+        LocalDate departure = LocalDate.parse("2022-10-15");
+
+        // find available rooms
+        List<Room> rooms = appController.searchRooms(arrival, departure, 2, Bed.QUEEN, false);
+        if (rooms.size() == 0) {
+            Assertions.fail("No rooms found");
+            return;
+        }
+
+        // act like they've logged in
+        Session session = appController.logIn("clerk1", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        User user = session.getUser();
+        assertTrue(null != user);
+
+        // create a reservation
+        Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
+        assertTrue(null != reservation);
+
+        // get roomRate
+        long stayLength = DAYS.between(arrival, departure);
+        Room room = rooms.get(0);
+        double roomRate = room.getNightlyRate();
+
+        // generate an invoice for the created reservation
+        Response response = appController.generateInvoice(roomRate, stayLength);
+        assertTrue(response == Response.SUCCESS);
+
     }
 }
