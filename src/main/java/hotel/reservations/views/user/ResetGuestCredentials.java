@@ -25,6 +25,10 @@ public class ResetGuestCredentials extends ThemedPanel {
     private RoundedTextField guestUsernameField;
     private RoundedButton btnResetPassword, btnBack;
 
+    /**
+     * Attach the Frame.java dependency and configure panel components.
+     * @param frame
+     */
     public ResetGuestCredentials(Frame frame) {
         this.frame = frame;
 
@@ -50,6 +54,9 @@ public class ResetGuestCredentials extends ThemedPanel {
         fillLayout();
     }
 
+    /**
+     * Layout and place components on the panel.
+     */
     private void fillLayout(){
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gbc.gridy = 0;

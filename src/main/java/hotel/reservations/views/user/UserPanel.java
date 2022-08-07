@@ -37,6 +37,10 @@ public class UserPanel extends ThemedPanel {
     private boolean hasPreviousMessage, isClerkMode;
     private GridBagConstraints gbc = new GridBagConstraints();
 
+    /**
+     * Attach the Frame.java dependency and configure page components.
+     * @param frame Frame.java interface
+     */
     public UserPanel(Frame frame) {
         this.frame = frame;
 
@@ -183,6 +187,9 @@ public class UserPanel extends ThemedPanel {
         isClerkMode = true;
     }
 
+    /**
+     * Clear the user state : Clerk : mode
+     */
     private void clearClerkMode(){
         remove(clerkOldPwField);
         remove(clerkNewPwField);
