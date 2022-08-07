@@ -1,3 +1,11 @@
+/**
+ * @file UserPanel.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that provides a reusable display
+ *        for any domain object implementing the User.java interface.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.user;
 
 import hotel.reservations.models.reservation.Reservation;
@@ -15,7 +23,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * The User Page.
