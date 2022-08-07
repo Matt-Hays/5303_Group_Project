@@ -76,17 +76,19 @@ public class RoomPanel extends ThemedPanel {
                 if(getFrame().getSession() != null){
                     sessionUser = getFrame().getSession().getUser();
 
-                    if (sessionUser.getAccountType() == Account.CLERK) {
-                        String username = guestUsernameField.getText();
-                        sessionUser = getFrame().getAppController().getUser(username);
-                        if (null == sessionUser) {
-                            displayMessage("Invalid username!", "red");
-                            return;
-                        }
+                    Reservation res;
+                    switch(sessionUser.getAccountType()){
+                        case CLERK:
+                            String username = guestUsernameField.getText();
+                            if (username.isEmpty()) return;
+                            res = getFrame().getAppController().clerkCreateReservation(username, roomCache, arrival, departure);
+                            break;
+                        default:
+                            res = getFrame().getAppController().createReservation(sessionUser, roomCache, arrival, departure);
+                            break;
                     }
 
-                    Reservation reservation = getFrame().getAppController().createReservation(sessionUser, roomCache, arrival, departure);
-                    if (null != reservation) {
+                    if (res != null) {
                         clearClerkMode();
                         getFrame().getHomePanel().displayMessage("Reservation Successfully created!", "green");
                         getFrame().changeScreen("home");

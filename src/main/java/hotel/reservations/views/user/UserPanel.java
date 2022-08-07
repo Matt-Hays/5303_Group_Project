@@ -91,8 +91,8 @@ public class UserPanel extends ThemedPanel {
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
                 if(isClerkMode) clearClerkMode();
-                UUID userId = getFrame().getSession().getUser().getUserId();
-                List<Reservation> reservations = getFrame().getAppController().getReservationByUserId(userId);
+                String username = getFrame().getSession().getUser().getUsername();
+                List<Reservation> reservations = getFrame().getAppController().getReservationByUsername(username);
                 getFrame().getReservationsPanel().fillLayout(reservations);
                 getFrame().changeScreen("reservations");
             }

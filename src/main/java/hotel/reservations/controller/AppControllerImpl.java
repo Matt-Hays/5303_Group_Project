@@ -25,7 +25,6 @@ import hotel.reservations.services.impls.ReportServiceImpl;
 import hotel.reservations.services.impls.ReservationServiceImpl;
 import hotel.reservations.services.impls.RoomServiceImpl;
 import hotel.reservations.services.impls.UserServiceImpl;
-import hotel.reservations.views.frame.Frame;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -49,7 +48,7 @@ public class AppControllerImpl implements AppController{
          */
         this.userService = new UserServiceImpl(userDao, sessionDao);
         this.roomService = new RoomServiceImpl(roomDao);
-        this.reservationService = new ReservationServiceImpl(reservationDao);
+        this.reservationService = new ReservationServiceImpl(reservationDao, userDao);
         this.reportService = new ReportServiceImpl(reservationDao, userDao);
     }
 
@@ -153,8 +152,8 @@ public class AppControllerImpl implements AppController{
      *  Reservation Service Endpoints   *
      *                                  */
     @Override
-    public List<Reservation> getReservationByUserId(UUID id){
-        return reservationService.findReservationByUserId(id);
+    public List<Reservation> getReservationByUsername(String username){
+        return reservationService.findReservationByUsername(username);
     }
 
     @Override
@@ -165,6 +164,11 @@ public class AppControllerImpl implements AppController{
     @Override
     public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure) {
         return reservationService.createReservation(guest, room, arrival, departure);
+    }
+
+    @Override
+    public Reservation clerkCreateReservation(String username, Room room, LocalDate arrival, LocalDate departure) {
+        return reservationService.clerkCreateReservation(username, room, arrival, departure);
     }
 
     @Override
@@ -186,6 +190,12 @@ public class AppControllerImpl implements AppController{
     public Response checkOut(Reservation reservation) {
         return reservationService.checkOut(reservation);
     }
+
+    /**                                     *
+     * End of Reservation Service Endpoints *
+     * ------------------------------------ *
+     *   Unimplemented Service Endpoints    *
+     *                                      */
 
     @Override
     public Response payInvoice(Reservation reservation) {
