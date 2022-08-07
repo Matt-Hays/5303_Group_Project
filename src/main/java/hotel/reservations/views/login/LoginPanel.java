@@ -1,3 +1,10 @@
+/**
+ * @file LoginPanel.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that is provided the login workflow.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.login;
 
 import hotel.reservations.models.session.Session;
