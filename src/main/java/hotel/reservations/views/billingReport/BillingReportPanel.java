@@ -118,6 +118,7 @@ public class BillingReportPanel extends ThemedPanel {
         gbc.insets = new Insets(0, 16, 0, 16);
         scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + "Subtotal: "+ inv.getSubtotal() + "</p></html>"), gbc);
         gbc.gridx = 0;
+        gbc.gridy++;
         RoundedButton tempBtn = new RoundedButton("View Invoice");
         tempBtn.setActionCommand(String.valueOf(inv.getInvoiceId()));
         tempBtn.addActionListener(new ActionListener() {
@@ -135,6 +136,7 @@ public class BillingReportPanel extends ThemedPanel {
                 getFrame().changeScreen("billing-report");
             }
         });
+        scrollPanel.add(tempBtn, gbc);
     }
 
     public Frame getFrame() {
