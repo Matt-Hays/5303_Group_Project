@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.UUID;
 
 public class ClerkPanel extends ThemedPanel {
     private final Frame frame;
@@ -53,6 +54,16 @@ public class ClerkPanel extends ThemedPanel {
                 List<Room> rooms = getFrame().getAppController().getRooms();
                 getFrame().getStatusReportPanel().fillLayout(rooms);
                 getFrame().changeScreen("status-report");
+            }
+        });
+
+        btnCheckInOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UUID guestId = getFrame().getAppController().getUser(getUsernameField()).getUserId();
+                List<Reservation> reservations = getFrame().getAppController().getReservationByUserId(guestId);
+                getFrame().getReservationsPanel().fillLayout(reservations);
+                getFrame().changeScreen("reservations");
             }
         });
 

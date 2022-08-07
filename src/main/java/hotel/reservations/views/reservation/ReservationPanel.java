@@ -3,6 +3,7 @@ package hotel.reservations.views.reservation;
 import com.github.lgooddatepicker.components.DatePicker;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.reservation.ReservationStatus;
+import hotel.reservations.models.user.Account;
 import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.RoundedTextField;
@@ -20,8 +21,10 @@ public class ReservationPanel extends ThemedPanel {
     private JLabel reservationIdLabel, customerIdLabel, roomNumberLabel, arrivalLabel, departureLabel, statusLabel;
     private DatePicker arrivalField, departureField;
     private RoundedTextField roomNumberField, statusField;
-    private RoundedButton btnBack, btnUpdate, btnCancel;
+    private RoundedButton btnBack, btnUpdate, btnCancel, btnCheckIn, btnCheckOut;
     private Reservation reservationCache;
+    private GridBagConstraints gbc = new GridBagConstraints();
+
 
     public ReservationPanel(Frame frame) {
         this.frame = frame;
@@ -56,6 +59,8 @@ public class ReservationPanel extends ThemedPanel {
         btnUpdate = new RoundedButton("Update Reservation");
         btnCancel = new RoundedButton("Cancel Reservation");
         btnBack = new RoundedButton("Back");
+        btnCheckIn = new RoundedButton("Check-In");
+        btnCheckOut = new RoundedButton("Check-Out");
 
         btnUpdate.addActionListener(new ActionListener() {
             @Override
@@ -90,8 +95,27 @@ public class ReservationPanel extends ThemedPanel {
             }
         });
 
+        btnCheckIn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().getAppController().checkIn(reservation);
+                getFrame().getHomePanel().displayMessage("Guest Checked-In", "green");
+                getFrame().changeScreen("home");
+                clearLayout();
+            }
+        });
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        btnCheckOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().getAppController().checkOut(reservation);
+                getFrame().getHomePanel().displayMessage("Guest Checked-Out", "yellow");
+                getFrame().changeScreen("home");
+                clearLayout();
+            }
+        });
+
+
         gbc.gridx = gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridwidth = 2;
@@ -125,11 +149,28 @@ public class ReservationPanel extends ThemedPanel {
         gbc.gridx++;
         add(btnBack, gbc);
 
+        if(reservation.getStatus().equals(ReservationStatus.AWAITING) && getFrame().getSession().getUser().getAccountType().equals(Account.CLERK))
+            displayClerkView(btnCheckIn);
+        else if(reservation.getStatus().equals(ReservationStatus.CHECKEDIN) && getFrame().getSession().getUser().getAccountType().equals(Account.CLERK))
+            displayClerkView(btnCheckOut);
+
         revalidate();
         repaint();
     }
 
-    public Frame getFrame() {
+    private void clearClerkDisplay(){
+        remove(getComponentCount() - 1);
+        revalidate();
+        repaint();
+    }
+
+    private void displayClerkView(RoundedButton btn){
+        gbc.gridy++;
+        gbc.gridx = 1;
+        add(btn, gbc);
+    }
+
+    private Frame getFrame() {
         return frame;
     }
 
