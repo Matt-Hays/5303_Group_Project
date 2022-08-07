@@ -1,5 +1,5 @@
 /**
- * @file CreateRoomPanel.java
+ * @file RoomManagementPanel.java
  * @author Sarah Smallwood
  * @brief The custom page *JPanel* that provides the Clerk access to their
  *        Room Management workflow.
