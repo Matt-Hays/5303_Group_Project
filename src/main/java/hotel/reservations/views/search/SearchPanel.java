@@ -1,3 +1,11 @@
+/**
+ * @file SearchPanel.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that provides access to the
+ *        Search Rooms workflow.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.search;
 
 import com.github.lgooddatepicker.components.DatePicker;
@@ -22,6 +30,10 @@ public class SearchPanel extends ThemedPanel {
     private RoundedTextField smokingField, numBedsField, bedTypeField, occupiedField, rateField;
     private RoundedButton btnSearch, btnBack;
 
+    /**
+     * Attach the Frame.java dependency and generate the page layout.
+     * @param frame Frame.java interface.
+     */
     public SearchPanel(Frame frame){
         setFrame(frame);
 
@@ -85,6 +97,9 @@ public class SearchPanel extends ThemedPanel {
         return frame;
     }
 
+    /**
+     * Populate the layout with panel components.
+     */
     private void fillLayout(){
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gbc.gridy = 0;
