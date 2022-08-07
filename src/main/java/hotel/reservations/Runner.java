@@ -12,17 +12,17 @@ public class Runner {
     public static void main(String[] args) throws NoSuchMethodException {
         // Persistence Layer
         DatabaseImpl db = new DatabaseImpl();
+        // Application Layer Controller
+        AppController applicationController = new AppControllerImpl(db);
 
         // Views Layer
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                // Application Layer Controller
-                AppController applicationController = new AppControllerImpl(db);
+
                 // Views Layer Controller
                 Frame guiHandler = new FrameImpl(applicationController);
                 // Associate Views with the ApplicationController
-                applicationController.addViewsHandler(guiHandler);
             }
         });
     }

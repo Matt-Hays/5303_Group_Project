@@ -37,6 +37,11 @@ public interface AppController {
     public void createClerk(String username, String firstName, String lastName, String address, String state,
                             String zipCode);
 
+    /**
+     * This needs to be moved to the service layer.
+     */
+    public User getUser(String username);
+
     /**                              *
      * End of User Service Endpoints *
      * ----------------------------- *
@@ -66,7 +71,6 @@ public interface AppController {
      */
     // Use Case 01
     public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure);
-    public User getUser(String username);
 
     // Use Case 02
     public Response cancelReservation(Reservation reservation);
@@ -80,9 +84,6 @@ public interface AppController {
     // Use Case 05
     public Response checkOut(Reservation reservation);
 
-    // Use Case 06
-    public void viewReport(UUID sessionId);
-
     // Use Case 07
     public Response createRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
 
@@ -94,19 +95,6 @@ public interface AppController {
     // Use Case 09
     public Response updateRoom(int roomId, Bed bedType, int numBeds, boolean smoking, boolean occupied, double nightly_rate);
 
-
-
-    // Use Case 12
-    public void getInvoice(Reservation reservation);
-
-    // Use Case 13
-    public void viewStatus(List<Room> roomReport);
-
-
-
     // Use Case 17
     public void payInvoice(Reservation reservation);
-
-    // Misc. Methods
-    public void addViewsHandler(Frame guiHandler);
 }
