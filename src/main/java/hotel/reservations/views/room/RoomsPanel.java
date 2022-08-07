@@ -1,3 +1,11 @@
+/**
+ * @file RoomsPanel.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that provides a display for a single
+ *        Room domain object.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.room;
 
 import hotel.reservations.models.room.Room;
@@ -20,10 +28,23 @@ public class RoomsPanel extends ThemedPanel {
     private List<Room> roomCache;
     private LocalDate arrival, departure;
 
+    /**
+     * Attach the Frame.java dependency.
+     * @param frame Frame.java interface.
+     */
     public RoomsPanel(Frame frame) {
         this.frame = frame;
     }
 
+    /**
+     * Given a list of rooms, an arrival date, and a departure date, generate a
+     * JScrollPanel to display each Room domain object and track the arrival and departure date
+     * to pass to the room page to allow a user to make a reservation using the dates provided during
+     * their search.
+     * @param rooms List of Room.java domain objects.
+     * @param arrival The desired arrival date. Passed to RoomPanel.
+     * @param departure The desired departure date. Passed to RoomPanel.
+     */
     public void fillLayout(List<Room> rooms, LocalDate arrival, LocalDate departure){
         if(roomCache != null) clearPanel();
         this.roomCache = rooms;
@@ -63,6 +84,12 @@ public class RoomsPanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Given a Room.java domain object and a GridBagConstraints layout object,
+     * add the Room domain object to the Scroll Panel for display.
+     * @param room Room.java domain object.
+     * @param gbc GridBagConstraints layout object.
+     */
     private void insertRoom(Room room, GridBagConstraints gbc){
         System.out.println(room.getRoomId());
         scrollPanel.add(new JLabel("<html><p style='color:black; font-size:16px; font-weight:bold'>" + room.getRoomId() + "</p></html>"), gbc);
@@ -102,6 +129,9 @@ public class RoomsPanel extends ThemedPanel {
         scrollPanel.add(tempBtn, gbc);
     }
 
+    /**
+     * Remove all components to clear the previous state of the panel.
+     */
     private void clearPanel(){
         for(Component comp : getComponents())
             remove(comp);
