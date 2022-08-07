@@ -1,3 +1,11 @@
+/**
+ * @file ReservationsPanel.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that provides a display for a list of
+ *        Reservation domain objects.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.reservation;
 
 import hotel.reservations.models.reservation.Reservation;
@@ -19,12 +27,19 @@ public class ReservationsPanel extends ThemedPanel {
     private RoundedButton btnBack;
     private List<Reservation> reservationsCache;
 
+    /**
+     * Attach the Frame.java dependency and initiate the panel with a "Back" button.
+     * @param frame Frame.java interface.
+     */
     public ReservationsPanel(Frame frame) {
         this.frame = frame;
 
         initDisplay();
     }
 
+    /**
+     * Initiate the panel with a single "Back" button.
+     */
     private void initDisplay(){
         btnBack = new RoundedButton("Back");
 
@@ -41,6 +56,10 @@ public class ReservationsPanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Given a list of Reservation domain objects, layout the panle using the list.
+     * @param reservations List of Reservation.java domain objects.
+     */
     public void fillLayout(List<Reservation> reservations){
         clearLayout();
         if(reservations.isEmpty()) {
@@ -90,6 +109,9 @@ public class ReservationsPanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Clear the panel of all components to remove the previous state of the panel.
+     */
     public void clearLayout(){
         if(getComponents().length > 0){
             for(Component comp : getComponents()){
@@ -98,6 +120,12 @@ public class ReservationsPanel extends ThemedPanel {
         }
     }
 
+    /**
+     * Given a single reservation and the current GridBagConstraints layout object,
+     * add the reservation to the ScrollPanel.
+     * @param res Reservation.java domain object.
+     * @param gbc GridBagConstraints layout object.
+     */
     private void insertReservation(Reservation res, GridBagConstraints gbc){
         scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + res.getReservationId() + "</p></html>"), gbc);
         gbc.gridy++;
