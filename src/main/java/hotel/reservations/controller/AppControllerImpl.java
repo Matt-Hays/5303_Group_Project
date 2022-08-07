@@ -39,12 +39,6 @@ public class AppControllerImpl implements AppController{
 
 
     public AppControllerImpl(DatabaseImpl db){
-//        this.guiHandler = null;
-//        this.sessionDAO = new SessionDaoImpl();
-//        this.userDAO = new UserDaoImpl(db);
-//        this.reservationDAO = new ReservationDaoImpl(db);
-//        this.roomDAO = new RoomDaoImpl(db, reservationDAO);
-
         SessionDao sessionDao = new SessionDaoImpl();
         UserDao userDao = new UserDaoImpl(db);
         ReservationDao reservationDao = new ReservationDaoImpl(db);
@@ -153,11 +147,11 @@ public class AppControllerImpl implements AppController{
         return reportService.getInvoiceList(username);
     }
 
-    /**                              *
-     * End of Room Service Endpoints *
-     * ----------------------------- *
-     * Reservation Service Endpoints *
-     *                               */
+    /**                                 *
+     * End of Invoice Service Endpoints *
+     * -------------------------------- *
+     *  Reservation Service Endpoints   *
+     *                                  */
     @Override
     public List<Reservation> getReservationByUserId(UUID id){
         return reservationService.findReservationByUserId(id);
