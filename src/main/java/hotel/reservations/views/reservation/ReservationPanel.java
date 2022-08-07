@@ -149,25 +149,17 @@ public class ReservationPanel extends ThemedPanel {
         gbc.gridx++;
         add(btnBack, gbc);
 
-        if(reservation.getStatus().equals(ReservationStatus.AWAITING) && getFrame().getSession().getUser().getAccountType().equals(Account.CLERK))
-            displayClerkView(btnCheckIn);
-        else if(reservation.getStatus().equals(ReservationStatus.CHECKEDIN) && getFrame().getSession().getUser().getAccountType().equals(Account.CLERK))
-            displayClerkView(btnCheckOut);
-
-        revalidate();
-        repaint();
-    }
-
-    private void clearClerkDisplay(){
-        remove(getComponentCount() - 1);
-        revalidate();
-        repaint();
-    }
-
-    private void displayClerkView(RoundedButton btn){
-        gbc.gridy++;
         gbc.gridx = 1;
-        add(btn, gbc);
+        gbc.gridy++;
+        if(reservation.getStatus().equals(ReservationStatus.AWAITING) && getFrame().getSession().getUser().getAccountType().equals(Account.CLERK)){
+            add(btnCheckIn, gbc);
+        }
+        else if(reservation.getStatus().equals(ReservationStatus.CHECKEDIN) && getFrame().getSession().getUser().getAccountType().equals(Account.CLERK)){
+            add(btnCheckOut, gbc);
+        }
+
+        revalidate();
+        repaint();
     }
 
     private Frame getFrame() {
