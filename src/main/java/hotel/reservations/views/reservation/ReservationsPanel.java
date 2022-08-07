@@ -2,7 +2,6 @@ package hotel.reservations.views.reservation;
 
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.reservation.ReservationStatus;
-import hotel.reservations.models.room.Room;
 import hotel.reservations.views.frame.Frame;
 import hotel.reservations.views.styles.RoundedButton;
 import hotel.reservations.views.styles.ThemedPanel;
@@ -11,7 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
 import java.util.List;
 
 public class ReservationsPanel extends ThemedPanel {
@@ -73,6 +71,7 @@ public class ReservationsPanel extends ThemedPanel {
             gbc.gridx = 0;
             gbc.insets = new Insets(8, 0, 8, 0);
         }
+
         btnBack = new RoundedButton("Back");
         btnBack.addActionListener(new ActionListener() {
             @Override
@@ -81,6 +80,7 @@ public class ReservationsPanel extends ThemedPanel {
             }
         });
         scrollPanel.add(btnBack);
+
         scrollPane.setViewportView(scrollPanel);
 
         scrollPane.revalidate();
@@ -123,7 +123,6 @@ public class ReservationsPanel extends ThemedPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String resId = e.getActionCommand();
-                System.out.println(resId);
                  // Get the Reservation from the room id
                 for(Reservation res : reservationsCache){
                     if(String.valueOf(res.getReservationId()).equals(resId)){

@@ -117,6 +117,7 @@ public class HomePanel extends ThemedPanel {
     public void loggedOutDisplay(){
         remove(btnLogin);
         if(btnAdmin != null) remove(btnAdmin);
+        if(btnClerk != null) remove(btnClerk);
         btnLogin.setText("Login");
         btnLogin.setPreferredSize(new Dimension(btnLogin.getWidth() - 12, btnLogin.getHeight()));
         gbc.anchor = GridBagConstraints.WEST;
@@ -241,6 +242,10 @@ public class HomePanel extends ThemedPanel {
         this.hasPreviousMessage = false;
         revalidate();
         repaint();
+    }
+
+    private void clearState(){
+
     }
 
     /**
