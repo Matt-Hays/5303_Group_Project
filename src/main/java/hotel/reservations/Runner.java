@@ -2,7 +2,7 @@
  * @file Runner.java
  * @brief The application's starting point and configuration.
  * @author Matthew Hays
- *
+ * @dependencies none
  */
 
 package hotel.reservations;
