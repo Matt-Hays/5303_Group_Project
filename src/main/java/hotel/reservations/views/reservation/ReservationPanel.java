@@ -1,5 +1,5 @@
 /**
- * @file HomePanel.java
+ * @file Reservation.java
  * @author Matthew Hays
  * @brief The custom page *JPanel* that provides a display for a single
  *        Reservation domain object.
