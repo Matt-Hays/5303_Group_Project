@@ -1,3 +1,9 @@
+/**
+ * @file Runner.java
+ * @brief The interface to the GUI JFrame.
+ * @author Matthew Hays
+ */
+
 package hotel.reservations.views.frame;
 
 import hotel.reservations.controller.AppController;

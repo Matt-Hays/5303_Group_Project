@@ -1,3 +1,10 @@
+/**
+ * @file FrameImpl.java
+ * @author Matthew Hays
+ * @brief The User Interface's primary frame *JFrame* implementing object.
+ * @dependencies AppController.java
+ */
+
 package hotel.reservations.views.frame;
 
 import hotel.reservations.controller.AppController;
@@ -31,17 +38,20 @@ public class FrameImpl extends JFrame implements Frame {
     private Session session;
 
     public FrameImpl(AppController appController) {
+        // Inject AppController dependency.
         setApplicationController(appController);
 
         setSize(850, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Hotel Reservations");
 
+        // Set up the JFrame to use a primary JPanel that is injected with differing "cards" **our custom JPanels.
         cardPanel = new JPanel(new CardLayout());
         cardLayout = (CardLayout) cardPanel.getLayout();
 
         /**
          * Create all user interface pages (JPanel) and add them to the frame's card layout.
+         * The index of each card is commented to the right of each entry.
          */
         cardPanel.add(new HomePanel(this), "home"); // 0
         cardPanel.add(new LoginPanel(this), "login"); // 1
@@ -62,8 +72,10 @@ public class FrameImpl extends JFrame implements Frame {
         cardPanel.add(new ModifyRoomPanel(this), "modifyRoom"); // 14
         //cardPanel.add(new DeleteRoomPanel(this), "deleteRoom"); // 15
 
+        // Add our built CardPanel to the JFrame.
         add(cardPanel);
 
+        // Display the JFrame.
         setVisible(true);
     }
 
