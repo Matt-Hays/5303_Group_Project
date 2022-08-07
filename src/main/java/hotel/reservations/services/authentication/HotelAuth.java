@@ -1,3 +1,10 @@
+/**
+ * @file HotelAuth.java
+ * @author Matthew Hays
+ * @brief Provides an immutable class of static methods that provide
+ *        password hashing and validation using the PBKDF2WithHmacSHA1 algorithm.
+ */
+
 package hotel.reservations.services.authentication;
 
 import javax.crypto.SecretKeyFactory;
