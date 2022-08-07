@@ -90,11 +90,6 @@ public class AppControllerImpl implements AppController{
     }
 
     @Override
-    public User getUser(String username) {
-        return userService.getUserByUsername(username);
-    }
-
-    @Override
     public Response resetGuestPassword(UUID sessionId, String username){
         return userService.resetGuestPassword(sessionId, username);
     }
