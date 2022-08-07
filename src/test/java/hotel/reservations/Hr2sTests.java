@@ -10,10 +10,6 @@ import hotel.reservations.models.session.Session;
 import hotel.reservations.models.user.*;
 import hotel.reservations.persistence.DatabaseImpl;
 import hotel.reservations.persistence.Response;
-import hotel.reservations.persistence.dao.RoomDao;
-import hotel.reservations.persistence.dao.impls.ReservationDaoImpl;
-import hotel.reservations.persistence.dao.impls.RoomDaoImpl;
-import hotel.reservations.persistence.dao.impls.UserDaoImpl;
 import hotel.reservations.views.frame.FrameImpl;
 import hotel.reservations.views.frame.Frame;
 import org.junit.jupiter.api.*;
@@ -26,8 +22,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(OrderAnnotation.class)
 class Hr2sTests {
@@ -50,8 +45,6 @@ class Hr2sTests {
 
         appController = new AppControllerImpl(db);
         Frame guiHandler = new FrameImpl(appController);
-        // Associate Views with the ApplicationController
-        appController.addViewsHandler(guiHandler);
     }
 
     /**
@@ -81,12 +74,19 @@ class Hr2sTests {
     @Test
     @Order(2)
     void getAdminUser() {
-        User user = appController.getUser("admin");
-        System.out.println(user);
+        String password = "password123$";
+
+        // log the admin user in
+        Session session = appController.logIn("admin", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        User user = session.getUser();
         assertTrue(null != user);
-        if (null != user) {
-            assertTrue(user.getAccountType() == Account.ADMIN);
-        }
+        assertTrue(user.getAccountType() == Account.ADMIN);
+
+        Response response = appController.logOut(sessionId);
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
@@ -96,10 +96,24 @@ class Hr2sTests {
      */
     @Test
     @Order(3)
-    void registerUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    void registerUser() {
         String password = "password123$";
-        assertTrue(null != appController.registerUser("guest1", password.toCharArray(), "bob", "thebuilder",
-                "1234 Something Street", "MyState", "12345"));
+
+        // register a guest
+        Session session = appController.registerUser("guest1", password.toCharArray(), "bob", "thebuilder",
+                "1234 Something Street", "MyState", "12345");
+
+        assertTrue(null != session);
+        User user = session.getUser();
+        assertTrue(user.getAccountType() == Account.GUEST);
+
+        // attempt to register the same username again
+        Session nullSession = appController.registerUser("guest1", password.toCharArray(), "bob", "thebuilder",
+                "1234 Something Street", "MyState", "12345");
+        assertTrue(null == nullSession);
+
+        Response response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
@@ -108,9 +122,26 @@ class Hr2sTests {
     @Test
     @Order(4)
     void createClerk() {
-        appController.createClerk("clerk1", "Clerky", "McClerk", "1234 Clerk Street", "ClerkState", "24680");
-        User user = appController.getUser("clerk1");
+        String password = "password123$";
+
+        // create a clerk
+        Response response = appController.createClerk("clerk1", "Clerky", "McClerk", "1234 Clerk Street", "ClerkState", "24680");
+        assertTrue(response == Response.SUCCESS);
+        // attempt to register same username
+        response = appController.createClerk("clerk1", "Clerky", "McClerk", "1234 Clerk Street", "ClerkState", "24680");
+        assertTrue(response == Response.FAILURE);
+
+        // log the clerk user in
+        Session session = appController.logIn("clerk1", password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+
+        User user = session.getUser();
+        assertTrue(null != user);
         assertTrue(user.getAccountType() == Account.CLERK);
+
+        response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
@@ -124,25 +155,55 @@ class Hr2sTests {
         String password = "password123$";
         String newLastName = "MyNewLastName";
         String username = "clerk1";
-        User user = appController.getUser(username);
+
+        // log the clerk user in
+        Session session = appController.logIn(username, password.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+        User user = session.getUser();
         assertTrue(null != user);
 
-        Session session = appController.logIn(user.getUsername(), password.toCharArray());
         user.setLastName(newLastName);
-        appController.modifyUser(session.getId(), user.getUsername(), user.getFirstName(), user.getLastName(),
+        user = appController.modifyUser(session.getId(), user.getUsername(), user.getFirstName(), user.getLastName(),
                 user.getStreet(), user.getState(), user.getZipCode(), user.getActive());
 
-        user = appController.getUser(username);
         assertTrue(user.getLastName().equals(newLastName));
 
-        appController.logOut(session.getId());
+        Response response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
+    }
+
+    @Test
+    @Order(6)
+    void changePassword() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String currentPassword = "password123$";
+        String oldPassword = currentPassword;
+        String newPassword = "ALongerPassword123$";
+        String username = "guest1";
+
+        // log the clerk user in
+        Session session = appController.logIn(username, currentPassword.toCharArray());
+        UUID sessionId = session.getId();
+        assertTrue(null != sessionId);
+        User user = session.getUser();
+        assertTrue(null != user);
+
+        Response response = appController.resetPassword(username, currentPassword.toCharArray(), newPassword.toCharArray());
+        assertTrue(response == Response.SUCCESS);
+
+        // attempt to change password using the old password
+        response = appController.resetPassword(username, oldPassword.toCharArray(), newPassword.toCharArray());
+        assertTrue(response == Response.FAILURE);
+
+        response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
      * test getting available rooms
      */
     @Test
-    @Order(6)
+    @Order(7)
     void getAvailableRooms() {
         LocalDate arrival = LocalDate.parse("2022-01-01");
         LocalDate departure = LocalDate.parse("2022-12-01");
@@ -156,7 +217,7 @@ class Hr2sTests {
      * @throws InvalidKeySpecException
      */
     @Test
-    @Order(7)
+    @Order(8)
     void UC01() throws NoSuchAlgorithmException, InvalidKeySpecException {
         String password = "password123$";
         LocalDate arrival = LocalDate.parse("2022-09-01");
@@ -185,19 +246,11 @@ class Hr2sTests {
         assertTrue(null != reservation);
 
         // check the db to see if the reservation was successful
-        List<Reservation> reservations = appController.getReservationByUserId(user.getUserId());
-        Boolean found = false;
-        for(Reservation r: reservations) {
-            if (0 == reservation.getReservationId().toString().compareTo(r.getReservationId().toString())) {
-                found = true;
-                break;
-            }
-        }
+        reservation = appController.getReservationByReservationId(reservation.getReservationId());
+        assertTrue(null != reservation);
 
-        assertTrue(found);
-
-        // TODO: how can I check success
-        appController.logOut(sessionId);
+        Response response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
@@ -206,7 +259,7 @@ class Hr2sTests {
      * @throws InvalidKeySpecException
      */
     @Test
-    @Order(8)
+    @Order(9)
     void checkInOut() throws NoSuchAlgorithmException, InvalidKeySpecException  {
         String password = "password123$";
 
@@ -219,12 +272,13 @@ class Hr2sTests {
         assertTrue(null != user);
 
         // get reservations
-        List<Reservation> reservations = appController.getReservationByUserId(user.getUserId());
-        assertFalse(reservations.isEmpty());
+        List<Reservation> reservations = appController.getReservationByUsername(user.getUsername());
+        assertTrue(reservations.size() > 0);
 
         // choose the first reservation
         Reservation reservation = reservations.get(0);
         assertTrue(null != reservation);
+        assertTrue(ReservationStatus.AWAITING == reservation.getStatus());
 
         // checkIn
         Response response = appController.checkIn(reservation);
@@ -242,7 +296,8 @@ class Hr2sTests {
         reservation = appController.getReservationByReservationId(reservation.getReservationId());
         assertTrue(reservation.getStatus() == ReservationStatus.COMPLETE);
 
-        appController.logOut(sessionId);
+        response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
@@ -251,7 +306,7 @@ class Hr2sTests {
      * @throws InvalidKeySpecException
      */
     @Test
-    @Order(9)
+    @Order(10)
     void cancelReservation() throws NoSuchAlgorithmException, InvalidKeySpecException {
         String password = "password123$";
         LocalDate arrival = LocalDate.parse("2022-10-01");
@@ -276,22 +331,23 @@ class Hr2sTests {
         Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
         assertTrue(null != reservation);
 
-        // checkIn
+        // cancel reservation
         Response response = appController.cancelReservation(reservation);
         assertTrue(response == Response.SUCCESS);
 
-        // check if db indicates checkedIn
+        // check if db indicates cancelled
         reservation = appController.getReservationByReservationId(reservation.getReservationId());
         assertTrue(reservation.getStatus() == ReservationStatus.CANCELLED);
 
-        appController.logOut(sessionId);
+        response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
      * test modifying a reservation
      */
     @Test
-    @Order(10)
+    @Order(11)
     void modifyReservation() {
         String password = "password123$";
         LocalDate arrival = LocalDate.parse("2022-11-01");
@@ -317,6 +373,7 @@ class Hr2sTests {
         Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
         assertTrue(null != reservation);
 
+        // modify reservation
         reservation.setCheckout(newDeparture);
         Response response = appController.modifyReservation(reservation);
         assertTrue(response == Response.SUCCESS);
@@ -324,14 +381,15 @@ class Hr2sTests {
         reservation = appController.getReservationByReservationId(reservation.getReservationId());
         assertTrue(reservation.getDeparture().isEqual(newDeparture));
 
-        appController.logOut(sessionId);
+        response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
      * test retrieving a room
      */
     @Test
-    @Order(11)
+    @Order(12)
     void getRoom() {
         String password = "password123$";
         int roomNumber = 102;
@@ -345,14 +403,15 @@ class Hr2sTests {
         assertTrue(null != room);
         assertTrue(room.getRoomId() == roomNumber);
 
-        appController.logOut(sessionId);
+        Response response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
      * test creating a new room
      */
     @Test
-    @Order(12)
+    @Order(13)
     void insertRoom() {
         String password = "password123$";
         int roomNumber = 1024;
@@ -362,6 +421,7 @@ class Hr2sTests {
         UUID sessionId = session.getId();
         assertTrue(null != sessionId);
 
+        // create a room
         Response response = appController.createRoom(roomNumber, Bed.KING, 2, false, false, 1999.99);
         assertTrue(response == Response.SUCCESS);
 
@@ -369,18 +429,20 @@ class Hr2sTests {
         response = appController.createRoom(roomNumber, Bed.QUEEN, 4, false, false, 195.35);
         assertTrue(response == Response.FAILURE);
 
+        // ensure new room is in the db
         Room room = appController.getRoom(roomNumber);
         assertTrue(null != room);
         assertTrue(room.getRoomId() == roomNumber);
 
-        appController.logOut(sessionId);
+        response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
      * test modification of a room
      */
     @Test
-    @Order(13)
+    @Order(14)
     void modifyRoom() {
         String password = "password123$";
         int roomNumber = 102;
@@ -403,19 +465,21 @@ class Hr2sTests {
         Response response = appController.updateRoom(room.getRoomId(), room.getBedType(), room.getNumBeds(), room.getSmoking(), room.getOccupied(), room.getNumBeds());
         assertTrue(response == Response.SUCCESS);
 
+        // ensure room was updated in db
         room = appController.getRoom(roomNumber);
         assertTrue(null != room);
         assertTrue(room.getRoomId() == roomNumber);
         assertTrue(room.getNumBeds() == numBeds);
 
-        appController.logOut(sessionId);
+        response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 
     /**
      * test deleting a room
      */
     @Test
-    @Order(14)
+    @Order(15)
     void deleteRoom() {
         String password = "password123$";
         int roomNumber = 1024;
@@ -437,6 +501,7 @@ class Hr2sTests {
         Room room = appController.getRoom(roomNumber);
         assertTrue(null == room);
 
-        appController.logOut(sessionId);
+        response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 }

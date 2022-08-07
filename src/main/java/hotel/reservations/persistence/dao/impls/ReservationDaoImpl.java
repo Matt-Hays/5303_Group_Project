@@ -121,7 +121,6 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
         }
 
         reservation.setStatus(ReservationStatus.CANCELLED);
-        System.out.println("Reservation cancel called!");
         return db.updateReservation(reservation.getReservationId(), reservation.getCustomerId(),
             reservation.getInvoiceId(), reservation.getRoomNumber(), reservation.getCreatedAt(),
             reservation.getArrival(), reservation.getDeparture(), reservation.getStatus());
