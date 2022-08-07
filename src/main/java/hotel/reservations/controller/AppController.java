@@ -19,14 +19,23 @@ public interface AppController {
      *                        */
 
     public Session logIn(String username, char[] password);
-    public void logOut(UUID sessionId);
+
+    public Response logOut(UUID sessionId);
+
+    // Use Case 11
     public Session registerUser(String username, char[] password, String firstName, String lastName, String address,
                              String state, String zipCode);
-    public void resetPassword(String username, char[] oldPassword, char[] newPassword);
-    public void resetGuestPassword(UUID sessionId, String username);
+
+    // Use Case 14
+    public Response resetPassword(String username, char[] oldPassword, char[] newPassword);
+    public Response resetGuestPassword(UUID sessionId, String username);
+
+    // Use Case 15
     public User modifyUser(UUID sessionId, String newUsername, String firstName, String lastName, String address, String state,
                            String zipCode, boolean active);
-    public void createClerk(String username, String firstName, String lastName, String address, String state,
+
+    // Use Case 16
+    public Response createClerk(String username, String firstName, String lastName, String address, String state,
                             String zipCode);
 
     /**                              *
@@ -71,5 +80,6 @@ public interface AppController {
      *   Unimplemented Service Endpoints    *
      *                                      */
 
-    public void payInvoice(Reservation reservation);
+    // Use Case 17
+    public Response payInvoice(Reservation reservation);
 }

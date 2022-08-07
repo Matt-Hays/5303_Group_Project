@@ -48,8 +48,8 @@ public class UserServiceImpl implements UserService {
      * @param id The user's session id.
      */
     @Override
-    public void logout(UUID id) {
-        sessionDao.destroySessionById(id);
+    public Response logout(UUID id) {
+        return sessionDao.destroySessionById(id);
     }
 
     /**
@@ -88,8 +88,8 @@ public class UserServiceImpl implements UserService {
      * @param zipCode The user's zip code.
      */
     @Override
-    public void createClerk(String username, String firstName, String lastName, String street, String state, String zipCode) {
-        userDao.createDefaultUser(Account.CLERK, username, firstName, lastName, street, state, zipCode);
+    public Response createClerk(String username, String firstName, String lastName, String street, String state, String zipCode) {
+        return userDao.createDefaultUser(Account.CLERK, username, firstName, lastName, street, state, zipCode);
     }
 
     /**
@@ -125,24 +125,25 @@ public class UserServiceImpl implements UserService {
      * @param newPassword The user's requested new password.
      */
     @Override
-    public void updatePassword(String username, char[] oldPassword, char[] newPassword) {
-        userDao.changePassword(username, oldPassword, newPassword);
+    public Response updatePassword(String username, char[] oldPassword, char[] newPassword) {
+        return userDao.changePassword(username, oldPassword, newPassword);
     }
 
     @Override
-    public void resetGuestPassword(UUID sessionId, String username) {
+    public Response resetGuestPassword(UUID sessionId, String username) {
         if(sessionDao.getSessionUser(sessionId).getAccountType().equals(Account.ADMIN))
-            userDao.resetGuestPassword(username);
+            return userDao.resetGuestPassword(username);
+        return Response.FAILURE;
     }
 
     @Override
-    public void deleteUser(User user) {
-
+    public Response deleteUser(User user) {
+        return Response.FAILURE;
     }
 
     @Override
-    public void deleteUserById(UUID id) {
-
+    public Response deleteUserById(UUID id) {
+        return Response.FAILURE;
     }
 
     @Override
