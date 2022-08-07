@@ -1,3 +1,11 @@
+/**
+ * @file RoundedPasswordField.java
+ * @author Matthew Hays
+ * @brief A JPasswordField wrapper class that overrides the default look of the JPasswordField.
+ *        Provides a rounded password field that conforms to theme styles.
+ * @dependencies JPasswordField
+ */
+
 package hotel.reservations.views.styles;
 
 import javax.swing.*;

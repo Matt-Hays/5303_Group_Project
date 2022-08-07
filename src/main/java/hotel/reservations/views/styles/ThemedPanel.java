@@ -1,3 +1,11 @@
+/**
+ * @file ThemedPanel.java
+ * @author Matthew Hays
+ * @brief A JPanel wrapper class that overrides the default look of the JPanel.
+ *        Provides a top (dark) to bottom (light) gradient background.
+ * @dependencies JPanel
+ */
+
 package hotel.reservations.views.styles;
 
 import javax.swing.*;

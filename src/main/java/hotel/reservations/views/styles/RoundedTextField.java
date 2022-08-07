@@ -1,3 +1,11 @@
+/**
+ * @file RoundedTextField.java
+ * @author Matthew Hays
+ * @brief A JTextField wrapper class that overrides the default look of the JTextField.
+ *        Provides a rounded text field that conforms to theme styles.
+ * @dependencies JTextField
+ */
+
 package hotel.reservations.views.styles;
 
 import javax.swing.*;
