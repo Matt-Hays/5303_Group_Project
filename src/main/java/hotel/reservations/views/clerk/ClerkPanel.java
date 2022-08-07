@@ -60,8 +60,7 @@ public class ClerkPanel extends ThemedPanel {
         btnCheckInOut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UUID guestId = getFrame().getAppController().getUser(getUsernameField()).getUserId();
-                List<Reservation> reservations = getFrame().getAppController().getReservationByUserId(guestId);
+                List<Reservation> reservations = getFrame().getAppController().getReservationByUsername(getUsernameField());
                 getFrame().getReservationsPanel().fillLayout(reservations);
                 getFrame().changeScreen("reservations");
             }
@@ -72,13 +71,8 @@ public class ClerkPanel extends ThemedPanel {
             public void actionPerformed(ActionEvent e) {
                 if(hasPreviousMessage) clearMessage();
                 String username = guestUsernameField.getText();
-                User guestUser = getFrame().getAppController().getUser(username);
-                if (null == guestUser) {
-                    System.out.println("invalid username");
-                    displayMessage("Invalid username!", "red");
-                    return;
-                }
-                List<Reservation> reservations = getFrame().getAppController().getReservationByUserId(guestUser.getUserId());
+
+                List<Reservation> reservations = getFrame().getAppController().getReservationByUsername(username);
                 getFrame().getReservationsPanel().fillLayout(reservations);
                 getFrame().changeScreen("reservations");
             }

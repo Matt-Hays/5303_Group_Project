@@ -12,9 +12,10 @@ import java.util.UUID;
 public interface ReservationService {
     public Response checkIn(Reservation reservation);
     public Response checkOut(Reservation reservation);
-    public List<Reservation> findReservationByUserId(UUID id);
+    public List<Reservation> findReservationByUsername(String username);
     public Reservation findReservationByReservationId(UUID id);
     public Reservation createReservation(User guest, Room room, LocalDate arrival, LocalDate departure);
+    public Reservation clerkCreateReservation(String username, Room room, LocalDate arrival, LocalDate departure);
     public Response cancelReservation(Reservation reservation);
     public Response modifyReservation(Reservation modifiedReservation);
 }
