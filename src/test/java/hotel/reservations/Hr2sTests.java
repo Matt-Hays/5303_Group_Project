@@ -546,4 +546,19 @@ class Hr2sTests {
         Response response = appController.logOut(session.getId());
         assertTrue(response == Response.SUCCESS);
     }
+
+    @Test
+    @Order(17)
+    void resetPassword(){
+        String username = "guest2";
+        String oldPassword = "oldPassword";
+        String newPassword = "newPassword";
+
+        //registering a new user to reset their password
+        Session session = appController.registerUser(username, oldPassword.toCharArray(), "Test", "Guest", "123 Main St.", "California", "12345");
+        assertTrue(null != session);
+
+        //reset password
+        assertSame(Response.SUCCESS, appController.resetPassword(username, oldPassword.toCharArray(), newPassword.toCharArray()));
+    }
 }
