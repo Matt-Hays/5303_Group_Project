@@ -73,6 +73,7 @@ public interface AppController {
     public Response modifyReservation(Reservation modifiedReservation);
     public Response checkIn(Reservation reservation);
     public Response checkOut(Reservation reservation);
+    public Invoice getInvoice(UUID invoiceId);
 
     /**                                     *
      * End of Reservation Service Endpoints *

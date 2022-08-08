@@ -186,6 +186,11 @@ public class AppControllerImpl implements AppController{
         return reservationService.checkOut(reservation);
     }
 
+    @Override
+    public Invoice getInvoice(UUID invoiceId)  {
+        return reservationService.getInvoice(invoiceId);
+    }
+
     /**                                     *
      * End of Reservation Service Endpoints *
      * ------------------------------------ *
