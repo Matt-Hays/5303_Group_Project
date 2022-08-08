@@ -1,3 +1,10 @@
+/**
+ * @file Invoice.java
+ * @author Sarah Smallwood
+ * @brief The Invoice domain object. Models the structure of the Invoice domain object and
+ *        provides the application with methods used to modify the structure.
+ */
+
 package hotel.reservations.models.reservation;
 
 import java.util.UUID;

@@ -1,3 +1,10 @@
+/**
+ * @file Session.java
+ * @author Matthew Hays
+ * @brief The Session domain object. Provides the application with a data structure that's presence or
+ *        absence in application memory can assist in authorization and state storage of the User.
+ */
+
 package hotel.reservations.models.session;
 
 

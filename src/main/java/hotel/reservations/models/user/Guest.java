@@ -1,3 +1,10 @@
+/**
+ * @file Guest.java
+ * @author Sarah Smallwood
+ * @brief User.java implementing object. Provides the application with the Guest logged-in state and
+ *        implements necessary User interface methods.
+ */
+
 package hotel.reservations.models.user;
 
 import java.util.UUID;
