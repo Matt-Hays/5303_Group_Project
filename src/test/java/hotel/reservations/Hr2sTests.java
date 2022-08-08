@@ -536,14 +536,12 @@ class Hr2sTests {
         Reservation reservation = appController.createReservation(user, rooms.get(0), arrival, departure);
         assertTrue(null != reservation);
 
-        // get roomRate
-        long stayLength = DAYS.between(arrival, departure);
-        Room room = rooms.get(0);
-        double roomRate = room.getNightlyRate();
+        // get invoiceId from reservation
+        UUID invoiceId = reservation.getInvoiceId();
 
         // generate an invoice for the created reservation
-        Response response = appController.generateInvoice(roomRate, stayLength);
-        assertTrue(response == Response.SUCCESS);
+        Invoice invoice = appController.getInvoice(invoiceId);
+        assertTrue(null != invoice);
 
     }
 }

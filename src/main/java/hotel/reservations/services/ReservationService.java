@@ -1,5 +1,6 @@
 package hotel.reservations.services;
 
+import hotel.reservations.models.reservation.Invoice;
 import hotel.reservations.models.reservation.Reservation;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.User;
@@ -18,4 +19,5 @@ public interface ReservationService {
     public Reservation clerkCreateReservation(String username, Room room, LocalDate arrival, LocalDate departure);
     public Response cancelReservation(Reservation reservation);
     public Response modifyReservation(Reservation modifiedReservation);
+    public Invoice getInvoice(UUID invoiceId);
 }

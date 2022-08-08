@@ -88,4 +88,8 @@ public class ReservationServiceImpl implements ReservationService {
     public Response modifyReservation(Reservation modifiedReservation) {
         return reservationDao.updateReservation(modifiedReservation);
     }
+
+    public Invoice getInvoice(UUID invoiceId){
+        return reservationDao.getInvoice(invoiceId);
+    };
 }
