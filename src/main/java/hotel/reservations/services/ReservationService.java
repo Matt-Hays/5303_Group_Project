@@ -1,3 +1,9 @@
+/**
+ * @file ReservationService.java
+ * @author Matthew Hays
+ * @brief Provides an interface to interact with Reservation domain requests.
+ */
+
 package hotel.reservations.services;
 
 import hotel.reservations.models.reservation.Invoice;

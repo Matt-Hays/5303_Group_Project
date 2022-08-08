@@ -1,3 +1,11 @@
+/**
+ * @file BillingReport.java
+ * @author Christian Haddad
+ * @brief The custom page *JPanel* that is provided to allow the Clerk
+ *        to complete their request billing report workflow.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.billingReport;
 
 import hotel.reservations.models.reservation.Invoice;
@@ -11,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+
 public class BillingReportPanel extends ThemedPanel {
 
     private final Frame frame;
@@ -19,6 +28,10 @@ public class BillingReportPanel extends ThemedPanel {
     private RoundedButton btnBack;
     private List<Invoice> invoicesCache;
 
+    /**
+     * Attach the Frame dependency to the object and revalidate the panel's contents.
+     * @param frame
+     */
     public BillingReportPanel(Frame frame) {
         this.frame = frame;
 
@@ -32,7 +45,14 @@ public class BillingReportPanel extends ThemedPanel {
 
     }
 
+    /**
+     * Upon request of the panel, generate the content and layout of the panel
+     * for a given list of invoice domain objects. *Builds a JScrollPane using an internal
+     * JPanel and adds it to the BillingReportPanel JPanel.
+     * @param invoices A list of Invoice.java domain objects.
+     */
     public void fillLayout(List<Invoice> invoices) {
+        // Do not try to display an empty list.
         if(invoices.isEmpty()) {
             this.invoicesCache = null;
             initDisplay();
@@ -81,22 +101,24 @@ public class BillingReportPanel extends ThemedPanel {
 
     }
 
+    /**
+     * Inserts an Invoice.java domain object to the Scroll Panel.
+     * *Creates labels for the respective Invoice fields and a JButton
+     *  for each Invoice domain object. All JLabels and JButtons are added
+     *  to the Scroll Pane's internal JPanel *ScrollPanel.
+     * @param inv Invoice.java domain object.
+     * @param gbc GridBagConstraints current layout.
+     */
     private void insertInvoices(Invoice inv, GridBagConstraints gbc) {
-
-/*        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + inv.getIsPaid() + "</p></html>"), gbc);
-        gbc.gridy++;
-        gbc.insets = new Insets(0, 16, 0, 16);*/
         scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + "Invoice ID: " + inv.getInvoiceId()+ "</p></html>"), gbc);
         gbc.gridy++;
         gbc.insets = new Insets(0, 16, 0, 16);
         scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + "Resort Fees: " + inv.getFees() + "</p></html>"), gbc);
         gbc.gridx++;
         gbc.insets = new Insets(0, 16, 0, 16);
-/*        scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + inv.getTaxRate() + "</p></html>"), gbc);
-        gbc.gridx++;
-        gbc.insets = new Insets(0, 16, 0, 16);*/
         scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + "Subtotal: "+ inv.getSubtotal() + "</p></html>"), gbc);
         gbc.gridx = 0;
+        gbc.gridy++;
         RoundedButton tempBtn = new RoundedButton("View Invoice");
         tempBtn.setActionCommand(String.valueOf(inv.getInvoiceId()));
         tempBtn.addActionListener(new ActionListener() {
@@ -114,6 +136,7 @@ public class BillingReportPanel extends ThemedPanel {
                 getFrame().changeScreen("billing-report");
             }
         });
+        scrollPanel.add(tempBtn, gbc);
     }
 
     public Frame getFrame() {

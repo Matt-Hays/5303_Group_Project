@@ -1,3 +1,10 @@
+/**
+ * @file StatusReportPanel.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that provides Clerk access to view the status of all rooms.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.reports;
 
 import hotel.reservations.models.reservation.Reservation;
@@ -21,6 +28,10 @@ public class StatusReportPanel extends ThemedPanel {
     private JPanel scrollPanel;
     private List<Room> roomCache;
 
+    /**
+     * Attach the Frame.java dependency and generate the JLabels.
+     * @param frame
+     */
     public StatusReportPanel(Frame frame) {
         this.frame = frame;
 
@@ -31,6 +42,9 @@ public class StatusReportPanel extends ThemedPanel {
         roomStatusTableHeader = new JLabel("<html><p style='color:white; font-size:16px'>Room Occupied</p></html>");
     }
 
+    /**
+     * Add a Back button to the page.
+     */
     private void initDisplay(){
         btnBack = new RoundedButton("Back");
 
@@ -47,6 +61,10 @@ public class StatusReportPanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Populate the layout with a list of Rooms.
+     * @param rooms A list of Room domain objects.
+     */
     public void fillLayout(List<Room> rooms){
         clearLayout();
         if(rooms.isEmpty()) {
@@ -99,6 +117,9 @@ public class StatusReportPanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Remove all components from the panel to clear state.
+     */
     public void clearLayout(){
         if(getComponents().length > 0){
             for(Component comp : getComponents()){
@@ -107,6 +128,11 @@ public class StatusReportPanel extends ThemedPanel {
         }
     }
 
+    /**
+     * Insert a single Room domain object to the Scroll Panel.
+     * @param room Room.java domain object.
+     * @param gbc GridBagConstraints layout object.
+     */
     private void insertRoom(Room room, GridBagConstraints gbc){
         scrollPanel.add(new JLabel("<html><p style='color:white; font-size:16px; font-weight:bold'>" + room.getRoomId() + "</p></html>"), gbc);
         gbc.gridx++;

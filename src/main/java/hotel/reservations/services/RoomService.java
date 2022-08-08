@@ -1,3 +1,9 @@
+/**
+ * @file RoomService.java
+ * @author Matthew Hays
+ * @brief Provides an interface to interact with Room domain requests.
+ */
+
 package hotel.reservations.services;
 
 import hotel.reservations.models.room.Bed;

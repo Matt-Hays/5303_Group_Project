@@ -1,3 +1,11 @@
+/**
+ * @file CreateRoomPanel.java
+ * @author Sarah Smallwood
+ * @brief The custom page *JPanel* that provides the Clerk access to their
+ *        Create Room workflow.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.room;
 
 import hotel.reservations.models.room.Bed;
@@ -19,6 +27,10 @@ public class CreateRoomPanel extends ThemedPanel {
     private RoundedButton btnCreateRoom;
     private GridBagConstraints gbc = new GridBagConstraints();
 
+    /**
+     * Attach the Frame.java dependency and generate all page components.
+     * @param frame Frame.java interface.
+     */
     public CreateRoomPanel(Frame frame) {
         setFrame(frame);
 
@@ -55,6 +67,9 @@ public class CreateRoomPanel extends ThemedPanel {
         fillLayout();
     }
 
+    /**
+     * Populate the panel's layout with the generated components.
+     */
     private void fillLayout() {
         gbc.gridx = gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -116,6 +131,10 @@ public class CreateRoomPanel extends ThemedPanel {
         add(btnCreateRoom, gbc);
 
     }
+
+    /**
+     * Standard getter and setter methods from here through the end of the file.
+     */
     private void setFrame(Frame frame){
         this.frame = frame;
     }

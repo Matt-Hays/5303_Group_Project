@@ -1,3 +1,11 @@
+/**
+ * @file HomePanel.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that is provided as the initial and
+ *        primary page of the application. Provides routing to all workflows.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.home;
 
 import hotel.reservations.models.user.Account;

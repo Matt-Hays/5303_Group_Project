@@ -1,3 +1,11 @@
+/**
+ * @file AdminPanel.java
+ * @brief The custom page *JPanel* that is provided to allow the Admin
+ *        to complete their workflows.
+ * @author Matthew Hays
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.admin;
 
 import hotel.reservations.views.frame.Frame;
@@ -15,6 +23,10 @@ public class AdminPanel extends ThemedPanel {
     private RoundedButton btnCreateClerk, btnResetGuestPassword;
     private boolean hasPreviousMessage;
 
+    /**
+     * Layout the Admin panel's content using a GridBagLayout.
+     * @param frame Frame.java interface dependency.
+     */
     public AdminPanel(Frame frame) {
         this.frame = frame;
 
@@ -54,6 +66,10 @@ public class AdminPanel extends ThemedPanel {
         });
     }
 
+    /**
+     * Remove the most recently added component.
+     * *Assumption: The last component added was the displayed message.
+     */
     private void clearMessages(){
         remove(getComponentCount() - 1);
         hasPreviousMessage = false;

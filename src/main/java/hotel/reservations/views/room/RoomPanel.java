@@ -1,3 +1,11 @@
+/**
+ * @file RoomPanel.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that provides a display for a single
+ *        Room domain object. This page is reused for both Guest and Clerk workflows.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.room;
 
 import hotel.reservations.models.reservation.Reservation;
@@ -30,6 +38,11 @@ public class RoomPanel extends ThemedPanel {
     private GridBagConstraints gbc = new GridBagConstraints();
     private boolean clerkMode = false;
 
+    /**
+     * Attach Frame.java dependency and attach empty JLabel components
+     * to the panel.
+     * @param frame Frame.java interface.
+     */
     public RoomPanel(Frame frame) {
         this.frame = frame;
 

@@ -1,3 +1,11 @@
+/**
+ * @file ClerkPanel.java
+ * @auhor Matthew Hays
+ * @brief The custom page *JPanel* that is provided to allow the Clerk
+ *        to complete their workflows.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.clerk;
 
 import hotel.reservations.models.room.Room;
@@ -25,6 +33,10 @@ public class ClerkPanel extends ThemedPanel {
     private GridBagConstraints gbc;
     private boolean hasPreviousMessage = false;
 
+    /**
+     * Attach the Frame dependency and layout the page components.
+     * @param frame Frame.java interface.
+     */
     public ClerkPanel(Frame frame) {
         this.frame = frame;
 
@@ -98,6 +110,9 @@ public class ClerkPanel extends ThemedPanel {
         return guestUsernameField.getText();
     }
 
+    /**
+     * Layout panel components.
+     */
     private void fillLayout(){
         gbc.gridx = gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -122,6 +137,10 @@ public class ClerkPanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Encapsulate a repeated function - add a new component to the panel.
+     * @param comp The component to add.
+     */
     private void insertComponent(Component comp){
         gbc.gridy++;
         gbc.insets = new Insets(4, 0, 4, 0);

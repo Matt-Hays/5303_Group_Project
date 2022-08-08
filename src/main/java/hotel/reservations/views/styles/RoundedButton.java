@@ -1,3 +1,11 @@
+/**
+ * @file RoundedButton.java
+ * @author Matthew Hays
+ * @brief A JButton wrapper class that overrides the default look of the JButton.
+ *        Provides a rounded button that conforms to theme styles.
+ * @dependencies JButton
+ */
+
 package hotel.reservations.views.styles;
 
 import javax.swing.*;

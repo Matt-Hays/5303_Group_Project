@@ -1,3 +1,11 @@
+/**
+ * @file DatabaseImpl.java
+ * @author Joshua Wellman
+ * @brief Database.java implementing object. Abstracts PreparedStatements necessary for
+ *        DBMS communications. Maintains a connection to the physical DBMS.
+ * @dependencies Underlying physical DBMS.
+ */
+
 package hotel.reservations.persistence;
 
 import hotel.reservations.models.reservation.Invoice;

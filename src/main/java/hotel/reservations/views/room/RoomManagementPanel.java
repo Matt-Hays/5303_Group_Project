@@ -1,3 +1,11 @@
+/**
+ * @file RoomManagementPanel.java
+ * @author Sarah Smallwood
+ * @brief The custom page *JPanel* that provides the Clerk access to their
+ *        Room Management workflow.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.room;
 
 import hotel.reservations.views.frame.Frame;
@@ -18,6 +26,10 @@ public class RoomManagementPanel extends ThemedPanel {
     private RoundedButton btnCreateRoom, btnModifyRoom, btnDeleteRoom;
     private GridBagConstraints gbc = new GridBagConstraints();
 
+    /**
+     * Attach the Frame.java dependency and generate all page components.
+     * @param frame Frame.java interface.
+     */
     public RoomManagementPanel(Frame frame) {
         setFrame(frame);
 
@@ -70,6 +82,9 @@ public class RoomManagementPanel extends ThemedPanel {
         fillLayout();
     }
 
+    /**
+     * Layout the components of the panel.
+     */
     private void fillLayout() {
         gbc.gridx = gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;

@@ -1,3 +1,12 @@
+/**
+ * @file SessionServiceImpl.java
+ * @author Matthew Hays
+ * @brief The SessionService implementing object. Provides logic and routing for configuring data access object
+ *        requests within the particular domain to build a response to a Service layer request.
+ *        ** Currently unused.
+ * @dependencies SessionDao.java
+ */
+
 package hotel.reservations.services.impls;
 
 import hotel.reservations.models.session.Session;

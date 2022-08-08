@@ -1,3 +1,11 @@
+/**
+ * @file UserPanel.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that provides a reusable display
+ *        for any domain object implementing the User.java interface.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.user;
 
 import hotel.reservations.models.reservation.Reservation;
@@ -15,7 +23,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * The User Page.
@@ -30,6 +37,10 @@ public class UserPanel extends ThemedPanel {
     private boolean hasPreviousMessage, isClerkMode;
     private GridBagConstraints gbc = new GridBagConstraints();
 
+    /**
+     * Attach the Frame.java dependency and configure page components.
+     * @param frame Frame.java interface
+     */
     public UserPanel(Frame frame) {
         this.frame = frame;
 
@@ -176,6 +187,9 @@ public class UserPanel extends ThemedPanel {
         isClerkMode = true;
     }
 
+    /**
+     * Clear the user state : Clerk : mode
+     */
     private void clearClerkMode(){
         remove(clerkOldPwField);
         remove(clerkNewPwField);

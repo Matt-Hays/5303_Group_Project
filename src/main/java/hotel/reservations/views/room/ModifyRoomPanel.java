@@ -1,3 +1,11 @@
+/**
+ * @file ModifyRoomPanel.java
+ * @author Sarah Smallwood
+ * @brief The custom page *JPanel* that provides the Clerk access to their
+ *        Modify Room workflow.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.room;
 
 import hotel.reservations.models.room.Bed;
@@ -21,6 +29,10 @@ public class ModifyRoomPanel extends ThemedPanel {
     private RoundedButton btnReturnRoom, btnModifyRoom;
     private GridBagConstraints gbc = new GridBagConstraints();
 
+    /**
+     * Attach the Frame.java dependency and generate all page components.
+     * @param frame Frame.java interface.
+     */
     public ModifyRoomPanel(Frame frame) {
         this.frame = frame;
         setLayout(new GridBagLayout());
@@ -67,6 +79,10 @@ public class ModifyRoomPanel extends ThemedPanel {
         fillLayout();
     }
 
+    /**
+     * Set the values of each component using the given Room domain object.
+     * @param room Room.java domain object.
+     */
     public void populateRoomDetails(Room room){
         roomField.setText(String.valueOf(room.getRoomId()));
         smokingField.setText(String.valueOf(room.getSmoking()));
@@ -78,6 +94,9 @@ public class ModifyRoomPanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Layout the components of the panel.
+     */
     private void fillLayout() {
         gbc.gridx = gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -154,6 +173,10 @@ public class ModifyRoomPanel extends ThemedPanel {
         add(btnModifyRoom, gbc);
 
     }
+
+    /**
+     * Standard getter and setter methods from here through the end of the file.
+     */
     private void setFrame(Frame frame){
         this.frame = frame;
     }

@@ -1,3 +1,11 @@
+/**
+ * @file Reservation.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that provides a display for a single
+ *        Reservation domain object.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.reservation;
 
 import com.github.lgooddatepicker.components.DatePicker;
@@ -25,12 +33,19 @@ public class ReservationPanel extends ThemedPanel {
     private Reservation reservationCache;
     private GridBagConstraints gbc = new GridBagConstraints();
 
-
+    /**
+     * Attach the Frame.java dependency and set the panel's layout
+     * @param frame
+     */
     public ReservationPanel(Frame frame) {
         this.frame = frame;
         setLayout(new GridBagLayout());
     }
 
+    /**
+     * Given a Reservation domain object, layout the panel using the object.
+     * @param reservation Reservation.java domain object.
+     */
     public void fillLayout(Reservation reservation){
         this.reservationCache = reservation;
 
@@ -162,6 +177,9 @@ public class ReservationPanel extends ThemedPanel {
         repaint();
     }
 
+    /**
+     * Standard getters and setters from here through the end of the file.
+     */
     private Frame getFrame() {
         return frame;
     }

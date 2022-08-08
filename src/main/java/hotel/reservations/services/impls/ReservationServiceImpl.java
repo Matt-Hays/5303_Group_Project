@@ -1,3 +1,11 @@
+/**
+ * @file ReservationServiceImpl.java
+ * @author Matthew Hays
+ * @brief The ReservationService implementing object. Provides logic and routing for configuring data access object
+ *        requests within the particular domain to build a response to a Service layer request.
+ * @dependencies ReservationDao.java, UserDao.java
+ */
+
 package hotel.reservations.services.impls;
 
 import hotel.reservations.models.reservation.Invoice;

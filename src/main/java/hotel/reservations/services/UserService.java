@@ -1,3 +1,9 @@
+/**
+ * @file SessionService.java
+ * @author Matthew Hays
+ * @brief Provides an interface to interact with User domain requests.
+ */
+
 package hotel.reservations.services;
 
 import hotel.reservations.models.session.Session;

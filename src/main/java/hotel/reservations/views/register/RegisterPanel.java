@@ -1,3 +1,11 @@
+/**
+ * @file RegisterPanel.java
+ * @author Matthew Hays
+ * @brief The custom page *JPanel* that provides access to the register user and create clerk workflows.
+ *        This page is reused for both guest and admin workflows.
+ * @dependencies Frame.java
+ */
+
 package hotel.reservations.views.register;
 
 import hotel.reservations.models.session.Session;
