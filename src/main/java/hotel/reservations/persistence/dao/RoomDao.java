@@ -1,3 +1,9 @@
+/**
+ * @file RoomDao.java
+ * @author Joshua Southern
+ * @author Joshua Wellman
+ * @brief Provides an interface for persistence level interactions on the Room domain object.
+ */
 
 package hotel.reservations.persistence.dao;
 

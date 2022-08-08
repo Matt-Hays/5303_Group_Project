@@ -1,3 +1,9 @@
+/**
+ * @file InvoiceDao.java
+ * @author Sarah Smallwood
+ * @brief Provides an interface for persistence level interactions on the Invoice domain object.
+ */
+
 package hotel.reservations.persistence.dao;
 
 import hotel.reservations.models.reservation.Invoice;

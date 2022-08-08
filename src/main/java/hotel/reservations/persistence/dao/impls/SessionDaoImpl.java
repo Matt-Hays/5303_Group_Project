@@ -1,3 +1,10 @@
+/**
+ * @file SessionDaoImpl.java
+ * @author Matthew Hays
+ * @brief SessionDao.java implementing object. Provides logic for persistence layer
+ *        interactions on the Session domain.
+ */
+
 package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.session.Session;
