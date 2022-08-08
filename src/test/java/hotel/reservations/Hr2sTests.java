@@ -8,11 +8,12 @@ import hotel.reservations.models.reservation.ReservationStatus;
 import hotel.reservations.models.room.Bed;
 import hotel.reservations.models.room.Room;
 import hotel.reservations.models.session.Session;
-import hotel.reservations.models.user.*;
+import hotel.reservations.models.user.Account;
+import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.DatabaseImpl;
 import hotel.reservations.persistence.Response;
-import hotel.reservations.views.frame.FrameImpl;
 import hotel.reservations.views.frame.Frame;
+import hotel.reservations.views.frame.FrameImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
@@ -23,8 +24,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(OrderAnnotation.class)
 class Hr2sTests {
@@ -519,6 +520,26 @@ class Hr2sTests {
 
         // find available rooms
         List<Room> rooms = appController.searchRooms(arrival, departure, 2, Bed.QUEEN, false);
+        //registers a guest and creates a reservation to trigger the creation of an invoice for that reservation
+        Session testSession = appController.registerUser("guest3", password.toCharArray(), "FirstName", "LastName", "123 Main St", "California", "12345");
+        User guest3 = testSession.getUser();
+        appController.createReservation(guest3, rooms.get(0), arrival, departure);
+
+        //testing the function to ensure it returns a report of invoices greater than size 0
+        List<Invoice> invoiceList = appController.generateBillingReport(guest3.getUsername());
+
+        assertTrue(invoiceList.size() > 0);
+    }
+
+    @Test
+    @Order(17)
+    void viewBillingReport(){
+
+        String password = "password123$";
+        LocalDate arrival = LocalDate.parse("2022-06-01");
+        LocalDate departure = LocalDate.parse("2022-06-30");
+
+        List<Room> rooms = appController.searchRooms(arrival, departure, 1, Bed.KING, false);
         if (rooms.size() == 0) {
             Assertions.fail("No rooms found");
             return;
@@ -548,7 +569,7 @@ class Hr2sTests {
     }
 
     @Test
-    @Order(17)
+    @Order(18)
     void resetPassword(){
         String username = "guest2";
         String oldPassword = "oldPassword";
