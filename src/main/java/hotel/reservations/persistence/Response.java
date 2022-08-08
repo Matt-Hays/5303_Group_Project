@@ -1,3 +1,9 @@
+/**
+ * @file Response.java
+ * @author Joshua Wellman
+ * @brief Provides an enum to indicate a success or failure upon execution of an action.
+ */
+
 package hotel.reservations.persistence;
 
 public enum Response {

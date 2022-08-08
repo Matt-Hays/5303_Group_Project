@@ -1,3 +1,7 @@
+/**
+ * @author Christian Haddad
+ */
+
 package hotel.reservations.models.user;
 
 import java.util.UUID;

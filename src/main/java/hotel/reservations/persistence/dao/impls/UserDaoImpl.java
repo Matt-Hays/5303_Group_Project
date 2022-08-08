@@ -1,3 +1,7 @@
+/**
+ * @author Christian Haddad
+ */
+
 package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.user.*;

@@ -1,3 +1,11 @@
+/**
+ * @file Database.java
+ * @author Joshua Wellman
+ * @brief Provides an interface to interact with the underlying
+ *        physical database connection. Abstracts the PreparedStatements
+ *        necessary to facilitate database communication.
+ */
+
 package hotel.reservations.persistence;
 
 import hotel.reservations.models.reservation.Invoice;

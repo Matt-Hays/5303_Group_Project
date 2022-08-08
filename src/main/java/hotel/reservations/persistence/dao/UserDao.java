@@ -1,3 +1,9 @@
+/**
+ * @file UserDao.java
+ * @author Christian Haddad
+ * @brief Provides an interface for persistence level interactions on the User domain object.
+ */
+
 package hotel.reservations.persistence.dao;
 
 import hotel.reservations.models.user.Account;
