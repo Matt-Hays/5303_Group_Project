@@ -543,5 +543,7 @@ class Hr2sTests {
         Invoice invoice = appController.getInvoice(invoiceId);
         assertTrue(null != invoice);
 
+        Response response = appController.logOut(session.getId());
+        assertTrue(response == Response.SUCCESS);
     }
 }
