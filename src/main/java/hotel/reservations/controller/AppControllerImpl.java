@@ -1,3 +1,12 @@
+/**
+ * @file AppControllerImpl.java
+ * @author Matthew Hays
+ * @brief AppController.java implementing object. Provides the logic necessary to
+ *        route incoming requests to a particular Service and provides a response to
+ *        the user interface.
+ * @dependencies UserService.java, RoomService.java, ReservationService.java, SessionService.java;
+ */
+
 package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Invoice;

@@ -1,3 +1,11 @@
+/**
+ * @file AppController.java
+ * @author Matthew Hays
+ * @brief Provides an interface to the user interface such that the user interface can request
+ *        completion of workflow tasks from the controller. Performs only "switching" into the correct domain
+ *        through requests made to the Service layer objects.
+ */
+
 package hotel.reservations.controller;
 
 import hotel.reservations.models.reservation.Invoice;
