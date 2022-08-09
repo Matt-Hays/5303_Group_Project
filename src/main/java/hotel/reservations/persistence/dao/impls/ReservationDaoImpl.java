@@ -19,11 +19,15 @@ import hotel.reservations.persistence.DatabaseImpl;
 import hotel.reservations.persistence.Response;
 import hotel.reservations.persistence.dao.InvoiceDao;
 import hotel.reservations.persistence.dao.ReservationDao;
+import org.sqlite.date.DateFormatUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
@@ -131,8 +135,12 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
         }
         // Get room nightly_rate
         Invoice invoice = db.getInvoice(reservation.getInvoiceId());
-        invoice.setSubtotal(roomRate * 0.8, 1);
-        db.updateInvoice(invoice);
+        LocalDate date = reservation.getArrival();
+        LocalDate dateToCheck = date.minus(Period.ofDays(2));
+        if(date.isAfter(dateToCheck)){
+            invoice.setSubtotal(roomRate * 0.8, 1);
+            db.updateInvoice(invoice);
+        }
         reservation.setStatus(ReservationStatus.CANCELLED);
         return db.updateReservation(reservation.getReservationId(), reservation.getCustomerId(),
             reservation.getInvoiceId(), reservation.getRoomNumber(), reservation.getCreatedAt(),
