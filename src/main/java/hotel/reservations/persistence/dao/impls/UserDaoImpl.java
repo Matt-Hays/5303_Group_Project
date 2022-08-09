@@ -1,5 +1,9 @@
 /**
+ * @file UserDaoImpl.java
  * @author Christian Haddad
+ * @author Joshua Wellman
+ * @brief UserDao.java implementing object. Provides logic for persistence layer
+ *        interactions on the User domain.
  */
 
 package hotel.reservations.persistence.dao.impls;

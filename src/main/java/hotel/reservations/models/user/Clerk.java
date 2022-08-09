@@ -1,5 +1,8 @@
 /**
+ * @file Clerk.java
  * @author Christian Haddad
+ * @brief User.java implementing object. Provides the application with the Clerk logged-in state and
+ *        implements necessary User interface methods.
  */
 
 package hotel.reservations.models.user;

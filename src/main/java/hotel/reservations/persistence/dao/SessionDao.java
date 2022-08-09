@@ -1,3 +1,9 @@
+/**
+ * @file SessionDao.java
+ * @author Matthew Hays
+ * @brief Provides access to the Session domain used to authenticate users.
+ */
+
 package hotel.reservations.persistence.dao;
 
 

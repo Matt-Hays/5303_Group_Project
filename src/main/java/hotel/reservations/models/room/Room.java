@@ -1,3 +1,11 @@
+/**
+ * @file Room.java
+ * @author Joshua Southern
+ * @author Joshua Wellman
+ * @brief The Session domain object. Provides the application with a data structure that's presence or
+ *        absence in application memory can assist in authorization and state storage of the User.
+ */
+
 package hotel.reservations.models.room;
 
 import hotel.reservations.models.room.Bed;

@@ -1,3 +1,11 @@
+/**
+ * @file Admin.java
+ * @author Joshua Southern
+ * @author Joshua Wellman
+ * @brief User.java implementing object. Provides the application with the Admin logged-in state and
+ *        implements necessary User interface methods.
+ */
+
 package hotel.reservations.models.user;
 
 

@@ -24,7 +24,7 @@ public class CreateRoomPanel extends ThemedPanel {
     private Frame frame;
     private JLabel roomLabel, smokingLabel, bedNumLabel, bedTypeLabel, occupiedLabel, nightlyRateLabel, pageTitle;
     private RoundedTextField roomField, smokingField, bedNumField, bedTypeField, occupiedField, nightlyRateField;
-    private RoundedButton btnCreateRoom;
+    private RoundedButton btnCreateRoom, btnBack;
     private GridBagConstraints gbc = new GridBagConstraints();
 
     /**
@@ -51,6 +51,7 @@ public class CreateRoomPanel extends ThemedPanel {
         nightlyRateField = new RoundedTextField(20);
 
         btnCreateRoom = new RoundedButton("Create Room");
+        btnBack = new RoundedButton("Back");
 
         btnCreateRoom.addActionListener(new ActionListener() {
             @Override
@@ -59,6 +60,13 @@ public class CreateRoomPanel extends ThemedPanel {
                 //System.out.println("Room Created!");
                 getFrame().getHomePanel().displayMessage("Your room has been created!", "green");
                 getFrame().changeScreen("home");
+            }
+        });
+
+        btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().changeScreen("clerk");
             }
         });
 
@@ -129,6 +137,9 @@ public class CreateRoomPanel extends ThemedPanel {
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
         add(btnCreateRoom, gbc);
+
+        gbc.gridy++;
+        add(btnBack, gbc);
 
     }
 

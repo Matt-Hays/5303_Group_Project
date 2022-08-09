@@ -1,3 +1,13 @@
+/**
+ * @file ReservationDaoImpl.java
+ * @author Sarah Smallwood
+ * @author Joshua Wellman
+ * @brief ReservationDao.java & InvoiceDao.java implementing object. Provides logic for
+ *        persistence layer interactions on the Reservation & Invoice domains.
+ *        * The link between Invoices and Reservations was made as Invoices depend on
+ *        Reservations and are created, modified, deleted and accessed together.
+ */
+
 package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.reservation.Invoice;

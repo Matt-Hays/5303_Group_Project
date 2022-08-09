@@ -66,10 +66,10 @@ public class FrameImpl extends JFrame implements Frame {
         cardPanel.add(new ReservationsPanel(this), "reservations"); // 10
         cardPanel.add(new ClerkPanel(this), "clerk"); // 11
         cardPanel.add(new StatusReportPanel(this), "status-report"); // 12
-        cardPanel.add(new BillingReportPanel(this), "billing-report"); //12
-        cardPanel.add(new RoomManagementPanel(this), "roomMgmt"); // 12
-        cardPanel.add(new CreateRoomPanel(this), "createRoom"); // 13
-        cardPanel.add(new ModifyRoomPanel(this), "modifyRoom"); // 14
+        cardPanel.add(new BillingReportPanel(this), "billing-report"); //13
+        cardPanel.add(new RoomManagementPanel(this), "roomMgmt"); // 14
+        cardPanel.add(new CreateRoomPanel(this), "createRoom"); // 15
+        cardPanel.add(new ModifyRoomPanel(this), "modifyRoom"); // 16
         //cardPanel.add(new DeleteRoomPanel(this), "deleteRoom"); // 15
 
         // Add our built CardPanel to the JFrame.
@@ -178,7 +178,7 @@ public class FrameImpl extends JFrame implements Frame {
     }
 
     public BillingReportPanel getBillingReportPanel() {
-        return (BillingReportPanel) cardPanel.getComponent(12);
+        return (BillingReportPanel) cardPanel.getComponent(13);
     }
 
 }

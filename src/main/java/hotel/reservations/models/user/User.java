@@ -1,5 +1,10 @@
 /**
+ * @file User.java
  * @author Christian Haddad
+ * @brief A User interface that allows for generic passing of an object implementing
+ *        User domain specific functions such as getAccountType(), getUsername(), etc.
+ *        such that the application can make state decisions based upon the implementing type
+ *        of the passed object.
  */
 
 package hotel.reservations.models.user;

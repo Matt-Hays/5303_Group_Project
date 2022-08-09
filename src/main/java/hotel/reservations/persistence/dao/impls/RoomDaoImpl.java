@@ -1,3 +1,11 @@
+/**
+ * @file RoomDaoImpl.java
+ * @author Joshua Southern
+ * @author Joshua Wellman
+ * @brief RoomDao.java implementing object. Provides logic for persistence layer
+ *        interactions on the Room domain.
+ */
+
 package hotel.reservations.persistence.dao.impls;
 
 import hotel.reservations.models.reservation.Reservation;
