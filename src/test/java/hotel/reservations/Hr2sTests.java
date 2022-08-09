@@ -513,7 +513,7 @@ class Hr2sTests {
      */
     @Test
     @Order(16)
-    void generateInvoice() {
+    void viewBillingReport() {
         String password = "password123$";
         LocalDate arrival = LocalDate.parse("2022-10-01");
         LocalDate departure = LocalDate.parse("2022-10-15");
@@ -533,8 +533,7 @@ class Hr2sTests {
 
     @Test
     @Order(17)
-    void viewBillingReport(){
-
+    void generateInvoice(){
         String password = "password123$";
         LocalDate arrival = LocalDate.parse("2022-06-01");
         LocalDate departure = LocalDate.parse("2022-06-30");
