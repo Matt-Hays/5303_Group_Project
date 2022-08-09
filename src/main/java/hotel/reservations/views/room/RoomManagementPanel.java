@@ -23,7 +23,7 @@ public class RoomManagementPanel extends ThemedPanel {
     private Frame frame;
     private JLabel roomLabel, smokingLabel, bedNumLabel, bedTypeLabel, occupiedLabel, nightlyRateLabel, pageTitle;
     private RoundedTextField roomField, smokingField, bedNumField, bedTypeField, occupiedField, nightlyRateField;
-    private RoundedButton btnCreateRoom, btnModifyRoom, btnDeleteRoom;
+    private RoundedButton btnCreateRoom, btnModifyRoom, btnDeleteRoom, btnBack;
     private GridBagConstraints gbc = new GridBagConstraints();
 
     /**
@@ -52,6 +52,7 @@ public class RoomManagementPanel extends ThemedPanel {
         btnCreateRoom = new RoundedButton("Create New Room");
         btnModifyRoom = new RoundedButton("Modify Existing Room");
         btnDeleteRoom = new RoundedButton("Delete Existing Room");
+        btnBack = new RoundedButton("Back");
 
         btnCreateRoom.addActionListener(new ActionListener() {
             @Override
@@ -74,6 +75,13 @@ public class RoomManagementPanel extends ThemedPanel {
             public void actionPerformed(ActionEvent e) {
                 getFrame().changeScreen("deleteRoom");
                 System.out.println("Delete Room Button Clicked");
+            }
+        });
+
+        btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().changeScreen("clerk");
             }
         });
 
@@ -110,6 +118,9 @@ public class RoomManagementPanel extends ThemedPanel {
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
         add(btnDeleteRoom, gbc);
+
+        gbc.gridy++;
+        add(btnBack, gbc);
 
     }
     private void setFrame(Frame frame){

@@ -26,7 +26,7 @@ public class ModifyRoomPanel extends ThemedPanel {
     private Frame frame;
     private JLabel roomInputLabel, roomLabel, smokingLabel, bedNumLabel, bedTypeLabel, occupiedLabel, nightlyRateLabel, pageTitle;
     private RoundedTextField roomInputField, roomField, smokingField, bedNumField, bedTypeField, occupiedField, nightlyRateField;
-    private RoundedButton btnReturnRoom, btnModifyRoom;
+    private RoundedButton btnReturnRoom, btnModifyRoom, btnBack;
     private GridBagConstraints gbc = new GridBagConstraints();
 
     /**
@@ -55,6 +55,7 @@ public class ModifyRoomPanel extends ThemedPanel {
 
         btnReturnRoom = new RoundedButton("Return Room Details");
         btnModifyRoom = new RoundedButton("Modify Room");
+        btnBack = new RoundedButton("Back");
 
         btnReturnRoom.addActionListener(new ActionListener() {
             @Override
@@ -72,6 +73,13 @@ public class ModifyRoomPanel extends ThemedPanel {
                 //System.out.println("Room Created!");
                 getFrame().getHomePanel().displayMessage("Your room has been updated!", "green");
                 getFrame().changeScreen("home");
+            }
+        });
+
+        btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().changeScreen("clerk");
             }
         });
 
@@ -172,6 +180,8 @@ public class ModifyRoomPanel extends ThemedPanel {
         gbc.anchor = GridBagConstraints.WEST;
         add(btnModifyRoom, gbc);
 
+        gbc.gridy++;
+        add(btnBack, gbc);
     }
 
     /**

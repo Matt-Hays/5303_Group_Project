@@ -74,6 +74,7 @@ public class ClerkPanel extends ThemedPanel {
             public void actionPerformed(ActionEvent e) {
                 List<Reservation> reservations = getFrame().getAppController().getReservationByUsername(getUsernameField());
                 getFrame().getReservationsPanel().fillLayout(reservations);
+                getFrame().getReservationsPanel().clerkMode();
                 getFrame().changeScreen("reservations");
             }
         });
@@ -86,6 +87,7 @@ public class ClerkPanel extends ThemedPanel {
 
                 List<Reservation> reservations = getFrame().getAppController().getReservationByUsername(username);
                 getFrame().getReservationsPanel().fillLayout(reservations);
+                getFrame().getReservationsPanel().clerkMode();
                 getFrame().changeScreen("reservations");
             }
         });

@@ -26,6 +26,7 @@ public class ReservationsPanel extends ThemedPanel {
     private JPanel scrollPanel;
     private RoundedButton btnBack;
     private List<Reservation> reservationsCache;
+    private boolean clerkMode;
 
     /**
      * Attach the Frame.java dependency and initiate the panel with a "Back" button.
@@ -113,6 +114,7 @@ public class ReservationsPanel extends ThemedPanel {
      * Clear the panel of all components to remove the previous state of the panel.
      */
     public void clearLayout(){
+        if(clerkMode) clearClerkMode();
         if(getComponents().length > 0){
             for(Component comp : getComponents()){
                 remove(comp);
@@ -164,6 +166,34 @@ public class ReservationsPanel extends ThemedPanel {
             }
         });
         scrollPanel.add(tempBtn, gbc);
+    }
+
+    public void clerkMode(){
+        this.clerkMode = true;
+        for(ActionListener al : btnBack.getActionListeners()){
+            btnBack.removeActionListener(al);
+        }
+
+        btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().changeScreen("clerk");
+            }
+        });
+    }
+
+    public void clearClerkMode(){
+        this.clerkMode = false;
+        for(ActionListener al : btnBack.getActionListeners()){
+            btnBack.removeActionListener(al);
+        }
+
+        btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().changeScreen("account");
+            }
+        });
     }
 
     private Frame getFrame() {
