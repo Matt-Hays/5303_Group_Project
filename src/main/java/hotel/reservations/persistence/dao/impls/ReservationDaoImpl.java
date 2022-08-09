@@ -135,12 +135,14 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
         }
         // Get room nightly_rate
         Invoice invoice = db.getInvoice(reservation.getInvoiceId());
+
         LocalDate date = reservation.getArrival();
         LocalDate dateToCheck = date.minus(Period.ofDays(2));
         if(date.isAfter(dateToCheck)){
             invoice.setSubtotal(roomRate * 0.8, 1);
             db.updateInvoice(invoice);
         }
+
         reservation.setStatus(ReservationStatus.CANCELLED);
         return db.updateReservation(reservation.getReservationId(), reservation.getCustomerId(),
             reservation.getInvoiceId(), reservation.getRoomNumber(), reservation.getCreatedAt(),
