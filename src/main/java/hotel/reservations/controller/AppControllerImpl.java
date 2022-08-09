@@ -57,7 +57,7 @@ public class AppControllerImpl implements AppController{
          */
         this.userService = new UserServiceImpl(userDao, sessionDao);
         this.roomService = new RoomServiceImpl(roomDao);
-        this.reservationService = new ReservationServiceImpl(reservationDao, userDao);
+        this.reservationService = new ReservationServiceImpl(reservationDao, userDao, roomDao);
         this.reportService = new ReportServiceImpl(reservationDao, userDao);
     }
 
