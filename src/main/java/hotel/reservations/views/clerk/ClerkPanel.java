@@ -27,7 +27,7 @@ import java.util.UUID;
 public class ClerkPanel extends ThemedPanel {
     private final Frame frame;
     private RoundedButton btnRoomMgmt, btnViewStatusReport, btnCheckInOut, btnMakeReservation, btnModifyReservation,
-            btnGenerateBilling;
+            btnGenerateBilling, btnBack;
     private RoundedTextField guestUsernameField;
     private JLabel guestUsernameLabel;
     private GridBagConstraints gbc;
@@ -51,6 +51,7 @@ public class ClerkPanel extends ThemedPanel {
         btnMakeReservation = new RoundedButton("Make Reservation");
         btnModifyReservation = new RoundedButton("Modify Reservation");
         btnGenerateBilling = new RoundedButton("Generate Billing Report");
+        btnBack = new RoundedButton("Back");
 
         btnRoomMgmt.addActionListener(new ActionListener() {
             @Override
@@ -102,6 +103,13 @@ public class ClerkPanel extends ThemedPanel {
             }
         });
 
+        btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFrame().changeScreen("home");
+            }
+        });
+
 
         gbc = new GridBagConstraints();
 
@@ -134,6 +142,7 @@ public class ClerkPanel extends ThemedPanel {
         insertComponent(btnMakeReservation);
         insertComponent(btnModifyReservation);
         insertComponent(btnGenerateBilling);
+        insertComponent(btnBack);
 
         revalidate();
         repaint();
