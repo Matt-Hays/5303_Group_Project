@@ -125,11 +125,14 @@ public class ReservationDaoImpl implements ReservationDao, InvoiceDao {
     }
 
     @Override
-    public Response cancelReservation(Reservation reservation) {
+    public Response cancelReservation(Reservation reservation, double roomRate) {
         if (reservation.getStatus() != ReservationStatus.AWAITING) {
             return Response.FAILURE;
         }
-
+        // Get room nightly_rate
+        Invoice invoice = db.getInvoice(reservation.getInvoiceId());
+        invoice.setSubtotal(roomRate * 0.8, 1);
+        db.updateInvoice(invoice);
         reservation.setStatus(ReservationStatus.CANCELLED);
         return db.updateReservation(reservation.getReservationId(), reservation.getCustomerId(),
             reservation.getInvoiceId(), reservation.getRoomNumber(), reservation.getCreatedAt(),

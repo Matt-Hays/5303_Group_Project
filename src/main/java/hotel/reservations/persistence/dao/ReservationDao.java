@@ -34,7 +34,7 @@ public interface ReservationDao {
 
     Response deleteReservation(Reservation reservation);
 
-    Response cancelReservation(Reservation reservation);
+    Response cancelReservation(Reservation reservation, double roomRate);
 
     public Invoice generateInvoice(double roomRate, long stayLength);
 

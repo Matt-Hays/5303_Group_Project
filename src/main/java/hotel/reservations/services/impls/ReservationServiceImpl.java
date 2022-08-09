@@ -15,6 +15,7 @@ import hotel.reservations.models.room.Room;
 import hotel.reservations.models.user.User;
 import hotel.reservations.persistence.Response;
 import hotel.reservations.persistence.dao.ReservationDao;
+import hotel.reservations.persistence.dao.RoomDao;
 import hotel.reservations.persistence.dao.UserDao;
 import hotel.reservations.services.ReservationService;
 
@@ -25,10 +26,12 @@ import java.util.UUID;
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationDao reservationDao;
     private final UserDao userDao;
+    private final RoomDao roomDao;
 
-    public ReservationServiceImpl(ReservationDao reservationDao, UserDao userDao) {
+    public ReservationServiceImpl(ReservationDao reservationDao, UserDao userDao, RoomDao roomDao) {
         this.reservationDao = reservationDao;
         this.userDao = userDao;
+        this.roomDao = roomDao;
     }
 
     @Override
@@ -89,7 +92,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Response cancelReservation(Reservation reservation) {
-        return reservationDao.cancelReservation(reservation);
+        // Get room
+        double rate = roomDao.getRoom(reservation.getRoomNumber()).getNightlyRate();
+        return reservationDao.cancelReservation(reservation, rate);
     }
 
     @Override
